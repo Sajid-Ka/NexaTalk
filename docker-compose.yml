@@ -10,3 +10,17 @@ services:
       - ./backend:/app
       - /app/node_modules
     restart: always
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:6
+    container_name: nexatalk-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    restart: always
+
+volumes:
+  mongo_data:
