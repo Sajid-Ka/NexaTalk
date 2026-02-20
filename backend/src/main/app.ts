@@ -1,10 +1,14 @@
-import express from "express"
+import "express-async-errors"
+import express from "express";
+import authRoutes from "./routes/authRoutes";
+import { errorHandler } from "./middlewares/errorHandler";
 
 const app = express();
+
 app.use(express.json());
 
-app.get("/",(req,res) => {
-    res.send("NexaTalk Backend Running ...");
-});
+app.use("/api/auth",authRoutes);
+
+app.use(errorHandler);
 
 export default app;
