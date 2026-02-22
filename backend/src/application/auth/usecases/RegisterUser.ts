@@ -2,15 +2,17 @@ import { IUserRepository } from "../../../domain/auth/interfaces/IUserRepository
 import { IPasswordHasher } from "../../../domain/auth/interfaces/IPasswordHasher";
 import { User } from "../../../domain/auth/entities/User";
 import { ConflictError } from "../../../domain/auth/errors/ConflictError";
-import { UserMapper } from "../../../shared/mappers/userMapper";
+import { UserMapper } from "../mappers/UseMapper";
+import { RegisterUserRequest } from "../dtos/requests/RegisterUserRequest";
+import { RegisterUserResponse } from "../dtos/responses/RegisterUserResponse";
 
 export class RegisterUser {
   constructor(
     private userRepo: IUserRepository,
-    private hasher: IPasswordHasher
-  ) { }
+    private hasher: IPasswordHasher,
+  ) {}
 
-  async execute(dto: any) {
+  async execute(dto: RegisterUserRequest): Promise<RegisterUserResponse> {
     const exists = await this.userRepo.findByEmail(dto.email);
     if (exists) throw new ConflictError();
 

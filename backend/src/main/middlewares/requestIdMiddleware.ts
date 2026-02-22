@@ -1,7 +1,12 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import { randomUUID } from "crypto";
+import { AuthenticatedRequest } from "../types/AuthenticatedRequest";
 
-export const requestIdMiddleware = (req: Request, _res: Response, next: NextFunction) => {
-    (req as any).requestId = randomUUID();
-    next();
+export const requestIdMiddleware = (
+  req: AuthenticatedRequest,
+  _res: Response,
+  next: NextFunction,
+) => {
+  req.requestId = randomUUID();
+  next();
 };

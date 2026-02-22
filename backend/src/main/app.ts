@@ -15,27 +15,27 @@ app.disable("x-powered-by");
 app.use(express.json());
 
 app.use(
-    helmet({
-        crossOriginEmbedderPolicy: false,
-        contentSecurityPolicy: {
-            directives: {
-                defaultSrc: ["'self'"],
-                scriptSrc: ["'self'"],
-                styleSrc: ["'self'", "'unsafe-inline'"],
-                imgSrc: ["'self'", "data:"],
-                connectSrc: ["'self'", env.CLIENT_ORIGIN],
-            },
-        },
-    })
+  helmet({
+    crossOriginEmbedderPolicy: false,
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:"],
+        connectSrc: ["'self'", env.CLIENT_ORIGIN],
+      },
+    },
+  }),
 );
 
 app.use(
-    cors({
-        origin: [env.CLIENT_ORIGIN],
-        credentials: true,
-        methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-        allowedHeaders: ["Content-Type", "Authorization"],
-    })
+  cors({
+    origin: [env.CLIENT_ORIGIN],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
 );
 
 app.use(requestIdMiddleware);

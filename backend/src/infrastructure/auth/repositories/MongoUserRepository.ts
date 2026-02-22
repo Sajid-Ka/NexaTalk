@@ -1,6 +1,8 @@
 import { IUserRepository } from "../../../domain/auth/interfaces/IUserRepository";
 import { User } from "../../../domain/auth/entities/User";
 import { UserModel } from "../database/UserModel";
+import { HydratedDocument } from "mongoose";
+import { IUserDocument } from "../database/UserModel";
 
 export class MongoUserRepository implements IUserRepository {
   async findByEmail(email: string): Promise<User | null> {
@@ -19,7 +21,7 @@ export class MongoUserRepository implements IUserRepository {
     return this.toEntity(userDoc);
   }
 
-  private toEntity(userDoc: any): User {
+  private toEntity(userDoc: HydratedDocument<IUserDocument>): User {
     return new User({
       id: userDoc.id,
       username: userDoc.username,

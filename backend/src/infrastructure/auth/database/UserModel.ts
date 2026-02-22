@@ -1,6 +1,20 @@
-import mongoose from "mongoose";
+import { Schema, model, Document } from "mongoose";
 
-const userSchema = new mongoose.Schema(
+export interface IUserDocument extends Document {
+  username: string;
+  email: string;
+  passwordHash: string;
+  avatar?: string;
+  status: "online" | "idle" | "offline";
+  globalRole: "user" | "admin";
+  isProfilePublic: boolean;
+  isBlocked: boolean;
+  blockedReason?: string;
+  lastSeenAt?: Date;
+  deletedAt?: Date;
+}
+
+const userSchema = new Schema<IUserDocument>(
   {
     username: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -26,4 +40,4 @@ const userSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-export const UserModel = mongoose.model("User", userSchema);
+export const UserModel = model<IUserDocument>("User", userSchema);

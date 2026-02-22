@@ -21,8 +21,8 @@ const refreshSession = new RefreshSession(refreshRepo, tokenService, tokenGenera
 const logoutUser = new LogoutUser(refreshRepo, tokenGenerator);
 
 export const authController = new AuthController(
-    registerUser,
-    loginUser,
-    refreshSession,
-    logoutUser
+  registerUser,
+  loginUser,
+  refreshSession,
+  logoutUser,
 );
