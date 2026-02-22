@@ -1,34 +1,21 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError } from "../../domain/errors/AppError";
 import { logger } from "../../shared/logger/logger";
-import { ZodError } from "zod";
+import { errorResponse } from "../../shared/response/responseFormatter";
 
 export const errorHandler = (
   err: Error,
-  req: Request,
+  _req: Request,
   res: Response,
-  _next: NextFunction,
+  _next: NextFunction
 ) => {
-  logger.error(err.message);
-
-  if(err instanceof ZodError){
-    return res.status(400).json({
-      message : "Validation failed",
-      errors : err.issues.map((e) => ({
-        field : e.path.join("."),
-        message : e.message
-      }))
-    })
-  }
-
   if (err instanceof AppError) {
-    logger.warn(err.message);
-    return res.status(err.statusCode).json({
-      message : err.message
-    });
+    logger.warn(`${err.code} - ${err.message}`);
+    return res.status(err.statusCode).json(errorResponse(err.code, err.message));
   }
 
-  return res.status(500).json({
-    message : "Internal Server Error",
-  })
+  logger.error("Unexpected error", err);
+  return res
+    .status(500)
+    .json(errorResponse("INTERNAL_SERVER_ERROR", "something went wrong"));
 };

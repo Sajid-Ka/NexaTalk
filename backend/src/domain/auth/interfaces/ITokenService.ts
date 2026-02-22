@@ -1,4 +1,4 @@
 export interface ITokenService {
-    generateAccessToken(userId : string) : string;
-    generateRefreshToken(userId : string) : string;
+  generateAccessToken(userId: string, role: string): string;
+  verifyAccessToken(token: string): any;
 }

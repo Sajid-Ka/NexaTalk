@@ -8,28 +8,37 @@ export class MongoUserRepository implements IUserRepository {
 
     if (!userDoc) return null;
 
+    return this.toEntity(userDoc);
+  }
+
+  async findById(id: string): Promise<User | null> {
+    const userDoc = await UserModel.findById(id);
+
+    if (!userDoc) return null;
+
+    return this.toEntity(userDoc);
+  }
+
+  private toEntity(userDoc: any): User {
     return new User({
       id: userDoc.id,
       username: userDoc.username,
       email: userDoc.email,
       passwordHash: userDoc.passwordHash,
-      globalRole : userDoc.globalRole
+      avatar: userDoc.avatar,
+      status: userDoc.status,
+      globalRole: userDoc.globalRole,
+      isProfilePublic: userDoc.isProfilePublic,
+      isBlocked: userDoc.isBlocked,
+      blockedReason: userDoc.blockedReason,
+      lastSeenAt: userDoc.lastSeenAt,
+      deletedAt: userDoc.deletedAt,
     });
   }
 
-  async create(data: {
-    username: string;
-    email: string;
-    passwordHash: string;
-  }): Promise<User> {
+  async create(data: { username: string; email: string; passwordHash: string }): Promise<User> {
     const created = await UserModel.create(data);
 
-    return new User({
-      id: created._id.toString(),
-      username: created.username,
-      email: created.email,
-      passwordHash: created.passwordHash,
-      globalRole : created.globalRole,
-    });
+    return this.toEntity(created);
   }
 }

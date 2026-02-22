@@ -7,6 +7,6 @@ export class BcryptPasswordHasher implements IPasswordHasher {
   }
 
   async compare(password: string, hashed: string): Promise<boolean> {
-    return bcrypt.compare(password,hashed);
+    return bcrypt.compare(password, hashed);
   }
 }

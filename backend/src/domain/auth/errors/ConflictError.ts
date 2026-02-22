@@ -2,6 +2,6 @@ import { AppError } from "../../errors/AppError";
 
 export class ConflictError extends AppError {
   constructor() {
-    super("Email alredy registered", 409);
+    super("EMAIL_ALREADY_REGISTERED", "Email already registered", 409);
   }
 }
