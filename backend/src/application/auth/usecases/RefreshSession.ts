@@ -4,6 +4,7 @@ import { SecureTokenGenerator } from "../../../infrastructure/auth/services/Secu
 import { IUserRepository } from "../../../domain/auth/interfaces/IUserRepository";
 import { InvalidRefreshTokenError } from "../../../domain/auth/errors/InvalidRefreshTokenError";
 import { RefreshTokenResponse } from "../dtos/responses/RefreshTokenResponse";
+import { logger } from "../../../shared/logger/logger";
 
 const REFRESH_TTL_DAYS = 7;
 
@@ -23,6 +24,9 @@ export class RefreshSession {
 
     if (storedSession.revoked) {
       await this.refreshRepo.deleteAllByUser(storedSession.userId);
+
+      logger.warn("Refresh token reuse detected", { userId: storedSession.userId });
+
       throw new InvalidRefreshTokenError();
     }
 

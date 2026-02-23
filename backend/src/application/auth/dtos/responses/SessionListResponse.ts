@@ -1,5 +1,6 @@
 export interface SessionListResponse {
-  ipAddress?: string;
-  userAgent?: string;
-  expiresAt: Date;
+    id: string;
+    ipAddress?: string;
+    userAgent?: string;
+    expiresAt: Date;
 }

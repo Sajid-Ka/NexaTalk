@@ -1,4 +1,5 @@
 export interface RefreshTokenData {
+  id?: string,
   userId: string;
   tokenHash: string;
   expiresAt: Date;
@@ -13,4 +14,5 @@ export interface IRefreshTokenRepository {
   revokeByHash(tokenHash: string): Promise<void>;
   deleteAllByUser(userId: string): Promise<void>;
   findActiveByUser(userId: string): Promise<RefreshTokenData[]>;
+  revokeById(sessionId: string, userId: string) : Promise<void>;
 }

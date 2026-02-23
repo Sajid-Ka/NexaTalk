@@ -8,9 +8,10 @@ export class ListUserSessions {
     const sessions = await this.refreshRepo.findActiveByUser(userId);
 
     return sessions.map((sessions) => ({
-      ipAddress: sessions.ipAddress,
-      userAgent: sessions.userAgent,
-      expiresAt: sessions.expiresAt,
+        id: sessions.id!,
+        ipAddress: sessions.ipAddress,
+        userAgent: sessions.userAgent,
+        expiresAt: sessions.expiresAt,
     }));
   }
 }

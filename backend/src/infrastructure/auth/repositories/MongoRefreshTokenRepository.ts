@@ -39,6 +39,7 @@ export class MongoRefreshTokenRepository implements IRefreshTokenRepository {
     }).lean();
 
     return docs.map((doc) => ({
+      id: doc._id.toString(),
       userId: doc.userId,
       tokenHash: doc.tokenHash,
       expiresAt: doc.expiresAt,
@@ -46,5 +47,12 @@ export class MongoRefreshTokenRepository implements IRefreshTokenRepository {
       userAgent: doc.userAgent ?? undefined,
       revoked: doc.revoked ?? false,
     }));
+  }
+
+  async revokeById(sessionId: string, userId: string): Promise<void> {
+    await RefreshTokenModel.updateOne(
+      {_id: sessionId,userId},
+      {revoked : true},
+    );
   }
 }
