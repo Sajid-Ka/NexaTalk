@@ -8,6 +8,7 @@
     "build": "tsc",
     "start": "node dist/main/server.js",
     "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --write .",
     "prepare": "husky install"
   },

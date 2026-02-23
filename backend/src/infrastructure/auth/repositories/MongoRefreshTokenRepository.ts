@@ -19,14 +19,32 @@ export class MongoRefreshTokenRepository implements IRefreshTokenRepository {
       expiresAt: doc.expiresAt,
       ipAddress: doc.ipAddress ?? undefined,
       userAgent: doc.userAgent ?? undefined,
+      revoked: doc.revoked ?? false,
     };
   }
 
-  async deleteByHash(tokenHash: string): Promise<void> {
-    await RefreshTokenModel.deleteOne({ tokenHash });
+  async revokeByHash(tokenHash: string): Promise<void> {
+    await RefreshTokenModel.updateOne({ tokenHash }, { $set: { revoked: true } });
   }
 
   async deleteAllByUser(userId: string): Promise<void> {
     await RefreshTokenModel.deleteMany({ userId });
+  }
+
+  async findActiveByUser(userId: string): Promise<RefreshTokenData[]> {
+    const docs = await RefreshTokenModel.find({
+      userId,
+      revoked: false,
+      expiresAt: { $gt: new Date() },
+    }).lean();
+
+    return docs.map((doc) => ({
+      userId: doc.userId,
+      tokenHash: doc.tokenHash,
+      expiresAt: doc.expiresAt,
+      ipAddress: doc.ipAddress ?? undefined,
+      userAgent: doc.userAgent ?? undefined,
+      revoked: doc.revoked ?? false,
+    }));
   }
 }

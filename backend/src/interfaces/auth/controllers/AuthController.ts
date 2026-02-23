@@ -7,6 +7,9 @@ import { successResponse } from "../../../shared/response/responseFormatter";
 import { logger } from "../../../shared/logger/logger";
 import { LoginUserRequest } from "../../../application/auth/dtos/requests/LoginUserRequest";
 import { AuthenticatedRequest } from "../../../main/types/AuthenticatedRequest";
+import { LogoutAllDevice } from "../../../application/auth/usecases/LogoutAllDevice";
+import { UnauthorizedError } from "../../../domain/errors/UnauthorizedError";
+import { ListUserSessions } from "../../../application/auth/usecases/ListUserSessions";
 
 export class AuthController {
   constructor(
@@ -14,6 +17,8 @@ export class AuthController {
     private loginUser: LoginUser,
     private refreshSession: RefreshSession,
     private logoutUser: LogoutUser,
+    private logoutAllDevice: LogoutAllDevice,
+    private listUserSessions: ListUserSessions,
   ) {}
 
   signup = async (req: AuthenticatedRequest, res: Response) => {
@@ -71,5 +76,26 @@ export class AuthController {
     });
 
     return res.status(200).json(successResponse(null, "Logged out successfully"));
+  };
+
+  logoutAll = async (req: AuthenticatedRequest, res: Response) => {
+    if (!req.user) throw new UnauthorizedError("Unauthorized");
+
+    await this.logoutAllDevice.execute(req.user.userId);
+
+    logger.info("User logged out from all devices", {
+      requestId: req.requestId,
+      userId: req.user.userId,
+    });
+
+    return res.status(200).json(successResponse(null, "Logged out from all devices"));
+  };
+
+  sessions = async (req: AuthenticatedRequest, res: Response) => {
+    if (!req.user) throw new UnauthorizedError("Unauthorized");
+
+    const result = await this.listUserSessions.execute(req.user.userId);
+
+    return res.status(200).json(successResponse(result, "Acvive sessions fetched"));
   };
 }

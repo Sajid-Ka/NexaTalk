@@ -5,6 +5,8 @@ import { IUserRepository } from "../../../domain/auth/interfaces/IUserRepository
 import { InvalidRefreshTokenError } from "../../../domain/auth/errors/InvalidRefreshTokenError";
 import { RefreshTokenResponse } from "../dtos/responses/RefreshTokenResponse";
 
+const REFRESH_TTL_DAYS = 7;
+
 export class RefreshSession {
   constructor(
     private refreshRepo: IRefreshTokenRepository,
@@ -19,29 +21,34 @@ export class RefreshSession {
 
     if (!storedSession) throw new InvalidRefreshTokenError();
 
-    if (storedSession.expiresAt.getTime() < new Date().getTime()) {
-      await this.refreshRepo.deleteByHash(tokenHash);
+    if (storedSession.revoked) {
+      await this.refreshRepo.deleteAllByUser(storedSession.userId);
+      throw new InvalidRefreshTokenError();
+    }
+
+    if (storedSession.expiresAt.getTime() <= Date.now()) {
+      await this.refreshRepo.revokeByHash(tokenHash);
       throw new InvalidRefreshTokenError();
     }
 
     const user = await this.userRepo.findById(storedSession.userId);
     if (!user) {
-      await this.refreshRepo.deleteByHash(tokenHash);
+      await this.refreshRepo.revokeByHash(tokenHash);
       throw new InvalidRefreshTokenError();
     }
 
-    await this.refreshRepo.deleteByHash(tokenHash);
+    await this.refreshRepo.revokeByHash(tokenHash);
 
     const newRefreshRaw = this.tokenGenerator.generate();
     const newRefreshHash = this.tokenGenerator.hash(newRefreshRaw);
 
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
+    const newExpires = new Date();
+    newExpires.setDate(newExpires.getDate() + REFRESH_TTL_DAYS);
 
     await this.refreshRepo.save({
       userId: user.id,
       tokenHash: newRefreshHash,
-      expiresAt,
+      expiresAt: newExpires,
       ipAddress: storedSession.ipAddress,
       userAgent: storedSession.userAgent,
     });

@@ -9,6 +9,6 @@ export class LogoutUser {
 
   async execute(refreshTokenRaw: string): Promise<void> {
     const tokenHash = this.tokenGenerator.hash(refreshTokenRaw);
-    await this.refreshRepo.deleteByHash(tokenHash);
+    await this.refreshRepo.revokeByHash(tokenHash);
   }
 }
