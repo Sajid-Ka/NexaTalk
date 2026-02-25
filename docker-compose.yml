@@ -1,22 +1,29 @@
 services:
   backend:
-    build: ./backend
+    build:
+      context: ./backend
     container_name: nexatalk-backend
-    ports:
-      - "5000:5000"
     env_file:
       - ./backend/.env
+    ports:
+      - "5000:5000"
     depends_on:
       - mongo
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: nexatalk-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
 
   mongo:
     image: mongo:6
     container_name: nexatalk-mongo
-    ports:
-      - "27018:27017"
     volumes:
       - mongo_data:/data/db
 
 volumes:
   mongo_data:
-

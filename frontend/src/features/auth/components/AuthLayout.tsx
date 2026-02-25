@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { ArrowLeft, MessageSquare } from "lucide-react";
 import { Link } from "react-router-dom";
 import Button from "../../../shared/components/ui/Button";
