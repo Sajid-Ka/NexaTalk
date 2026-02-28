@@ -1,7 +1,8 @@
 import winston from "winston";
-import { env } from "../config/env";
+import { env } from "../../../shared/config/env";
+import { ILogger } from "../../../domain/common/interfaces/ILogger";
 
-export const logger = winston.createLogger({
+export const logger: ILogger = winston.createLogger({
   level: env.NODE_ENV === "production" ? "info" : "debug",
   format: winston.format.combine(
     winston.format.timestamp(),

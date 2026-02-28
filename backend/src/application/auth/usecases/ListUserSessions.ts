@@ -1,7 +1,8 @@
-import { IRefreshTokenRepository } from "../../../domain/auth/interfaces/IRefreshTokenRepository";
+import { IRefreshTokenRepository } from "../../../domain/auth/repositories/IRefreshTokenRepository";
 import { SessionListResponse } from "../dtos/responses/SessionListResponse";
+import { IListUserSessionUsecase } from "../interfaces/IListUserSessionsUsecase";
 
-export class ListUserSessions {
+export class ListUserSessions implements IListUserSessionUsecase {
   constructor(private refreshRepo: IRefreshTokenRepository) {}
 
   async execute(userId: string): Promise<SessionListResponse[]> {

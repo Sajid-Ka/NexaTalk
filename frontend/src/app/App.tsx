@@ -1,15 +1,21 @@
-import { Routes, Route } from "react-router-dom";
-import LandingPage from "../features/landing/pages/LandingPage";
-import SignupPage from "../features/auth/pages/SignupPage";
-import LoginPage from "../features/auth/pages/LoginPage";
+import AppRouter from "./router";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<LandingPage />} />
-      <Route path="/signup" element={<SignupPage />} />
-      <Route path="/login" element={<LoginPage />} />
-    </Routes>
+    <div>
+       <Toaster
+        position="top-right"
+        toastOptions={{
+          style: {
+            background: "#1A1D2D",
+            color: "#fff",
+            border: "1px solid #3B82F6",
+          },
+        }}
+      />
+      <AppRouter />
+    </div>
   );
 }
 

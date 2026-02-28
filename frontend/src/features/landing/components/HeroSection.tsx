@@ -1,7 +1,7 @@
 import { Mic } from "lucide-react";
 import { Link } from "react-router-dom";
-import Button from "../../../shared/components/ui/Button";
-import Card from "../../../shared/components/ui/Card";
+import Button from "../../../shared/ui/Button";
+import Card from "../../../shared/ui/Card";
 
 export default function HeroSection() {
   return (

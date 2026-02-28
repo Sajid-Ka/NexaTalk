@@ -2,16 +2,15 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
 import { loginSchema, type LoginFormData } from "../validators/loginSchema";
-import Button from "../../../shared/components/ui/Button";
-import Card from "../../../shared/components/ui/Card";
+import Button from "../../../shared/ui/Button";
+import Card from "../../../shared/ui/Card";
 import LoginFields from "./LoginFields";
 import { useAuth } from "../context/AuthContext";
-import { loginApi } from "../api/authApi";
 import { useState } from "react";
 
 export default function LoginForm() {
     const navigate = useNavigate();
-    const { setAccessToken } = useAuth();
+    const {login} = useAuth();
 
     const [serverError, setServerError] = useState<string | null>(null);
 
@@ -27,15 +26,9 @@ export default function LoginForm() {
         try {
             setServerError(null);
 
-            const res = await loginApi(data);
+            await login(data);
 
-            const { accessToken, refreshToken } = res.data.data;
-
-            setAccessToken(accessToken);
-
-            localStorage.setItem("refreshToken", refreshToken);
-
-            navigate("/dashboard");
+            navigate("/dashboard", {replace : true});
 
         } catch (error: any) {
             setServerError(

@@ -1,6 +1,7 @@
 import crypto from "crypto";
+import { ITokenGenerator } from "../../../domain/auth/services/ITokenGenerator";
 
-export class SecureTokenGenerator {
+export class SecureTokenGenerator implements ITokenGenerator {
   generate(): string {
     return crypto.randomBytes(64).toString("hex");
   }

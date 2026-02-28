@@ -1,6 +1,7 @@
-import { IRefreshTokenRepository } from "../../../domain/auth/interfaces/IRefreshTokenRepository";
+import { IRefreshTokenRepository } from "../../../domain/auth/repositories/IRefreshTokenRepository";
+import { ILogoutAllDeviceUsecase } from "../interfaces/ILogoutAllDeviceUsecase";
 
-export class LogoutAllDevice {
+export class LogoutAllDevice implements ILogoutAllDeviceUsecase {
   constructor(private refreshRepo: IRefreshTokenRepository) {}
 
   async execute(userId: string): Promise<void> {

@@ -1,3 +1,5 @@
+import { GlobalRole } from "../../../../domain/auth/entities/User";
+
 export interface LoginUserResponse {
   accessToken: string;
   refreshToken: string;
@@ -5,6 +7,6 @@ export interface LoginUserResponse {
     id: string;
     username: string;
     email: string;
-    globalRole: string;
+    globalRole: GlobalRole;
   };
 }

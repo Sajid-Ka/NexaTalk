@@ -1,7 +1,7 @@
 import {
   IRefreshTokenRepository,
   RefreshTokenData,
-} from "../../../domain/auth/interfaces/IRefreshTokenRepository";
+} from "../../../domain/auth/repositories/IRefreshTokenRepository";
 import { RefreshTokenModel } from "../database/RefreshTokenModel";
 
 export class MongoRefreshTokenRepository implements IRefreshTokenRepository {

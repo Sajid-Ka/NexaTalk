@@ -1,6 +1,6 @@
 import type { UseFormRegister, FieldErrors } from "react-hook-form";
 import type { SignupFormData } from "../validators/signupSchema";
-import Input from "../../../shared/components/ui/Input";
+import Input from "../../../shared/ui/Input";
 
 interface SignupFieldsProps {
     register: UseFormRegister<SignupFormData>;

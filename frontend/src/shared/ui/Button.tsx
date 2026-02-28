@@ -1,6 +1,5 @@
 import { type ButtonHTMLAttributes, forwardRef } from "react";
-
-import { cn } from "../../lib/api-client";
+import { cn } from "../utils/cn";
 import { Loader2 } from "lucide-react";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

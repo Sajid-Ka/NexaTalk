@@ -1,6 +1,6 @@
 import { Check, Info } from "lucide-react";
-import Button from "../../../shared/components/ui/Button";
-import Card from "../../../shared/components/ui/Card";
+import Button from "../../../shared/ui/Button";
+import Card from "../../../shared/ui/Card";
 
 export default function PricingSection() {
   return (

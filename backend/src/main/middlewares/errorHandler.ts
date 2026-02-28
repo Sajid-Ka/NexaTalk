@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError } from "../../domain/errors/AppError";
-import { logger } from "../../shared/logger/logger";
+import { logger } from "../../infrastructure/common/logger/WinstonLogger";
 import { errorResponse } from "../../shared/response/responseFormatter";
 
 export const errorHandler = (err: Error, _req: Request, res: Response, _next: NextFunction) => {

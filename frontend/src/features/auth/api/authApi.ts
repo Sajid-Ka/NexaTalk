@@ -1,16 +1,16 @@
-import { api } from "../../../shared/lib/axios";
+import { api } from "../../../shared/api/axios";
 
-export const loginApi = (data : {email : string; password : string}) =>
-    api.post("/auth/login",data);
+export const loginApi = (data: { email: string; password: string }) =>
+    api.post("/auth/login", data);
 
-export const signupApi = (data : {username : string; email : string; password : string}) => 
-    api.post("/auth/signup",data);
+export const signupApi = (data: { username: string; email: string; password: string }) =>
+    api.post("/auth/signup", data);
 
-export const refreshApi = (refreshToken : string) => 
-    api.post("/auth/refresh",{refreshToken});
+export const refreshApi = () =>
+    api.post("/auth/refresh");
 
-export const logoutApi = (refreshToken: string) =>
-  api.post("/auth/logout", { refreshToken });
+export const logoutApi = () =>
+    api.post("/auth/logout");
 
 export const sessionsApi = () =>
-  api.get("/auth/sessions");
+    api.get("/auth/sessions");

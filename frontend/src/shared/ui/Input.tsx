@@ -1,6 +1,5 @@
 import { type InputHTMLAttributes, forwardRef } from "react";
-import { cn } from "../../lib/api-client";
-
+import { cn } from "../utils/cn";
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     label?: string;
     error?: string;

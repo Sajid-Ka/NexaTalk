@@ -1,21 +1,22 @@
-import { IUserRepository } from "../../../domain/auth/interfaces/IUserRepository";
-import { IPasswordHasher } from "../../../domain/auth/interfaces/IPasswordHasher";
-import { ITokenService } from "../../../domain/auth/interfaces/ITokenService";
-import { IRefreshTokenRepository } from "../../../domain/auth/interfaces/IRefreshTokenRepository";
-import { SecureTokenGenerator } from "../../../infrastructure/auth/services/SecureTokenGenerator";
+import { IUserRepository } from "../../../domain/auth/repositories/IUserRepository";
+import { IPasswordHasher } from "../../../domain/auth/services/IPasswordHasher";
+import { ITokenService } from "../../../domain/auth/services/ITokenService";
+import { IRefreshTokenRepository } from "../../../domain/auth/repositories/IRefreshTokenRepository";
 import { InvalidCredentialsError } from "../../../domain/auth/errors/InvalidCredentialsError";
-import { UserMapper } from "../mappers/UseMapper";
+import { UserMapper } from "../mappers/UserMapper";
 import { LoginUserRequest } from "../dtos/requests/LoginUserRequest";
 import { LoginUserResponse } from "../dtos/responses/LoginUserResponse";
+import { ILoginUserUsecase } from "../interfaces/ILoginUserUsecase";
+import { ITokenGenerator } from "../../../domain/auth/services/ITokenGenerator";
 
-export class LoginUser {
+export class LoginUser implements ILoginUserUsecase {
   constructor(
     private userRepo: IUserRepository,
     private hasher: IPasswordHasher,
     private tokenService: ITokenService,
     private refreshRepo: IRefreshTokenRepository,
-    private tokenGenerator: SecureTokenGenerator,
-  ) {}
+    private tokenGenerator: ITokenGenerator,
+  ) { }
 
   async execute(dto: LoginUserRequest, ip?: string, ua?: string): Promise<LoginUserResponse> {
     const user = await this.userRepo.findByEmail(dto.email);

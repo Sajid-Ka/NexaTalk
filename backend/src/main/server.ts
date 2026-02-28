@@ -1,7 +1,7 @@
 import app from "./app";
 import { env } from "../shared/config/env";
-import { logger } from "../shared/logger/logger";
-import { connectDB } from "../infrastructure/database/mongoConnection";
+import { logger } from "../infrastructure/common/logger/WinstonLogger";
+import { connectDB } from "../infrastructure/common/database/mongoConnection";
 
 async function startServer() {
   await connectDB();

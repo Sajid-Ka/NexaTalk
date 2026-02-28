@@ -1,20 +1,22 @@
-import { IRefreshTokenRepository } from "../../../domain/auth/interfaces/IRefreshTokenRepository";
-import { ITokenService } from "../../../domain/auth/interfaces/ITokenService";
-import { SecureTokenGenerator } from "../../../infrastructure/auth/services/SecureTokenGenerator";
-import { IUserRepository } from "../../../domain/auth/interfaces/IUserRepository";
+import { IRefreshTokenRepository } from "../../../domain/auth/repositories/IRefreshTokenRepository";
+import { ITokenService } from "../../../domain/auth/services/ITokenService";
+import { ITokenGenerator } from "../../../domain/auth/services/ITokenGenerator";
+import { IUserRepository } from "../../../domain/auth/repositories/IUserRepository";
 import { InvalidRefreshTokenError } from "../../../domain/auth/errors/InvalidRefreshTokenError";
 import { RefreshTokenResponse } from "../dtos/responses/RefreshTokenResponse";
-import { logger } from "../../../shared/logger/logger";
+import { IRefreshSessionUsecase } from "../interfaces/IRefreshSessionUsecase";
+import { ILogger } from "../../../domain/common/interfaces/ILogger";
 
 const REFRESH_TTL_DAYS = 7;
 
-export class RefreshSession {
+export class RefreshSession implements IRefreshSessionUsecase {
   constructor(
     private refreshRepo: IRefreshTokenRepository,
     private tokenService: ITokenService,
-    private tokenGenerator: SecureTokenGenerator,
+    private tokenGenerator: ITokenGenerator,
     private userRepo: IUserRepository,
-  ) {}
+    private logger: ILogger,
+  ) { }
 
   async execute(refreshTokenRaw: string): Promise<RefreshTokenResponse> {
     const tokenHash = this.tokenGenerator.hash(refreshTokenRaw);
@@ -25,7 +27,7 @@ export class RefreshSession {
     if (storedSession.revoked) {
       await this.refreshRepo.deleteAllByUser(storedSession.userId);
 
-      logger.warn("Refresh token reuse detected", { userId: storedSession.userId });
+      this.logger.warn("Refresh token reuse detected", { userId: storedSession.userId });
 
       throw new InvalidRefreshTokenError();
     }

@@ -1,6 +1,6 @@
 import type { UseFormRegister, FieldErrors } from "react-hook-form";
 import type { LoginFormData } from "../validators/loginSchema";
-import Input from "../../../shared/components/ui/Input";
+import Input from "../../../shared/ui/Input";
 import { Link } from "react-router-dom";
 
 interface LoginFieldsProps {

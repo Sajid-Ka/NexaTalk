@@ -1,24 +1,23 @@
 import { Response, NextFunction } from "express";
-import { JwtTokenService } from "../../infrastructure/auth/services/JwtTokenService";
+import { ITokenService } from "../../domain/auth/services/ITokenService";
 import { UnauthorizedError } from "../../domain/errors/UnauthorizedError";
 import { AuthenticatedRequest } from "../types/AuthenticatedRequest";
 
-const tokenService = new JwtTokenService();
+export const createAuthMiddleware =
+  (tokenService: ITokenService) =>
+    (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
+      const authHeader = req.headers.authorization;
 
-export const authMiddleware = (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
-  const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith("Bearer")) {
+        return next(new UnauthorizedError("Access token missing"));
+      }
 
-  if (!authHeader || !authHeader.startsWith("Bearer")) {
-    return next(new UnauthorizedError("Access token missing"));
-  }
+      const token = authHeader.split(" ")[1];
 
-  const token = authHeader.split(" ")[1];
-
-  try {
-    const payload = tokenService.verifyAccessToken(token);
-    req.user = payload;
-    next();
-  } catch {
-    next(new UnauthorizedError("Invalid or expired token"));
-  }
-};
+      try {
+        req.user = tokenService.verifyAccessToken(token);
+        next();
+      } catch {
+        next(new UnauthorizedError("Invalid or expired token"));
+      }
+    };

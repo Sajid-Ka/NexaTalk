@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { signupRequest } from "../services/authApi";
+import { signupApi } from "../api/authApi";
 import type { SignupFormData } from "../validators/signupSchema";
 
 export const useSignup = () => {
@@ -11,7 +11,8 @@ export const useSignup = () => {
             setLoading(true);
             setError(null);
 
-            return await signupRequest(data);
+            const res = await signupApi(data);
+            return res.data;
         } catch (err: any) {
             setError(err.response?.data?.message || "Signup failed");
         } finally {

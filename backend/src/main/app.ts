@@ -8,11 +8,13 @@ import { env } from "../shared/config/env";
 import { requestIdMiddleware } from "./middlewares/requestIdMiddleware";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "../shared/docs/swagger";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
 app.disable("x-powered-by");
 app.use(express.json());
+app.use(cookieParser());
 
 app.use(
   helmet({
@@ -39,6 +41,8 @@ app.use(
 );
 
 app.use(requestIdMiddleware);
+
+app.set("trust proxy", 1);
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api/auth", authRoutes);

@@ -1,5 +1,5 @@
 import { Zap, Users, Shield, Radio, MessageSquare, MonitorPlay } from "lucide-react";
-import Card from "../../../shared/components/ui/Card";
+import Card from "../../../shared/ui/Card";
 
 const features = [
   {

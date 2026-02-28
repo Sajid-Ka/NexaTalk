@@ -1,4 +1,4 @@
-import Button from "../../../shared/components/ui/Button";
+import Button from "../../../shared/ui/Button";
 
 const CallToAction = () => {
   return (

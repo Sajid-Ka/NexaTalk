@@ -1,17 +1,85 @@
-import { createContext, useContext, useState, } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import { loginApi,logoutApi,refreshApi } from "../api/authApi";
+import { 
+    setAccessToken as setAxiosToken,
+    setRefreshHandler,
+} from "../../../shared/api/interceptors";
 
-interface AuthState {
+interface AuthContextType {
     accessToken : string | null;
-    setAccessToken : (token : string | null) => void;
+    user : any | null;
+    login : (data : {email : string; password : string}) => Promise<void>;
+    logout : () => Promise<void>;
+    isAuthenticated : boolean;
+    loading : boolean;
 }
 
-const AuthContext = createContext<AuthState | null>(null);
+const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({children} : {children : React.ReactNode}) => {
     const [accessToken,setAccessToken] = useState<string | null>(null);
+    const [user, setUser] = useState<any | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        setAxiosToken(accessToken);
+    },[accessToken]);
+
+    const refresh = async () : Promise<string | null> => {
+        try {
+            const res = await refreshApi();
+            const newToken = res.data.data.accessToken;
+            setAccessToken(newToken);
+            return newToken;
+        } catch {
+            setAccessToken(null);
+            return null;
+        }
+    }
+
+    useEffect(() => {
+        setRefreshHandler(refresh);
+    },[]);
+
+    const login = async (data : {
+        email : string;
+        password : string;
+    }) => {
+        const res = await loginApi(data);
+
+        const {accessToken,user} = res.data.data;
+
+        setAccessToken(accessToken);
+        setUser(user);
+    }
+
+    const logout = async () => {
+        await logoutApi();
+        setAccessToken(null);
+        setUser(null);
+    }
+
+    useEffect(() => {
+        const init = async () => {
+            const token = await refresh();
+            if(!token) {
+                setUser(null);
+            }
+            setLoading(false);
+        };
+        init();
+    },[]);
 
     return(
-        <AuthContext.Provider value={{accessToken,setAccessToken}}>
+        <AuthContext.Provider 
+            value={{
+                accessToken,
+                user,
+                login,
+                logout,
+                isAuthenticated : !!accessToken,
+                loading,
+            }}>
             {children}
         </AuthContext.Provider>
     )
@@ -19,6 +87,6 @@ export const AuthProvider = ({children} : {children : React.ReactNode}) => {
 
 export const useAuth = () => {
     const context = useContext(AuthContext);
-    if(!context) throw new Error("AuthContext missing");
+    if(!context) throw new Error("AuthProvider missing");
     return context
 }

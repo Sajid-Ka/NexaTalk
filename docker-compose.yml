@@ -5,14 +5,16 @@ services:
     container_name: nexatalk-backend
     env_file:
       - ./backend/.env
-    ports:
-      - "5000:5000"
+    expose:
+      - "5000"
     depends_on:
       - mongo
 
   frontend:
     build:
       context: ./frontend
+      args:
+        VITE_API_URL: /api
     container_name: nexatalk-frontend
     ports:
       - "5173:80"
@@ -20,8 +22,10 @@ services:
       - backend
 
   mongo:
-    image: mongo:6
+    image: mongo:7
     container_name: nexatalk-mongo
+    ports:
+      - "27018:27017"
     volumes:
       - mongo_data:/data/db
 
