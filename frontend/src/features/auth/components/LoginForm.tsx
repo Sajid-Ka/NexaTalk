@@ -10,7 +10,7 @@ import { useState } from "react";
 
 export default function LoginForm() {
     const navigate = useNavigate();
-    const {login} = useAuth();
+    const { login } = useAuth();
 
     const [serverError, setServerError] = useState<string | null>(null);
 
@@ -28,12 +28,15 @@ export default function LoginForm() {
 
             await login(data);
 
-            navigate("/dashboard", {replace : true});
+            navigate("/home", { replace: true });
 
         } catch (error: any) {
-            setServerError(
-                error?.response?.data?.message || "Invalid email or password"
-            );
+            const message = error?.response?.data?.message;
+            if (message === "Email not verified") {
+                setServerError("Please verify your email before logging in.");
+            } else {
+                setServerError(message || "Invalid email or password");
+            }
         }
     };
 
@@ -43,9 +46,19 @@ export default function LoginForm() {
                 <LoginFields register={register} errors={errors} />
 
                 {serverError && (
-                    <p className="text-red-500 text-sm mt-4">
-                        {serverError}
-                    </p>
+                    <div className="mt-4 space-y-2">
+                        <p className="text-red-500 text-sm">
+                            {serverError}
+                        </p>
+                        {serverError === "Please verify your email before logging in." && (
+                            <Link
+                                to="/check-email"
+                                className="inline-block text-[#3B82F6] text-sm hover:underline"
+                            >
+                                Resend verification email
+                            </Link>
+                        )}
+                    </div>
                 )}
 
                 <Button

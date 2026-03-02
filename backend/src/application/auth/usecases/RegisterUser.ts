@@ -6,11 +6,13 @@ import { UserMapper } from "../mappers/UserMapper";
 import { RegisterUserRequest } from "../dtos/requests/RegisterUserRequest";
 import { RegisterUserResponse } from "../dtos/responses/RegisterUserResponse";
 import { IRegisterUserUsecase } from "../interfaces/IRegisterUserUsecase";
+import { SendVerificationEmail } from "./SendVerificationEmail";
 
 export class RegisterUser implements IRegisterUserUsecase {
   constructor(
     private userRepo: IUserRepository,
     private hasher: IPasswordHasher,
+    private sendVerificationEmail : SendVerificationEmail
   ) { }
 
   async execute(dto: RegisterUserRequest): Promise<RegisterUserResponse> {
@@ -30,6 +32,12 @@ export class RegisterUser implements IRegisterUserUsecase {
     });
 
     const user = await this.userRepo.create(newUser);
+    try{
+      await this.sendVerificationEmail.execute(user.id);
+    } catch (error) {
+      console.error("Verification email failed : ",error);
+    }
+
     return UserMapper.toRegisterResponse(user);
   }
 }

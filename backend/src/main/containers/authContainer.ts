@@ -1,6 +1,6 @@
 import { env } from "../../shared/config/env";
-import { MongoUserRepository } from "../../infrastructure/auth/repositories/MongoUserRepository";
-import { MongoRefreshTokenRepository } from "../../infrastructure/auth/repositories/MongoRefreshTokenRepository";
+import { UserRepository } from "../../infrastructure/auth/repositories/UserRepository";
+import { RefreshTokenRepository } from "../../infrastructure/auth/repositories/RefreshTokenRepository";
 import { BcryptPasswordHasher } from "../../infrastructure/auth/services/BcryptPasswordHasher";
 import { JwtTokenService } from "../../infrastructure/auth/services/JwtTokenService";
 import { SecureTokenGenerator } from "../../infrastructure/auth/services/SecureTokenGenerator";
@@ -15,14 +15,23 @@ import { AuthController } from "../../presentation/auth/controllers/AuthControll
 import { SessionController } from "../../presentation/auth/controllers/SessionController";
 import { createAuthMiddleware } from "../middlewares/authMiddleware";
 import { logger } from "../../infrastructure/common/logger/WinstonLogger";
+import { EmailVerificationTokenRepository } from "../../infrastructure/auth/repositories/EmailVerificationTokenRepository";
+import { SendVerificationEmail } from "../../application/auth/usecases/SendVerificationEmail";
+import { VerifyEmail } from "../../application/auth/usecases/VerifyEmail";
+import { NodemailerEmailService } from "../../infrastructure/auth/services/NodemailerEmailService";
 
-const userRepo = new MongoUserRepository();
-const refreshRepo = new MongoRefreshTokenRepository();
+const userRepo = new UserRepository();
+const refreshRepo = new RefreshTokenRepository();
 const hasher = new BcryptPasswordHasher();
 const tokenService = new JwtTokenService(env.JWT_SECRET, "15m");
 const tokenGenerator = new SecureTokenGenerator();
 
-const registerUser = new RegisterUser(userRepo, hasher);
+const emailTokenRepo = new EmailVerificationTokenRepository();
+const emailService = new NodemailerEmailService(env.EMAIL_USER,env.EMAIL_PASS);
+const sendVerificationEmail = new SendVerificationEmail(userRepo,emailTokenRepo,tokenGenerator,emailService,env.APP_BASE_URL);
+const verifyEmail = new VerifyEmail(userRepo,emailTokenRepo,tokenGenerator);
+
+const registerUser = new RegisterUser(userRepo, hasher,sendVerificationEmail);
 const loginUser = new LoginUser(userRepo, hasher, tokenService, refreshRepo, tokenGenerator);
 const refreshSession = new RefreshSession(refreshRepo, tokenService, tokenGenerator, userRepo, logger);
 const logoutUser = new LogoutUser(refreshRepo, tokenGenerator);
@@ -36,6 +45,7 @@ export const authController = new AuthController(
   registerUser,
   loginUser,
   refreshSession,
+  verifyEmail,
 );
 
 export const sessionController = new SessionController(
@@ -44,5 +54,6 @@ export const sessionController = new SessionController(
   listUserSessions,
   revokeSession,
 )
+
 
 export { authMiddleware };

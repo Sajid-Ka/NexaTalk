@@ -4,7 +4,7 @@ import {
 } from "../../../domain/auth/repositories/IRefreshTokenRepository";
 import { RefreshTokenModel } from "../database/RefreshTokenModel";
 
-export class MongoRefreshTokenRepository implements IRefreshTokenRepository {
+export class RefreshTokenRepository implements IRefreshTokenRepository {
   async save(token: RefreshTokenData): Promise<void> {
     await RefreshTokenModel.create(token);
   }

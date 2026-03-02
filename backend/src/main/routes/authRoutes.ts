@@ -5,10 +5,12 @@ import { registerSchema } from "../../presentation/auth/validators/registerValid
 import { loginSchema } from "../../presentation/auth/validators/loginValidator";
 import { authLimiter } from "../middlewares/authLimiter";
 import { authMiddleware } from "../containers/authContainer";
+import { verifyEmailSchema } from "../../presentation/auth/validators/verifyEmailValidator";
 
 const router = Router();
 
 router.post("/signup", validate(registerSchema), authController.signup);
+router.post("/verify-email", validate(verifyEmailSchema), authController.verifyEmail.bind(authController));
 router.post("/login", authLimiter, validate(loginSchema), authController.login);
 router.post("/refresh", authController.refresh);
 

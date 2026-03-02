@@ -8,6 +8,8 @@ import { ILoginUserUsecase } from "../../../application/auth/interfaces/ILoginUs
 import { IRefreshSessionUsecase } from "../../../application/auth/interfaces/IRefreshSessionUsecase";
 import { env } from "../../../shared/config/env";
 import { UnauthorizedError } from "../../../domain/errors/UnauthorizedError";
+import { IVerifyEmailUsecase } from "../../../application/auth/interfaces/IVerifyEmailUsecase";
+import { success } from "zod";
 
 const REFRESH_COOKIE_NAME = "refreshToken";
 
@@ -23,13 +25,24 @@ export class AuthController {
   constructor(
     private readonly _registerUser: IRegisterUserUsecase,
     private readonly _loginUser: ILoginUserUsecase,
-    private readonly _refreshSession: IRefreshSessionUsecase
+    private readonly _refreshSession: IRefreshSessionUsecase,
+    private readonly _verifyEmailUsecase : IVerifyEmailUsecase,
   ) {}
 
   signup = async (req: AuthenticatedRequest, res: Response) => {
     const result = await this._registerUser.execute(req.body);
     return res.status(201).json(successResponse(result, "User registered successfully"));
   };
+
+  verifyEmail = async (req : AuthenticatedRequest, res : Response) => {
+    const { token } = req.body;
+    await this._verifyEmailUsecase.execute(token);
+
+    return res.status(200).json({
+      success : true,
+      message : "Email verified successfully",
+    })
+  }
 
   login = async (req: AuthenticatedRequest, res: Response) => {
     const dto: LoginUserRequest = req.body;

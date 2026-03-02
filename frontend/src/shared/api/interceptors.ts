@@ -40,7 +40,7 @@ api.interceptors.response.use(
 
                 if(newToken) {
                     originalRequest.headers = {
-                        ...originalRequest.handler,
+                        ...originalRequest.headers,
                         Authorization : `Bearer ${newToken}`,
                     };
                     return api(originalRequest);

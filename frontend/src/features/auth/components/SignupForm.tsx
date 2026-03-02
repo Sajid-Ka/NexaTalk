@@ -25,7 +25,7 @@ export default function SignupForm() {
             console.log("signup success",res)
             toast.success("Account created Successfully");
 
-            navigate("/login");
+            navigate("/check-email");
         } catch (error: any) {
             console.log("Signup error:", error.response);
 

@@ -12,6 +12,7 @@ export interface IUserDocument extends Document {
   blockedReason?: string;
   lastSeenAt?: Date;
   deletedAt?: Date;
+  isEmailVerified : boolean;
 }
 
 const userSchema = new Schema<IUserDocument>(
@@ -36,6 +37,7 @@ const userSchema = new Schema<IUserDocument>(
     blockedReason: { type: String, default: null },
     lastSeenAt: { type: Date, default: null },
     deletedAt: { type: Date, default: null },
+    isEmailVerified : {type : Boolean, default : false},
   },
   { timestamps: true },
 );

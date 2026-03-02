@@ -14,3 +14,6 @@ export const logoutApi = () =>
 
 export const sessionsApi = () =>
     api.get("/auth/sessions");
+
+export const verifyEmailApi = (token: string) =>
+    api.post("/auth/verify-email", { token });

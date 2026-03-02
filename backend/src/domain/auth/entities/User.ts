@@ -17,6 +17,8 @@ export interface UserProps {
 
   lastSeenAt?: Date | null;
   deletedAt?: Date | null;
+
+  isEmailVerified?: boolean;
 }
 
 export class User {
@@ -36,6 +38,8 @@ export class User {
   public readonly lastSeenAt: Date | null;
   public readonly deletedAt: Date | null;
 
+  public readonly isEmailVerified : boolean;
+
   constructor(props: UserProps) {
     this.id = props.id ?? "";
     this.username = props.username;
@@ -52,5 +56,7 @@ export class User {
 
     this.lastSeenAt = props.lastSeenAt ?? null;
     this.deletedAt = props.deletedAt ?? null;
+
+    this.isEmailVerified = props.isEmailVerified ?? false;
   }
 }

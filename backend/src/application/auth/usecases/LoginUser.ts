@@ -8,6 +8,7 @@ import { LoginUserRequest } from "../dtos/requests/LoginUserRequest";
 import { LoginUserResponse } from "../dtos/responses/LoginUserResponse";
 import { ILoginUserUsecase } from "../interfaces/ILoginUserUsecase";
 import { ITokenGenerator } from "../../../domain/auth/services/ITokenGenerator";
+import { EmailNotVerifiedError } from "../../../domain/auth/errors/EmailNotVerifiedError";
 
 export class LoginUser implements ILoginUserUsecase {
   constructor(
@@ -16,7 +17,7 @@ export class LoginUser implements ILoginUserUsecase {
     private tokenService: ITokenService,
     private refreshRepo: IRefreshTokenRepository,
     private tokenGenerator: ITokenGenerator,
-  ) { }
+  ) {}
 
   async execute(dto: LoginUserRequest, ip?: string, ua?: string): Promise<LoginUserResponse> {
     const user = await this.userRepo.findByEmail(dto.email);
@@ -24,6 +25,8 @@ export class LoginUser implements ILoginUserUsecase {
 
     const valid = await this.hasher.compare(dto.password, user.passwordHash);
     if (!valid) throw new InvalidCredentialsError();
+
+    if(!user.isEmailVerified) throw new EmailNotVerifiedError();
 
     const accessToken = this.tokenService.generateAccessToken(user.id, user.globalRole);
     const refreshTokenRaw = this.tokenGenerator.generate();

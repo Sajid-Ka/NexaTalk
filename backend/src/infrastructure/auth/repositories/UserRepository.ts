@@ -3,7 +3,7 @@ import { User } from "../../../domain/auth/entities/User";
 import { UserModel, IUserDocument } from "../database/UserModel";
 import { BaseRepository } from "../../common/database/BaseRepository";
 
-export class MongoUserRepository extends BaseRepository<IUserDocument> implements IUserRepository {
+export class UserRepository extends BaseRepository<IUserDocument> implements IUserRepository {
 
   constructor() {
     super(UserModel);
@@ -49,6 +49,7 @@ export class MongoUserRepository extends BaseRepository<IUserDocument> implement
       blockedReason: doc.blockedReason,
       lastSeenAt: doc.lastSeenAt,
       deletedAt: doc.deletedAt,
+      isEmailVerified : doc.isEmailVerified,
     });
   }
 
@@ -65,6 +66,7 @@ export class MongoUserRepository extends BaseRepository<IUserDocument> implement
       blockedReason: user.blockedReason ?? undefined,
       lastSeenAt: user.lastSeenAt ?? undefined,
       deletedAt: user.deletedAt ?? undefined,
+      isEmailVerified : user.isEmailVerified,
     }
   }
 }
