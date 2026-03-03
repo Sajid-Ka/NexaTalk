@@ -46,4 +46,18 @@ export class NodemailerEmailService {
       `,
     });
   }
+
+  async sendPasswordResetEmail(email : string, link : string) : Promise<void> {
+    await this.transporter.sendMail({
+      from : `NexaTalk <${this.emailUser}>`,
+      to:email,
+      subject : "Reset your Password",
+      html : `
+         <h2>Password Reset</h2>
+        <p>Click the link below to reset your password:</p>
+        <a href="${link}">${link}</a>
+        <p>This link will expire in 15 minutes.</p>
+      `
+    });
+  }
 }

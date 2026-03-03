@@ -19,4 +19,7 @@ router.delete("/logout-all", authMiddleware, sessionController.logoutAll);
 router.get("/sessions", authMiddleware, sessionController.sessions);
 router.delete("/sessions/:sessionId", authMiddleware, sessionController.revoke);
 
+router.post("/request-password-reset", authLimiter,authController.requestPasswordReset);
+router.post("/reset-password",authController.resetPassword);
+
 export default router;

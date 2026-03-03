@@ -8,6 +8,10 @@ import ProtectedRoute from "../routes/ProtectedRoute";
 import PublicRoute from "../shared/router/GuestRoute";
 import VerifyEmailPage from "../features/auth/pages/VerifyEmailPage";
 import CheckEmailPage from "../features/auth/pages/CheckEmailPage";
+import ForgotPasswordPage from "../features/auth/pages/ForgotPasswordPage";
+import ResetPasswordPage from "../features/auth/pages/ResetPasswordPage";
+import AdminDashboardPage from "../features/admin/pages/AdminDashboardPage";
+import UserManagementPage from "../features/admin/pages/UserManagementPage";
 
 export default function AppRouter() {
     return (
@@ -45,20 +49,57 @@ export default function AppRouter() {
                     </ProtectedRoute>
                 }
             />
-            <Route 
-                path="/verify-email" 
+            <Route
+                path="/verify-email"
                 element={
-                    <ProtectedRoute>
+                    <PublicRoute>
                         <VerifyEmailPage />
-                    </ProtectedRoute>
-                } />
-            <Route 
-                path="/check-email" 
+                    </PublicRoute>
+                }
+            />
+            <Route
+                path="/check-email"
+                element={
+                    <PublicRoute>
+                        <CheckEmailPage />
+                    </PublicRoute>
+                }
+            />
+
+            <Route
+                path="/forgot-password"
+                element={
+                    <PublicRoute>
+                        <ForgotPasswordPage />
+                    </PublicRoute>
+                }
+            />
+
+            <Route
+                path="/reset-password"
+                element={
+                    <PublicRoute>
+                        <ResetPasswordPage />
+                    </PublicRoute>
+                }
+            />
+
+            <Route
+                path="/admin"
                 element={
                     <ProtectedRoute>
-                        <CheckEmailPage />
+                        <AdminDashboardPage />
                     </ProtectedRoute>
-                } />
+                }
+            />
+            <Route
+                path="/admin/users"
+                element={
+                    <ProtectedRoute>
+                        <UserManagementPage />
+                    </ProtectedRoute>
+                }
+            />
         </Routes>
     )
 }

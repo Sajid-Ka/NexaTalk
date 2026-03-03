@@ -17,3 +17,9 @@ export const sessionsApi = () =>
 
 export const verifyEmailApi = (token: string) =>
     api.post("/auth/verify-email", { token });
+
+export const requestPasswordResetApi = (email: string) =>
+    api.post("/auth/request-password-reset", { email });
+
+export const resetPasswordApi = (data: { token: string; newPassword: string }) =>
+    api.post("/auth/reset-password", data);

@@ -9,7 +9,8 @@ import { IRefreshSessionUsecase } from "../../../application/auth/interfaces/IRe
 import { env } from "../../../shared/config/env";
 import { UnauthorizedError } from "../../../domain/errors/UnauthorizedError";
 import { IVerifyEmailUsecase } from "../../../application/auth/interfaces/IVerifyEmailUsecase";
-import { success } from "zod";
+import { IRequestPasswordResetUsecase } from "../../../application/auth/interfaces/IRequestPasswordResetUsecase";
+import { IResetPasswordUsecase } from "../../../application/auth/interfaces/IResetPasswordUsecase";
 
 const REFRESH_COOKIE_NAME = "refreshToken";
 
@@ -27,6 +28,8 @@ export class AuthController {
     private readonly _loginUser: ILoginUserUsecase,
     private readonly _refreshSession: IRefreshSessionUsecase,
     private readonly _verifyEmailUsecase : IVerifyEmailUsecase,
+    private readonly _requestPasswordReset: IRequestPasswordResetUsecase,
+    private readonly _resetPassword: IResetPasswordUsecase,
   ) {}
 
   signup = async (req: AuthenticatedRequest, res: Response) => {
@@ -36,6 +39,13 @@ export class AuthController {
 
   verifyEmail = async (req : AuthenticatedRequest, res : Response) => {
     const { token } = req.body;
+    if(!token) {
+      return res.status(400).json({
+        success : false,
+        message : "Token missing",
+      })
+    }
+
     await this._verifyEmailUsecase.execute(token);
 
     return res.status(200).json({
@@ -86,4 +96,26 @@ export class AuthController {
       )
     );
   };
+
+  requestPasswordReset = async (req : AuthenticatedRequest, res : Response) => {
+    const {email} = req.body;
+
+    await this._requestPasswordReset.execute(email);
+
+    return res.status(200).json({
+      success : true,
+      message : "If the email exists, reset link has been sent",
+    });
+  }
+
+  resetPassword = async (req : AuthenticatedRequest, res : Response) => {
+    const {token, newPassword} = req.body;
+
+    await this._resetPassword.execute(token,newPassword);
+
+    return res.status(200).json({
+      success : true,
+      message: "Password reset successfully",
+    })
+  }
 }

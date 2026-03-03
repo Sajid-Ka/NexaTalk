@@ -54,12 +54,33 @@ export const AuthProvider = ({children} : {children : React.ReactNode}) => {
     }
 
     const logout = async () => {
-        await logoutApi();
-        setAccessToken(null);
-        setUser(null);
+        try {
+            await logoutApi();
+        } catch (error) {
+            console.error("Logout Api failed :",error);
+        } finally {
+            setAccessToken(null);
+            setUser(null);
+        }
     }
 
     useEffect(() => {
+        const publicAuthPages = [
+            "/login",
+            "/signup",
+            "/forgot-password",
+            "/reset-password",
+            "/verify-email",
+            "/check-email",
+        ];
+
+        const currentPath = window.location.pathname;
+
+        if(publicAuthPages.includes(currentPath)){
+            setLoading(false);
+            return
+        }
+
         const init = async () => {
             const token = await refresh();
             if(!token) {

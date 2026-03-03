@@ -1,11 +1,10 @@
 import { useEffect, useState, useRef } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams,useNavigate } from "react-router-dom";
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import AuthLayout from "../components/AuthLayout";
 import Card from "../../../shared/ui/Card";
 import Button from "../../../shared/ui/Button";
 import { verifyEmailApi } from "../api/authApi";
-import { useNavigate } from "react-router-dom";
 
 export default function VerifyEmailPage() {
     const [searchParams] = useSearchParams();

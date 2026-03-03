@@ -19,6 +19,9 @@ import { EmailVerificationTokenRepository } from "../../infrastructure/auth/repo
 import { SendVerificationEmail } from "../../application/auth/usecases/SendVerificationEmail";
 import { VerifyEmail } from "../../application/auth/usecases/VerifyEmail";
 import { NodemailerEmailService } from "../../infrastructure/auth/services/NodemailerEmailService";
+import { ResetPasswordTokenRepository } from "../../infrastructure/auth/repositories/ResetPasswordTokenRepository";
+import { RequestPasswordReset } from "../../application/auth/usecases/RequestPasswordReset";
+import { ResetPassword } from "../../application/auth/usecases/ResetPassword";
 
 const userRepo = new UserRepository();
 const refreshRepo = new RefreshTokenRepository();
@@ -39,6 +42,11 @@ const logoutAllDevice = new LogoutAllDevice(refreshRepo);
 const listUserSessions = new ListUserSessions(refreshRepo);
 const revokeSession = new RevokeSession(refreshRepo);
 
+const resetTokenRepo = new ResetPasswordTokenRepository();
+
+const requestPasswordReset = new RequestPasswordReset(userRepo,tokenGenerator,resetTokenRepo,emailService,env.APP_BASE_URL);
+const resetPassword = new ResetPassword(resetTokenRepo,userRepo,tokenGenerator,hasher);
+
 const authMiddleware = createAuthMiddleware(tokenService);
 
 export const authController = new AuthController(
@@ -46,6 +54,8 @@ export const authController = new AuthController(
   loginUser,
   refreshSession,
   verifyEmail,
+  requestPasswordReset,
+  resetPassword
 );
 
 export const sessionController = new SessionController(

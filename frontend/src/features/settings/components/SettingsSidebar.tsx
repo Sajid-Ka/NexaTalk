@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../auth/context/AuthContext";
 import {
     User,
     Shield,
@@ -28,6 +29,17 @@ const sidebarItems = [
 
 export default function SettingsSidebar() {
     const navigate = useNavigate();
+    const {logout}  = useAuth();
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+        } catch (error) {
+            console.error("Logout failed",error);
+        } finally {
+            navigate("/login",{replace : true});
+        }
+    }
 
     // For now, we only have the profile settings page
     const activeItem = "profile";
@@ -72,7 +84,10 @@ export default function SettingsSidebar() {
 
             {/* Log Out */}
             <div className="p-4 border-t border-white/5">
-                <button className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-400/10 rounded-xl transition-all duration-200">
+                <button 
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-400/10 rounded-xl transition-all duration-200"
+                >
                     <LogOut size={20} />
                     <span className="text-sm font-medium">Log Out</span>
                 </button>
