@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError } from "../../domain/errors/AppError";
-import { logger } from "../../infrastructure/common/logger/WinstonLogger";
+import { logger } from "../../infrastructure/common/logger/logger";
 import { errorResponse } from "../../shared/response/responseFormatter";
 import { EmailNotVerifiedError } from "../../domain/auth/errors/EmailNotVerifiedError";
 
@@ -11,10 +11,10 @@ export const errorHandler = (err: Error, _req: Request, res: Response, _next: Ne
     return res.status(err.statusCode).json(errorResponse(err.code, err.message));
   }
 
-  if(err instanceof EmailNotVerifiedError) {
+  if (err instanceof EmailNotVerifiedError) {
     return res.status(403).json({
-      success : false,
-      message : err.message,
+      success: false,
+      message: err.message,
     })
   }
 

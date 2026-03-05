@@ -32,4 +32,5 @@ export const AUTH_TYPES = {
   Logger: Symbol.for("Common.Logger"),
   ClientOrigin: Symbol.for("Auth.ClientOrigin"),
   AppBaseUrl: Symbol.for("Auth.AppBaseUrl"),
+  CacheService: Symbol.for("Common.CacheService"),
 };

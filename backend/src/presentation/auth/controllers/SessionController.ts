@@ -2,7 +2,7 @@ import { Response } from "express";
 import { successResponse } from "../../../shared/response/responseFormatter";
 import { UnauthorizedError } from "../../../domain/errors/UnauthorizedError";
 import { AuthenticatedRequest } from "../../../main/types/AuthenticatedRequest";
-import { logger } from "../../../infrastructure/common/logger/WinstonLogger";
+import { logger } from "../../../infrastructure/common/logger/logger";
 import { ILogoutUserUsecase } from "../../../application/auth/interfaces/ILogoutUserUsecase";
 import { ILogoutAllDeviceUsecase } from "../../../application/auth/interfaces/ILogoutAllDeviceUsecase";
 import { IListUserSessionsUsecase } from "../../../application/auth/interfaces/IListUserSessionsUsecase";
@@ -18,22 +18,22 @@ export class SessionController {
     @inject(AUTH_TYPES.LogoutAllDevice) private readonly _logoutAllDevice: ILogoutAllDeviceUsecase,
     @inject(AUTH_TYPES.ListUserSessions) private readonly _listUserSessions: IListUserSessionsUsecase,
     @inject(AUTH_TYPES.RevokeSession) private readonly _revokeSession: IRevokeSessionUsecase
-  ) {}
+  ) { }
 
   logout = async (req: AuthenticatedRequest, res: Response) => {
     const refreshToken = req.cookies?.refreshToken;
 
-    if(!refreshToken) {
-      return res.status(200).json(successResponse(null,"Logged out"));
+    if (!refreshToken) {
+      return res.status(200).json(successResponse(null, "Logged out"));
     }
 
     await this._logoutUser.execute(refreshToken);
 
     res.clearCookie("refreshToken", {
-      httpOnly : true,
-      secure : env.NODE_ENV === "production",
-      sameSite : "strict",
-      path : "/api/auth/refresh",
+      httpOnly: true,
+      secure: env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/api/auth/refresh",
     });
 
     return res.status(200).json(successResponse(null, "Logged out successfully"));

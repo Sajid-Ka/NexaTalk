@@ -5,9 +5,10 @@ import { IUserRepository } from "../../../domain/auth/repositories/IUserReposito
 import { InvalidRefreshTokenError } from "../../../domain/auth/errors/InvalidRefreshTokenError";
 import { RefreshTokenResponse } from "../dtos/responses/RefreshTokenResponse";
 import { IRefreshSessionUsecase } from "../interfaces/IRefreshSessionUsecase";
-import { ILogger } from "../../../domain/common/interfaces/ILogger";
-import { injectable,inject } from "inversify";
+import { ILogger } from "../../../domain/common/service/ILogger";
+import { injectable, inject } from "inversify";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
+import { ICacheService } from "../../../domain/common/service/ICacheService";
 
 const REFRESH_TTL_DAYS = 7;
 
@@ -18,17 +19,26 @@ export class RefreshSession implements IRefreshSessionUsecase {
     @inject(AUTH_TYPES.TokenService) private _tokenService: ITokenService,
     @inject(AUTH_TYPES.TokenGenerator) private _tokenGenerator: ITokenGenerator,
     @inject(AUTH_TYPES.UserRepository) private _userRepo: IUserRepository,
+    @inject(AUTH_TYPES.CacheService) private _cache : ICacheService,
     @inject(AUTH_TYPES.Logger) private _logger: ILogger,
-  ) {}
+  ) { }
 
   async execute(refreshTokenRaw: string): Promise<RefreshTokenResponse> {
     const tokenHash = this._tokenGenerator.hash(refreshTokenRaw);
+
+    const cacheKey = `refresh:${tokenHash}`;
+
+    const existsInCache = await this._cache.exists(cacheKey);
+
+    if(!existsInCache) throw new InvalidRefreshTokenError();
+
     const storedSession = await this._refreshRepo.findByHash(tokenHash);
 
     if (!storedSession) throw new InvalidRefreshTokenError();
 
     if (storedSession.revoked) {
       await this._refreshRepo.deleteAllByUser(storedSession.userId);
+      await this._cache.delete(cacheKey);
 
       this._logger.warn("Refresh token reuse detected", { userId: storedSession.userId });
 
@@ -37,16 +47,19 @@ export class RefreshSession implements IRefreshSessionUsecase {
 
     if (storedSession.expiresAt.getTime() <= Date.now()) {
       await this._refreshRepo.revokeByHash(tokenHash);
+      await this._cache.delete(cacheKey);
       throw new InvalidRefreshTokenError();
     }
 
     const user = await this._userRepo.findById(storedSession.userId);
     if (!user) {
       await this._refreshRepo.revokeByHash(tokenHash);
+      await this._cache.delete(cacheKey);
       throw new InvalidRefreshTokenError();
     }
 
     await this._refreshRepo.revokeByHash(tokenHash);
+    await this._cache.delete(cacheKey);
 
     const newRefreshRaw = this._tokenGenerator.generate();
     const newRefreshHash = this._tokenGenerator.hash(newRefreshRaw);
@@ -61,6 +74,12 @@ export class RefreshSession implements IRefreshSessionUsecase {
       ipAddress: storedSession.ipAddress,
       userAgent: storedSession.userAgent,
     });
+
+    await this._cache.set(
+      cacheKey,
+      {userId : user.id},
+      60 * 60 * 24 * 7
+    );
 
     const accessToken = this._tokenService.generateAccessToken(user.id, user.globalRole);
 

@@ -25,9 +25,11 @@ import { ResetPassword } from "../../../../application/auth/usecases/ResetPasswo
 
 import { AuthController } from "../../../../presentation/auth/controllers/AuthController";
 import { SessionController } from "../../../../presentation/auth/controllers/SessionController";
-import { logger } from "../../../../infrastructure/common/logger/WinstonLogger";
+import { logger } from "../../../../infrastructure/common/logger/logger";
 
 import { env } from "../../../../shared/config/env";
+
+import { RedisCacheService } from "../../../../infrastructure/common/cache/RedisCacheService";
 
 export function loadAuthModule(container: Container) {
 
@@ -66,4 +68,5 @@ export function loadAuthModule(container: Container) {
   container.bind<string>(AUTH_TYPES.AppBaseUrl).toConstantValue(env.APP_BASE_URL);
   container.bind<string>(AUTH_TYPES.ClientOrigin).toConstantValue(env.CLIENT_ORIGIN);
 
+  container.bind(AUTH_TYPES.CacheService).to(RedisCacheService).inSingletonScope();
 }

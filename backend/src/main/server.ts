@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import app from "./app";
 import { env } from "../shared/config/env";
-import { logger } from "../infrastructure/common/logger/WinstonLogger";
+import { logger } from "../infrastructure/common/logger/logger";
 import { connectDB } from "../infrastructure/common/database/mongoConnection";
 
 async function startServer() {

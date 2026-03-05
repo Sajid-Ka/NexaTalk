@@ -6,8 +6,10 @@ import { EmailVerificationToken } from "../../../domain/auth/entities/EmailVerif
 import { ISendVerificationEmailUsecase } from "../interfaces/ISendVerificationEmailUsecase";
 import { inject, injectable } from "inversify";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
+import { ICacheService } from "../../../domain/common/service/ICacheService";
 
-const  VERIFY_TTL_MINUTES = 60;
+const  VERIFY_TTL_MINUTES = 15;
+const VERIFY_TTL_SECONDS = 60 * 15;
 
 @injectable()
 export class SendVerificationEmail implements ISendVerificationEmailUsecase {
@@ -16,6 +18,7 @@ export class SendVerificationEmail implements ISendVerificationEmailUsecase {
         @inject(AUTH_TYPES.EmailVerificationTokenRepository) private _tokenRepo : IEmailVerificationTokenRepository,
         @inject(AUTH_TYPES.TokenGenerator) private _tokenGenerator : ITokenGenerator,
         @inject(AUTH_TYPES.EmailService) private _emailService : IEmailService,
+        @inject(AUTH_TYPES.CacheService) private _cache : ICacheService,
         @inject(AUTH_TYPES.AppBaseUrl) private _appBaseUrl : string
     ) {}
 
@@ -40,6 +43,14 @@ export class SendVerificationEmail implements ISendVerificationEmailUsecase {
         });
 
         await this._tokenRepo.save(token); 
+
+        const cacheKey = `verify_email:${tokenHash}`;
+
+        await this._cache.set(
+            cacheKey,
+            {userId : user.id},
+            VERIFY_TTL_SECONDS
+        )
 
         const verificationLink =`${this._appBaseUrl}/verify-email?token=${rawToken}`;
 

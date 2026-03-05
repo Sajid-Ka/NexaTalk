@@ -10,3 +10,12 @@ export const swaggerSpec = swaggerJSDoc({
   },
   apis: ["./src/interfaces/**/*.ts"],
 });
+
+
+
+//....  use this top in app.ts 
+// import swaggerUi from "swagger-ui-express";
+// import { swaggerSpec } from "../shared/docs/swagger";
+
+//.... this use route section in app.ts
+// app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));

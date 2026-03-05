@@ -6,7 +6,10 @@ import { ResetPasswordToken } from "../../../domain/auth/entities/ResetPasswordT
 import { IRequestPasswordResetUsecase } from "../interfaces/IRequestPasswordResetUsecase";
 import { injectable,inject } from "inversify";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
+import { ICacheService } from "../../../domain/common/service/ICacheService";
 
+const RESET_TTL_MINUTES = 15;
+const RESET_TTL_SECONDS = 60 * 15;
 
 @injectable()
 export class RequestPasswordReset implements IRequestPasswordResetUsecase {
@@ -15,6 +18,7 @@ export class RequestPasswordReset implements IRequestPasswordResetUsecase {
         @inject(AUTH_TYPES.TokenGenerator) private _tokenGenerator : ITokenGenerator,
         @inject(AUTH_TYPES.ResetPasswordTokenRepository) private _resetRepo : IResetPasswordTokenRepository,
         @inject(AUTH_TYPES.EmailService) private _emailService : IEmailService,
+        @inject(AUTH_TYPES.CacheService) private _cache : ICacheService,
         @inject(AUTH_TYPES.ClientOrigin) private _frontendUrl : string
     ) {}
 
@@ -27,7 +31,7 @@ export class RequestPasswordReset implements IRequestPasswordResetUsecase {
         const tokenHash = this._tokenGenerator.hash(rawToken);
 
         const expiresAt = new Date();
-        expiresAt.setMinutes(expiresAt.getMinutes() + 15);
+        expiresAt.setMinutes(expiresAt.getMinutes() + RESET_TTL_MINUTES);
 
         await this._resetRepo.save(new ResetPasswordToken({
                 userId : user.id,
@@ -35,6 +39,14 @@ export class RequestPasswordReset implements IRequestPasswordResetUsecase {
                 expiresAt,
             })
         );
+
+        const cacheKey = `reset_password:${tokenHash}`;
+
+        await this._cache.set(
+            cacheKey,
+            {userId : user.id},
+            RESET_TTL_SECONDS
+        )
 
         const resetLink = `${this._frontendUrl}/reset-password?token=${rawToken}`;
 

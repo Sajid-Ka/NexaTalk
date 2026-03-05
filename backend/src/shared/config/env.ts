@@ -26,6 +26,10 @@ const envSchema = z.object({
   EMAIL_PASS: z.string().trim().min(1),
 
   APP_BASE_URL: z.string().trim().url(),
+
+  REDIS_HOST : z.string().default("nexatalk-redis"),
+
+  REDIS_PORT : z.coerce.number().default(6379),
 });
 
 const parsed = envSchema.safeParse(process.env);

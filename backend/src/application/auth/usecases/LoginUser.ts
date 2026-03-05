@@ -11,6 +11,7 @@ import { ITokenGenerator } from "../../../domain/auth/services/ITokenGenerator";
 import { EmailNotVerifiedError } from "../../../domain/auth/errors/EmailNotVerifiedError";
 import { injectable,inject } from "inversify";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
+import { ICacheService } from "../../../domain/common/service/ICacheService";
 
 @injectable()
 export class LoginUser implements ILoginUserUsecase {
@@ -20,6 +21,7 @@ export class LoginUser implements ILoginUserUsecase {
     @inject(AUTH_TYPES.TokenService) private _tokenService: ITokenService,
     @inject(AUTH_TYPES.RefreshTokenRepository) private _refreshRepo: IRefreshTokenRepository,
     @inject(AUTH_TYPES.TokenGenerator) private _tokenGenerator: ITokenGenerator,
+    @inject(AUTH_TYPES.CacheService) private _cache : ICacheService
   ) { }
 
   async execute(dto: LoginUserRequest, ip?: string, ua?: string): Promise<LoginUserResponse> {
@@ -45,6 +47,12 @@ export class LoginUser implements ILoginUserUsecase {
       ipAddress: ip,
       userAgent: ua,
     });
+
+    await this._cache.set(
+      `refresh:${refreshTokenHash}`,
+      {userId : user.id},
+      60 * 60 * 24 * 7
+    );
 
     return LoginUserMapper.toLoginResponse(user, accessToken, refreshTokenRaw);
   }
