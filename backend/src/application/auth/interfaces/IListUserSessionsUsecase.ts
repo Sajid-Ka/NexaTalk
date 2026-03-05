@@ -1,5 +1,5 @@
 import { SessionListResponse } from "../dtos/responses/SessionListResponse";
 
-export interface IListUserSessionUsecase {
+export interface IListUserSessionsUsecase {
     execute(userId : string) : Promise<SessionListResponse[]>;
 }

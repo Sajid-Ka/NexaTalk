@@ -1,6 +1,7 @@
-import { Schema,model,Document } from "mongoose";
+import { Schema,model,Types } from "mongoose";
 
-export interface IEmailVerificationTokenDocument extends Document {
+export interface IEmailVerificationTokenPersistence {
+    _id : Types.ObjectId;
     userId : string;
     tokenHash : string;
     expiresAt : Date;
@@ -8,7 +9,7 @@ export interface IEmailVerificationTokenDocument extends Document {
     createdAt : Date;
 }
 
-const EmailVerificationTokenSchema = new Schema<IEmailVerificationTokenDocument> (
+const EmailVerificationTokenSchema = new Schema<IEmailVerificationTokenPersistence> (
     {
         userId: { type: String, required: true },
         tokenHash: { type: String, required: true, unique: true },
@@ -20,7 +21,7 @@ const EmailVerificationTokenSchema = new Schema<IEmailVerificationTokenDocument>
     }
 );
 
-export const EmailVerificationTokenModel  = model<IEmailVerificationTokenDocument>(
+export const EmailVerificationTokenModel  = model<IEmailVerificationTokenPersistence>(
     "EmailVerificationToken",
     EmailVerificationTokenSchema
 );

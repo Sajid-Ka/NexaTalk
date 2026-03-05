@@ -1,10 +1,15 @@
+import { inject, injectable } from "inversify";
 import { IRefreshTokenRepository } from "../../../domain/auth/repositories/IRefreshTokenRepository";
 import { IRevokeSessionUsecase } from "../interfaces/IRevokeSessionUsecase";
+import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
 
+@injectable()
 export class RevokeSession implements IRevokeSessionUsecase {
-    constructor(private refreshRepo : IRefreshTokenRepository) {}
+    constructor(
+        @inject(AUTH_TYPES.RefreshTokenRepository) private _refreshRepo : IRefreshTokenRepository
+    ) {}
 
     async execute(userId : string, sessionId : string) : Promise<void> {
-        await this.refreshRepo.revokeById(sessionId,userId);
+        await this._refreshRepo.revokeById(sessionId,userId);
     }
 }

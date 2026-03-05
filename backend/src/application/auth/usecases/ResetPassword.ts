@@ -3,33 +3,36 @@ import { IPasswordHasher } from "../../../domain/auth/services/IPasswordHasher";
 import { ITokenGenerator } from "../../../domain/auth/services/ITokenGenerator";
 import { IResetPasswordTokenRepository } from "../../../domain/auth/repositories/IResetPasswordTokenRepository";
 import { IResetPasswordUsecase } from "../interfaces/IResetPasswordUsecase";
+import { inject, injectable } from "inversify";
+import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
 
+@injectable()
 export class ResetPassword implements IResetPasswordUsecase {
     constructor(
-        private resetRepo : IResetPasswordTokenRepository,
-        private userRepo : IUserRepository,
-        private tokenGenerator : ITokenGenerator,
-        private hasher : IPasswordHasher
+        @inject(AUTH_TYPES.ResetPasswordTokenRepository) private _resetRepo : IResetPasswordTokenRepository,
+        @inject(AUTH_TYPES.UserRepository) private _userRepo : IUserRepository,
+        @inject(AUTH_TYPES.TokenGenerator) private _tokenGenerator : ITokenGenerator,
+        @inject(AUTH_TYPES.PasswordHasher) private _hasher : IPasswordHasher
     ) {}
 
     async execute(token : string, newPassword : string){
-        const tokenHash = this.tokenGenerator.hash(token);
+        const tokenHash = this._tokenGenerator.hash(token);
 
-        const storedToken = await this.resetRepo.findByTokenHash(tokenHash);
+        const storedToken = await this._resetRepo.findByTokenHash(tokenHash);
         if(!storedToken) throw new Error("Invalid token");
 
         if(storedToken.used) throw new Error("Token alredy used");
         if(storedToken.isExpired()) throw new Error("Token Expired");
 
-        const user = await this.userRepo.findById(storedToken.userId);
+        const user = await this._userRepo.findById(storedToken.userId);
         if(!user) throw new Error("User not found");
 
-        const hashedPassword = await this.hasher.hash(newPassword);
+        const hashedPassword = await this._hasher.hash(newPassword);
         
-        await this.userRepo.update(user.id, {
+        await this._userRepo.update(user.id, {
             passwordHash : hashedPassword,
         });
 
-        await this.resetRepo.deleteByUserId(user.id);
+        await this._resetRepo.deleteByUserId(user.id);
     }
 }

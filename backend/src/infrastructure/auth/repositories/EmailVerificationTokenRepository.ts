@@ -1,10 +1,18 @@
 import { IEmailVerificationTokenRepository } from "../../../domain/auth/repositories/IEmailVerificationTokenRepository";
 import { EmailVerificationToken } from "../../../domain/auth/entities/EmailVerificationToken";
-import { EmailVerificationTokenModel } from "../database/EmailVerificationTokenModel";
+import { EmailVerificationTokenModel,IEmailVerificationTokenPersistence } from "../database/EmailVerificationTokenModel";
+import { BaseRepository } from "../../common/database/BaseRepository";
+import { injectable } from "inversify";
 
-export class EmailVerificationTokenRepository implements IEmailVerificationTokenRepository {
+@injectable()
+
+export class EmailVerificationTokenRepository extends BaseRepository<IEmailVerificationTokenPersistence> implements IEmailVerificationTokenRepository {
+    constructor(){
+        super(EmailVerificationTokenModel)
+    }
+
     async save(token : EmailVerificationToken) : Promise<void> {
-        await EmailVerificationTokenModel.create({
+        await this.createRaw({
             userId: token.userId,
             tokenHash : token.tokenHash,
             expiresAt : token.expiresAt,
@@ -13,7 +21,7 @@ export class EmailVerificationTokenRepository implements IEmailVerificationToken
     }
 
     async findByHash(tokenHash: string): Promise<EmailVerificationToken | null> {
-        const doc = await EmailVerificationTokenModel.findOne({tokenHash}).lean();
+        const doc = await this.findOneRaw({tokenHash});
         if(!doc) return null;
 
         return new EmailVerificationToken({
@@ -27,13 +35,10 @@ export class EmailVerificationTokenRepository implements IEmailVerificationToken
     }
 
     async markAsUsed(id: string): Promise<void> {
-        await EmailVerificationTokenModel.updateOne(
-            {_id : id},
-            {$set : {used : true}}
-        );
+        await this.updateRaw(id, {$set : {used : true}});
     }
 
     async deleteAllByUser(userId: string): Promise<void> {
-        await EmailVerificationTokenModel.deleteMany({userId});
+        await this.model.deleteMany({userId});
     }
 }

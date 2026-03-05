@@ -1,7 +1,8 @@
 import { z } from "zod";
+import { emailValidator } from "../../../shared/baseValidators/authBaseValidator";
 
 export const forgotPasswordSchema = z.object({
-    email: z.string().email("Invalid email address"),
+    email: emailValidator,
 });
 
 export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;

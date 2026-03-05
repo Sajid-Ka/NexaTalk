@@ -1,37 +1,72 @@
-import { Model, Types } from "mongoose";
+import {
+  Model,
+  ClientSession,
+  UpdateQuery,
+  Types,
+  HydratedDocument
+} from "mongoose";
 
-export abstract class BaseRepository<TPersistence> {
+type Filter<T> = Record<string,unknown>;
+type CreatePersistence<T> = Omit<T, "_id" | "createdAt" | "updatedAt">;
+
+export abstract class BaseRepository<TPersistence extends {_id : Types.ObjectId }> {
   protected constructor(
     protected readonly model: Model<TPersistence>
   ) {}
 
-  protected async findByIdRaw(id: string): Promise<TPersistence | null> {
-    const entity = await this.model
-      .findById(new Types.ObjectId(id))
-      .lean();
+  protected async findByIdRaw(
+    id: string,
+    session?: ClientSession
+  ): Promise<TPersistence | null> {
+    return this.model
+      .findOne({ _id: new Types.ObjectId(id) } as Filter<TPersistence>)
+      .session(session ?? null)
+      .lean<TPersistence>()
+      .exec();
+  }
 
-    return entity as TPersistence | null;
+  protected async findOneRaw(
+    filter: Filter<TPersistence>,
+    session?: ClientSession
+  ): Promise<TPersistence | null> {
+    return this.model
+      .findOne(filter)
+      .session(session ?? null)
+      .lean<TPersistence>()
+      .exec();
   }
 
   protected async createRaw(
-    data: Partial<TPersistence>
+    data: CreatePersistence<TPersistence>,
+    session?: ClientSession
   ): Promise<TPersistence> {
-    const created = await this.model.create(data);
-    return created.toObject() as TPersistence;
+    const doc : HydratedDocument<TPersistence> = new this.model(data);
+    await doc.save({ session });
+    return doc.toObject();
   }
 
   protected async updateRaw(
     id: string,
-    data: Partial<TPersistence>
+    data: UpdateQuery<TPersistence>,
+    session?: ClientSession
   ): Promise<TPersistence | null> {
-    const updated = await this.model
-      .findByIdAndUpdate(id, data, { new: true })
-      .lean();
-
-    return updated as TPersistence | null;
+    return this.model
+      .findOneAndUpdate(
+        { _id: new Types.ObjectId(id) } as Filter<TPersistence>,
+        data,
+        { new: true, session }
+      )
+      .lean<TPersistence>()
+      .exec();
   }
 
-  protected async deleteRaw(id: string): Promise<void> {
-    await this.model.findByIdAndDelete(id);
+  protected async deleteRaw(
+    id: string,
+    session?: ClientSession
+  ): Promise<void> {
+    await this.model
+      .deleteOne({_id : new Types.ObjectId(id)} as Filter<TPersistence>)
+      .session(session ?? null)
+      .exec();
   }
 }

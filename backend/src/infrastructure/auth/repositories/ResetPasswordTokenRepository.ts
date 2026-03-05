@@ -1,10 +1,19 @@
 import { IResetPasswordTokenRepository } from "../../../domain/auth/repositories/IResetPasswordTokenRepository";
 import { ResetPasswordToken } from "../../../domain/auth/entities/ResetPasswordToken";
-import { ResetPasswordTokenModel,IResetPasswordTokenDocument } from "../database/ResetPasswordTokenModel";
+import { ResetPasswordTokenModel,IResetPasswordTokenPersistence } from "../database/ResetPasswordTokenModel";
+import { BaseRepository } from "../../common/database/BaseRepository";
+import { injectable } from "inversify";
 
-export class ResetPasswordTokenRepository implements IResetPasswordTokenRepository {
+@injectable()
+
+export class ResetPasswordTokenRepository extends BaseRepository<IResetPasswordTokenPersistence> implements IResetPasswordTokenRepository {
+    
+    constructor() {
+        super(ResetPasswordTokenModel)
+    }
+
     async save(token : ResetPasswordToken) : Promise<void> {
-        await ResetPasswordTokenModel.create({
+        await this.createRaw({
             userId : token.userId,
             tokenHash : token.tokenHash,
             expiresAt : token.expiresAt,
@@ -13,29 +22,25 @@ export class ResetPasswordTokenRepository implements IResetPasswordTokenReposito
     }
 
     async findByTokenHash(tokenHash: string): Promise<ResetPasswordToken | null> {
-        const doc = await ResetPasswordTokenModel.findOne({tokenHash}).lean();
+        const doc = await this.findOneRaw({tokenHash});
         if(!doc) return null;
 
-        return this.toDomain(doc);
+        return new ResetPasswordToken({
+            id: doc._id.toString(),
+            userId: doc.userId,
+            tokenHash: doc.tokenHash,
+            expiresAt: doc.expiresAt,
+            used: doc.used,
+            createdAt: doc.createdAt
+        })
     }
 
     async markAsUsed(id: string): Promise<void> {
-        await ResetPasswordTokenModel.findByIdAndUpdate(id, { used : true});
+        await this.updateRaw(id,{$set: { used : true}});
     }
 
     async deleteByUserId(userId: string): Promise<void> {
-        await ResetPasswordTokenModel.deleteMany({userId});
-    }
-
-    private toDomain(doc : IResetPasswordTokenDocument) : ResetPasswordToken {
-        return new ResetPasswordToken({
-            id : doc._id.toString(),
-            userId : doc.userId,
-            tokenHash : doc.tokenHash,
-            expiresAt : doc.expiresAt,
-            used : doc.used,
-            createdAt : doc.createdAt,
-        })
+        await this.model.deleteMany({userId});
     }
 
 }

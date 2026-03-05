@@ -1,17 +1,20 @@
+import { inject, injectable } from "inversify";
 import nodemailer from "nodemailer";
+import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
 
+@injectable()
 export class NodemailerEmailService {
-  private transporter;
+  private _transporter;
 
   constructor(
-    private emailUser: string,
-    private emailPass: string
+    @inject(AUTH_TYPES.EmailUser) private _emailUser: string,
+    @inject(AUTH_TYPES.EmailPass) private _emailPass: string
   ) {
-    this.transporter = nodemailer.createTransport({
+    this._transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: this.emailUser,
-        pass: this.emailPass,
+        user: this._emailUser,
+        pass: this._emailPass,
       },
       connectionTimeout : 5000,
       greetingTimeout : 5000,
@@ -20,8 +23,8 @@ export class NodemailerEmailService {
   }
 
   async sendVerificationEmail(to: string, link: string): Promise<void> {
-    await this.transporter.sendMail({
-      from: `"NexaTalk" <${this.emailUser}>`,
+    await this._transporter.sendMail({
+      from: `"NexaTalk" <${this._emailUser}>`,
       to,
       subject: "Verify your email",
       html: `
@@ -48,8 +51,8 @@ export class NodemailerEmailService {
   }
 
   async sendPasswordResetEmail(email : string, link : string) : Promise<void> {
-    await this.transporter.sendMail({
-      from : `NexaTalk <${this.emailUser}>`,
+    await this._transporter.sendMail({
+      from : `NexaTalk <${this._emailUser}>`,
       to:email,
       subject : "Reset your Password",
       html : `

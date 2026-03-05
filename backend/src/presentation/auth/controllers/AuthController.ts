@@ -11,6 +11,8 @@ import { UnauthorizedError } from "../../../domain/errors/UnauthorizedError";
 import { IVerifyEmailUsecase } from "../../../application/auth/interfaces/IVerifyEmailUsecase";
 import { IRequestPasswordResetUsecase } from "../../../application/auth/interfaces/IRequestPasswordResetUsecase";
 import { IResetPasswordUsecase } from "../../../application/auth/interfaces/IResetPasswordUsecase";
+import { inject, injectable } from "inversify";
+import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
 
 const REFRESH_COOKIE_NAME = "refreshToken";
 
@@ -22,14 +24,15 @@ const REFRESH_COOKIE_OPTION = {
   maxAge : 7 * 24 * 60 * 60 * 1000,
 }
 
+@injectable()
 export class AuthController {
   constructor(
-    private readonly _registerUser: IRegisterUserUsecase,
-    private readonly _loginUser: ILoginUserUsecase,
-    private readonly _refreshSession: IRefreshSessionUsecase,
-    private readonly _verifyEmailUsecase : IVerifyEmailUsecase,
-    private readonly _requestPasswordReset: IRequestPasswordResetUsecase,
-    private readonly _resetPassword: IResetPasswordUsecase,
+    @inject(AUTH_TYPES.RegisterUser) private readonly _registerUser: IRegisterUserUsecase,
+    @inject(AUTH_TYPES.LoginUser) private readonly _loginUser: ILoginUserUsecase,
+    @inject(AUTH_TYPES.RefreshSession) private readonly _refreshSession: IRefreshSessionUsecase,
+    @inject(AUTH_TYPES.VerifyEmail) private readonly _verifyEmailUsecase : IVerifyEmailUsecase,
+    @inject(AUTH_TYPES.RequestPasswordReset) private readonly _requestPasswordReset: IRequestPasswordResetUsecase,
+    @inject(AUTH_TYPES.ResetPassword) private readonly _resetPassword: IResetPasswordUsecase,
   ) {}
 
   signup = async (req: AuthenticatedRequest, res: Response) => {

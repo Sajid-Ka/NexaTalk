@@ -1,6 +1,8 @@
 import winston from "winston";
 import { env } from "../../../shared/config/env";
 import { ILogger } from "../../../domain/common/interfaces/ILogger";
+import { injectable } from "inversify";
+
 
 export const logger: ILogger = winston.createLogger({
   level: env.NODE_ENV === "production" ? "info" : "debug",

@@ -1,7 +1,15 @@
 import { z } from "zod";
+import { usernameValidator, emailValidator, passwordValidator, confirmPasswordValidator } from "../../../shared/baseValidators/authBaseValidator";
 
 export const registerSchema = z.object({
-  username: z.string().min(3),
-  email: z.string().email(),
-  password: z.string().min(8),
-});
+  username: usernameValidator,
+  email: emailValidator,
+  password: passwordValidator,
+  confirmPassword: confirmPasswordValidator,
+})
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match please check",
+    path: ["confirmPassword"]
+  })
+
+export type RegisterRequest = z.infer<typeof registerSchema>;

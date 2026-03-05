@@ -1,9 +1,13 @@
 import { IUserRepository } from "../../../domain/auth/repositories/IUserRepository";
 import { User } from "../../../domain/auth/entities/User";
-import { UserModel, IUserDocument } from "../database/UserModel";
+import { UserModel, IUserPersistence } from "../database/UserModel";
 import { BaseRepository } from "../../common/database/BaseRepository";
+import { UserPersistenceMapper } from "../mappers/UserPersistenceMapper";
+import { injectable } from "inversify";
 
-export class UserRepository extends BaseRepository<IUserDocument> implements IUserRepository {
+@injectable()
+
+export class UserRepository extends BaseRepository<IUserPersistence> implements IUserRepository {
 
   constructor() {
     super(UserModel);
@@ -11,62 +15,28 @@ export class UserRepository extends BaseRepository<IUserDocument> implements IUs
 
   async findById(id: string): Promise<User | null> {
     const doc = await this.findByIdRaw(id);
-    return doc ? this.toDomain(doc) : null;
+    return doc ? UserPersistenceMapper.toDomain(doc) : null;
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    const doc = await this.model.findOne({email}).lean();
-    return doc ? this.toDomain(doc) : null;
+    const doc = await this.findOneRaw({email});
+    return doc ? UserPersistenceMapper.toDomain(doc) : null;
   }
 
   async create(user : User) : Promise<User> {
-    const persistance = this.toPersistence(user);
-    const created = await this.createRaw(persistance);
-    return this.toDomain(created);
+    const persistence = UserPersistenceMapper.toPersistence(user);
+    const created = await this.createRaw(persistence);
+    return UserPersistenceMapper.toDomain(created);
   }
 
   async update(id: string, data: Partial<User>): Promise<User | null> {
-    const updated = await this.updateRaw(id, data as any);
-    return updated ? this.toDomain(updated) : null;
+    const persistenceUpdate = UserPersistenceMapper.toPersistenceUpdate(data);
+    const updated = await this.updateRaw(id, {$set : persistenceUpdate});
+    return updated ? UserPersistenceMapper.toDomain(updated) : null;
   }
 
   async delete(id : string) : Promise<boolean> {
     await this.deleteRaw(id);
     return true;
-  }
-
-  private toDomain(doc: IUserDocument): User {
-    return new User({
-      id: doc._id?.toString(),
-      username: doc.username,
-      email: doc.email,
-      passwordHash: doc.passwordHash,
-      avatar: doc.avatar,
-      status: doc.status,
-      globalRole: doc.globalRole,
-      isProfilePublic: doc.isProfilePublic,
-      isBlocked: doc.isBlocked,
-      blockedReason: doc.blockedReason,
-      lastSeenAt: doc.lastSeenAt,
-      deletedAt: doc.deletedAt,
-      isEmailVerified : doc.isEmailVerified,
-    });
-  }
-
-  private toPersistence(user : User) : Partial<IUserDocument> {
-    return {
-      username : user.username,
-      email : user.email,
-      passwordHash : user.passwordHash,
-      avatar: user.avatar,
-      status: user.status,
-      globalRole: user.globalRole,
-      isProfilePublic: user.isProfilePublic,
-      isBlocked: user.isBlocked,
-      blockedReason: user.blockedReason ?? undefined,
-      lastSeenAt: user.lastSeenAt ?? undefined,
-      deletedAt: user.deletedAt ?? undefined,
-      isEmailVerified : user.isEmailVerified,
-    }
   }
 }

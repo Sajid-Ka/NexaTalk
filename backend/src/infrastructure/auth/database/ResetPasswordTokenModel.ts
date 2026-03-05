@@ -1,6 +1,7 @@
-import { Schema,model,Document } from "mongoose";
+import { Schema,model,Types } from "mongoose";
 
-export interface IResetPasswordTokenDocument extends Document {
+export interface IResetPasswordTokenPersistence {
+    _id : Types.ObjectId;
     userId : string;
     tokenHash : string;
     expiresAt : Date;
@@ -8,7 +9,7 @@ export interface IResetPasswordTokenDocument extends Document {
     createdAt : Date;
 }
 
-const ResetPasswordTokenSchema = new Schema<IResetPasswordTokenDocument>(
+const ResetPasswordTokenSchema = new Schema<IResetPasswordTokenPersistence>(
     {
         userId : {type : String, required : true},
         tokenHash : {type : String, required : true, unique : true},
@@ -20,7 +21,7 @@ const ResetPasswordTokenSchema = new Schema<IResetPasswordTokenDocument>(
     }
 );
 
-export const ResetPasswordTokenModel = model<IResetPasswordTokenDocument>(
+export const ResetPasswordTokenModel = model<IResetPasswordTokenPersistence>(
     "ResetPasswordToken",
     ResetPasswordTokenSchema
 );

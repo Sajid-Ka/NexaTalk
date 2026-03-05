@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import app from "./app";
 import { env } from "../shared/config/env";
 import { logger } from "../infrastructure/common/logger/WinstonLogger";

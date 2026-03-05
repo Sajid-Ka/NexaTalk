@@ -1,8 +1,9 @@
 import { z } from "zod";
+import { confirmPasswordValidator, passwordValidator } from "../../../shared/baseValidators/authBaseValidator";
 
 export const resetPasswordSchema = z.object({
-    newPassword: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string().min(6, "Password must be at least 6 characters"),
+    newPassword: passwordValidator,
+    confirmPassword: confirmPasswordValidator,
 }).refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],

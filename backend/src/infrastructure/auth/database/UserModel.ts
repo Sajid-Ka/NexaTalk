@@ -1,6 +1,7 @@
-import { Schema, model, Document } from "mongoose";
+import { Schema, model, Types } from "mongoose";
 
-export interface IUserDocument extends Document {
+export interface IUserPersistence {
+  _id : Types.ObjectId;
   username: string;
   email: string;
   passwordHash: string;
@@ -9,13 +10,13 @@ export interface IUserDocument extends Document {
   globalRole: "user" | "admin";
   isProfilePublic: boolean;
   isBlocked: boolean;
-  blockedReason?: string;
-  lastSeenAt?: Date;
-  deletedAt?: Date;
+  blockedReason?: string | null;
+  lastSeenAt?: Date | null;
+  deletedAt?: Date | null;
   isEmailVerified : boolean;
 }
 
-const userSchema = new Schema<IUserDocument>(
+const userSchema = new Schema<IUserPersistence>(
   {
     username: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -42,4 +43,4 @@ const userSchema = new Schema<IUserDocument>(
   { timestamps: true },
 );
 
-export const UserModel = model<IUserDocument>("User", userSchema);
+export const UserModel = model<IUserPersistence>("User", userSchema);

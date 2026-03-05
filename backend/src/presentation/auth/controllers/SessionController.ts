@@ -5,16 +5,19 @@ import { AuthenticatedRequest } from "../../../main/types/AuthenticatedRequest";
 import { logger } from "../../../infrastructure/common/logger/WinstonLogger";
 import { ILogoutUserUsecase } from "../../../application/auth/interfaces/ILogoutUserUsecase";
 import { ILogoutAllDeviceUsecase } from "../../../application/auth/interfaces/ILogoutAllDeviceUsecase";
-import { IListUserSessionUsecase } from "../../../application/auth/interfaces/IListUserSessionsUsecase";
+import { IListUserSessionsUsecase } from "../../../application/auth/interfaces/IListUserSessionsUsecase";
 import { IRevokeSessionUsecase } from "../../../application/auth/interfaces/IRevokeSessionUsecase";
 import { env } from "../../../shared/config/env";
+import { inject, injectable } from "inversify";
+import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
 
+@injectable()
 export class SessionController {
   constructor(
-    private readonly _logoutUser: ILogoutUserUsecase,
-    private readonly _logoutAllDevice: ILogoutAllDeviceUsecase,
-    private readonly _listUserSessions: IListUserSessionUsecase,
-    private readonly _revokeSession: IRevokeSessionUsecase
+    @inject(AUTH_TYPES.LogoutUser) private readonly _logoutUser: ILogoutUserUsecase,
+    @inject(AUTH_TYPES.LogoutAllDevice) private readonly _logoutAllDevice: ILogoutAllDeviceUsecase,
+    @inject(AUTH_TYPES.ListUserSessions) private readonly _listUserSessions: IListUserSessionsUsecase,
+    @inject(AUTH_TYPES.RevokeSession) private readonly _revokeSession: IRevokeSessionUsecase
   ) {}
 
   logout = async (req: AuthenticatedRequest, res: Response) => {
