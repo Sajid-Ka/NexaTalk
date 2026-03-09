@@ -3,6 +3,7 @@ import { ResetPasswordToken } from "../../../domain/auth/entities/ResetPasswordT
 import { ResetPasswordTokenModel,IResetPasswordTokenPersistence } from "../database/ResetPasswordTokenModel";
 import { BaseRepository } from "../../common/database/BaseRepository";
 import { injectable } from "inversify";
+import { ClientSession } from "mongoose";
 
 @injectable()
 
@@ -12,13 +13,15 @@ export class ResetPasswordTokenRepository extends BaseRepository<IResetPasswordT
         super(ResetPasswordTokenModel)
     }
 
-    async save(token : ResetPasswordToken) : Promise<void> {
+    async save(token : ResetPasswordToken, session?: unknown) : Promise<void> {
+        const mongoSession = session as ClientSession | undefined;
+
         await this.createRaw({
             userId : token.userId,
             tokenHash : token.tokenHash,
             expiresAt : token.expiresAt,
             used : token.used,
-        });
+        }, mongoSession);
     }
 
     async findByTokenHash(tokenHash: string): Promise<ResetPasswordToken | null> {
@@ -35,12 +38,17 @@ export class ResetPasswordTokenRepository extends BaseRepository<IResetPasswordT
         })
     }
 
-    async markAsUsed(id: string): Promise<void> {
-        await this.updateRaw(id,{$set: { used : true}});
+    async markAsUsed(id: string, session?: unknown): Promise<void> {
+        const mongoSession = session as ClientSession | undefined;
+        await this.updateRaw(id,{$set: { used : true}},mongoSession);
     }
 
-    async deleteByUserId(userId: string): Promise<void> {
-        await this.model.deleteMany({userId});
+    async deleteByUserId(userId: string,session?: unknown): Promise<void> {
+        const mongoSession = (session as ClientSession | undefined) ?? null;
+        await this.model.
+            deleteMany({userId})
+            .session(mongoSession)
+            .exec();
     }
 
 }

@@ -1,6 +1,7 @@
-export class EmailNotVerifiedError extends Error {
+import { AppError } from "../../errors/AppError";
+
+export class EmailNotVerifiedError extends AppError {
     constructor() {
-        super("Email is not verified");
-        this.name = "EmailNotVerifiedError";
+        super("EMAIL_NOT_VERIFIED", "Email is not verified", 403);
     }
 }

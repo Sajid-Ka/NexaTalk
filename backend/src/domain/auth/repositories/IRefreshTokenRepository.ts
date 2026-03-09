@@ -6,13 +6,14 @@ export interface RefreshTokenData {
   ipAddress?: string;
   userAgent?: string;
   revoked?: boolean;
+  updatedAt?: Date;
 }
 
 export interface IRefreshTokenRepository {
-  save(token: RefreshTokenData): Promise<void>;
+  save(token: RefreshTokenData, session?: unknown): Promise<void>;
   findByHash(tokenHash: string): Promise<RefreshTokenData | null>;
-  revokeByHash(tokenHash: string): Promise<void>;
-  deleteAllByUser(userId: string): Promise<void>;
+  revokeByHash(tokenHash: string, session?: unknown): Promise<void>;
+  deleteAllByUser(userId: string, session?: unknown): Promise<void>;
   findActiveByUser(userId: string): Promise<RefreshTokenData[]>;
-  revokeById(sessionId: string, userId: string) : Promise<void>;
+  revokeById(sessionId: string, userId: string, session?: unknown): Promise<void>;
 }

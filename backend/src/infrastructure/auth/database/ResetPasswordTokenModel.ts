@@ -21,6 +21,8 @@ const ResetPasswordTokenSchema = new Schema<IResetPasswordTokenPersistence>(
     }
 );
 
+ResetPasswordTokenSchema.index({ expiresAt: 1 });
+
 export const ResetPasswordTokenModel = model<IResetPasswordTokenPersistence>(
     "ResetPasswordToken",
     ResetPasswordTokenSchema

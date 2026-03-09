@@ -12,6 +12,8 @@ export interface IUserPersistence {
   isBlocked: boolean;
   blockedReason?: string | null;
   lastSeenAt?: Date | null;
+  createdAt : Date;
+  updatedAt : Date;
   deletedAt?: Date | null;
   isEmailVerified : boolean;
 }
@@ -42,5 +44,8 @@ const userSchema = new Schema<IUserPersistence>(
   },
   { timestamps: true },
 );
+
+userSchema.index({ username: 1 });
+userSchema.index({ createdAt: -1 });
 
 export const UserModel = model<IUserPersistence>("User", userSchema);

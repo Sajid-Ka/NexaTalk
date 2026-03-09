@@ -21,6 +21,8 @@ const EmailVerificationTokenSchema = new Schema<IEmailVerificationTokenPersisten
     }
 );
 
+EmailVerificationTokenSchema.index({ expiresAt: 1 });
+
 export const EmailVerificationTokenModel  = model<IEmailVerificationTokenPersistence>(
     "EmailVerificationToken",
     EmailVerificationTokenSchema

@@ -1,4 +1,5 @@
 module.exports = {
+  root: true,
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: "latest",
@@ -15,8 +16,10 @@ module.exports = {
 
     "no-console": "warn",
     "@typescript-eslint/no-unused-vars": [
-      "error",
+      "warn",
       { argsIgnorePattern: "^_" }
     ],
+
+    "@typescript-eslint/no-explicit-any": "warn",
   },
 };

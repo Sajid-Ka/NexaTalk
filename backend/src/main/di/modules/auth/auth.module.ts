@@ -25,15 +25,11 @@ import { ResetPassword } from "../../../../application/auth/usecases/ResetPasswo
 
 import { AuthController } from "../../../../presentation/auth/controllers/AuthController";
 import { SessionController } from "../../../../presentation/auth/controllers/SessionController";
-import { logger } from "../../../../infrastructure/common/logger/logger";
 
 import { env } from "../../../../shared/config/env";
 
-import { RedisCacheService } from "../../../../infrastructure/common/cache/RedisCacheService";
-
 export function loadAuthModule(container: Container) {
 
-  container.bind(AUTH_TYPES.Logger).toConstantValue(logger);
   container.bind(AUTH_TYPES.UserRepository).to(UserRepository).inSingletonScope();
   container.bind(AUTH_TYPES.RefreshTokenRepository).to(RefreshTokenRepository).inSingletonScope();
   container.bind(AUTH_TYPES.EmailVerificationTokenRepository).to(EmailVerificationTokenRepository).inSingletonScope();
@@ -68,5 +64,14 @@ export function loadAuthModule(container: Container) {
   container.bind<string>(AUTH_TYPES.AppBaseUrl).toConstantValue(env.APP_BASE_URL);
   container.bind<string>(AUTH_TYPES.ClientOrigin).toConstantValue(env.CLIENT_ORIGIN);
 
-  container.bind(AUTH_TYPES.CacheService).to(RedisCacheService).inSingletonScope();
+  container.bind<number>(AUTH_TYPES.VerifyEmailTTLMinutes).toConstantValue(env.EMAIL_VERIFY_TTL_MINUTES);
+  container.bind<number>(AUTH_TYPES.ResetPasswordTTLMinutes).toConstantValue(env.RESET_PASSWORD_TTL_MINUTES);
+  container.bind<number>(AUTH_TYPES.RefreshTokenTTLDays).toConstantValue(env.REFRESH_TOKEN_TTL_DAYS);
+  container.bind(AUTH_TYPES.RefreshCookieOptions).toConstantValue({
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+    path: "/",
+    maxAge: env.REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000,
+  })
 }

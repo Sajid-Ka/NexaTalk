@@ -22,14 +22,21 @@ const envSchema = z.object({
   CLIENT_ORIGIN: z.string().trim().url(),
 
   EMAIL_USER: z.string().trim().email(),
-
   EMAIL_PASS: z.string().trim().min(1),
 
   APP_BASE_URL: z.string().trim().url(),
 
   REDIS_HOST : z.string().default("nexatalk-redis"),
-
   REDIS_PORT : z.coerce.number().default(6379),
+
+  EMAIL_VERIFY_TTL_MINUTES: z.coerce.number().default(15),
+  RESET_PASSWORD_TTL_MINUTES: z.coerce.number().default(15),
+  REFRESH_TOKEN_TTL_DAYS: z.coerce.number().default(7),
+
+  RATE_LIMIT_LOGIN: z.coerce.number().default(5),
+  RATE_LIMIT_SIGNUP: z.coerce.number().default(3),
+  RATE_LIMIT_RESET: z.coerce.number().default(3),
+  RATE_LIMIT_WINDOW_SECONDS: z.coerce.number().default(60),
 });
 
 const parsed = envSchema.safeParse(process.env);

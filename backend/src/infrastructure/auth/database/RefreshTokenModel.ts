@@ -24,4 +24,7 @@ const refreshTokenSchema = new Schema<IRefreshTokenPersistence>(
   { timestamps: true },
 );
 
+refreshTokenSchema.index({ userId: 1 });
+refreshTokenSchema.index({ expiresAt: 1 });
+
 export const RefreshTokenModel = model<IRefreshTokenPersistence>("RefreshToken", refreshTokenSchema);

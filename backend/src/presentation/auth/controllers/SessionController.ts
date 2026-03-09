@@ -2,14 +2,15 @@ import { Response } from "express";
 import { successResponse } from "../../../shared/response/responseFormatter";
 import { UnauthorizedError } from "../../../domain/errors/UnauthorizedError";
 import { AuthenticatedRequest } from "../../../main/types/AuthenticatedRequest";
-import { logger } from "../../../infrastructure/common/logger/logger";
+import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
+import { ILogger } from "../../../domain/common/services/ILogger";
 import { ILogoutUserUsecase } from "../../../application/auth/interfaces/ILogoutUserUsecase";
 import { ILogoutAllDeviceUsecase } from "../../../application/auth/interfaces/ILogoutAllDeviceUsecase";
 import { IListUserSessionsUsecase } from "../../../application/auth/interfaces/IListUserSessionsUsecase";
 import { IRevokeSessionUsecase } from "../../../application/auth/interfaces/IRevokeSessionUsecase";
-import { env } from "../../../shared/config/env";
 import { inject, injectable } from "inversify";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
+import { CookieOptions } from "express";
 
 @injectable()
 export class SessionController {
@@ -17,11 +18,13 @@ export class SessionController {
     @inject(AUTH_TYPES.LogoutUser) private readonly _logoutUser: ILogoutUserUsecase,
     @inject(AUTH_TYPES.LogoutAllDevice) private readonly _logoutAllDevice: ILogoutAllDeviceUsecase,
     @inject(AUTH_TYPES.ListUserSessions) private readonly _listUserSessions: IListUserSessionsUsecase,
-    @inject(AUTH_TYPES.RevokeSession) private readonly _revokeSession: IRevokeSessionUsecase
-  ) { }
+    @inject(AUTH_TYPES.RevokeSession) private readonly _revokeSession: IRevokeSessionUsecase,
+    @inject(COMMON_TYPES.Logger) private readonly _logger : ILogger,
+    @inject(AUTH_TYPES.RefreshCookieOptions) private readonly _cookieOptions : CookieOptions
+  ) {}
 
   logout = async (req: AuthenticatedRequest, res: Response) => {
-    const refreshToken = req.cookies?.refreshToken;
+    const refreshToken = req.cookies?.refreshTokenV2;
 
     if (!refreshToken) {
       return res.status(200).json(successResponse(null, "Logged out"));
@@ -29,12 +32,7 @@ export class SessionController {
 
     await this._logoutUser.execute(refreshToken);
 
-    res.clearCookie("refreshToken", {
-      httpOnly: true,
-      secure: env.NODE_ENV === "production",
-      sameSite: "strict",
-      path: "/api/auth/refresh",
-    });
+    res.clearCookie("refreshTokenV2", this._cookieOptions);
 
     return res.status(200).json(successResponse(null, "Logged out successfully"));
   };
@@ -42,7 +40,7 @@ export class SessionController {
   logoutAll = async (req: AuthenticatedRequest, res: Response) => {
     if (!req.user) throw new UnauthorizedError("Unauthorized");
 
-    logger.warn("Logout all triggered", { userId: req.user.userId });
+    this._logger.warn("Logout all triggered", { userId: req.user.userId });
 
     await this._logoutAllDevice.execute(req.user.userId);
 

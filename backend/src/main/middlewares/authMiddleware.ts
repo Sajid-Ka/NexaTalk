@@ -8,11 +8,15 @@ export const createAuthMiddleware =
     (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
       const authHeader = req.headers.authorization;
 
-      if (!authHeader || !authHeader.startsWith("Bearer")) {
+      if (!authHeader || !authHeader.startsWith("Bearer ")) {
         return next(new UnauthorizedError("Access token missing"));
       }
 
       const token = authHeader.split(" ")[1];
+
+      if(!token) {
+        return next(new UnauthorizedError("Access token missing"));
+      }
 
       try {
         req.user = tokenService.verifyAccessToken(token);

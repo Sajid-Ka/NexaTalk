@@ -1,4 +1,4 @@
-import { GlobalRole } from "../../../../domain/auth/entities/User";
+import { GlobalRole } from "../../../../shared/types/user.types";
 
 export interface LoginUserResponse {
   accessToken: string;

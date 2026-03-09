@@ -15,6 +15,8 @@ export class UserPersistenceMapper {
             isBlocked: doc.isBlocked,
             blockedReason: doc.blockedReason,
             lastSeenAt: doc.lastSeenAt,
+            createdAt: doc.createdAt,
+            updatedAt: doc.updatedAt,
             deletedAt: doc.deletedAt,
             isEmailVerified : doc.isEmailVerified,
         });
@@ -32,6 +34,8 @@ export class UserPersistenceMapper {
             isBlocked: user.isBlocked,
             blockedReason: user.blockedReason ?? undefined,
             lastSeenAt: user.lastSeenAt ?? undefined,
+            createdAt : user.createdAt,
+            updatedAt : user.updatedAt,
             deletedAt: user.deletedAt ?? undefined,
             isEmailVerified: user.isEmailVerified,
         } 

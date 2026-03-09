@@ -26,9 +26,12 @@ export default function LoginForm() {
         try {
             setServerError(null);
 
-            await login(data);
+            const user = await login(data);
 
-            navigate("/home", { replace: true });
+            console.log("Logged in user", user);
+
+            if(user?.globalRole === "admin") navigate("/admin", {replace : true})
+            else navigate("/home", {replace : true})
 
         } catch (error: any) {
             const message = error?.response?.data?.message;

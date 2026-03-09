@@ -6,16 +6,21 @@ import { RegisterUserMapper } from "../mappers/RegisterUserMapper";
 import { RegisterUserRequest } from "../dtos/requests/RegisterUserRequest";
 import { RegisterUserResponse } from "../dtos/responses/RegisterUserResponse";
 import { IRegisterUserUsecase } from "../interfaces/IRegisterUserUsecase";
-import { SendVerificationEmail } from "./SendVerificationEmail";
+import { ISendVerificationEmailUsecase } from "../interfaces/ISendVerificationEmailUsecase";
+import { ITransactionManager } from "../../../domain/common/services/ITransactionManager";
 import { inject, injectable } from "inversify";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
+import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
+import { ILogger } from "../../../domain/common/services/ILogger";
 
 @injectable()
 export class RegisterUser implements IRegisterUserUsecase {
   constructor(
-    @inject(AUTH_TYPES.UserRepository) private _userRepo: IUserRepository,
-    @inject(AUTH_TYPES.PasswordHasher) private _hasher: IPasswordHasher,
-    @inject(AUTH_TYPES.SendVerificationEmail) private _sendVerificationEmail: SendVerificationEmail
+    @inject(AUTH_TYPES.UserRepository) private readonly _userRepo: IUserRepository,
+    @inject(AUTH_TYPES.PasswordHasher) private readonly _hasher: IPasswordHasher,
+    @inject(AUTH_TYPES.SendVerificationEmail) private readonly _sendVerificationEmail: ISendVerificationEmailUsecase,
+    @inject(COMMON_TYPES.TransactionManager) private readonly _transactionManager : ITransactionManager,
+    @inject(COMMON_TYPES.Logger) private readonly _logger : ILogger,
   ) {}
 
   async execute(dto: RegisterUserRequest): Promise<RegisterUserResponse> {
@@ -34,11 +39,15 @@ export class RegisterUser implements IRegisterUserUsecase {
       isBlocked: false,
     });
 
-    const user = await this._userRepo.create(newUser);
+    const user = await this._transactionManager.run(async (session) => {
+      const createUser = await this._userRepo.create(newUser,session);
+      return createUser;
+    });
+
     try {
       await this._sendVerificationEmail.execute(user.id);
     } catch (error) {
-      console.error("Verification email failed : ", error);
+      this._logger.error("Verification email failed", error);
     }
 
     return RegisterUserMapper.toRegisterResponse(user);

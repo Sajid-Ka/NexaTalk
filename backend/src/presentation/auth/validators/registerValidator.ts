@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { usernameValidator, emailValidator, passwordValidator, confirmPasswordValidator } from "../../../shared/baseValidators/authBaseValidator";
+import { usernameValidator, emailValidator, passwordValidator, confirmPasswordValidator } from "../../../shared/baseValidators/authValidator";
 
 export const registerSchema = z.object({
   username: usernameValidator,

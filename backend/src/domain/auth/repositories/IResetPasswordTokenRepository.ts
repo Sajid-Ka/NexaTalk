@@ -1,8 +1,8 @@
 import { ResetPasswordToken } from "../entities/ResetPasswordToken";
 
 export interface IResetPasswordTokenRepository {
-    save(token : ResetPasswordToken) : Promise<void>;
+    save(token : ResetPasswordToken, session?: unknown) : Promise<void>;
     findByTokenHash(tokenHash : string) : Promise<ResetPasswordToken | null>;
-    markAsUsed(id :  string) : Promise<void>;
-    deleteByUserId(userId : string) : Promise<void>;
+    markAsUsed(id :  string, session?: unknown) : Promise<void>;
+    deleteByUserId(userId : string, session?: unknown) : Promise<void>;
 }

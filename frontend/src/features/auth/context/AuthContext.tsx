@@ -1,113 +1,124 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import { loginApi,logoutApi,refreshApi } from "../api/authApi";
-import { 
+import { createContext, useContext, useState, useEffect, useRef, useCallback } from "react";
+import { loginApi, logoutApi, refreshApi } from "../api/authApi";
+import {
     setAccessToken as setAxiosToken,
     setRefreshHandler,
 } from "../../../shared/api/interceptors";
 
+interface AuthUser {
+    id: string;
+    username: string;
+    email: string;
+    globalRole: "admin" | "user";
+}
+
 interface AuthContextType {
-    accessToken : string | null;
-    user : any | null;
-    login : (data : {email : string; password : string}) => Promise<void>;
-    logout : () => Promise<void>;
-    isAuthenticated : boolean;
-    loading : boolean;
+    accessToken: string | null;
+    user: AuthUser | null;
+    login: (data: { email: string; password: string }) => Promise<AuthUser>;
+    logout: () => Promise<void>;
+    isAuthenticated: boolean;
+    loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider = ({children} : {children : React.ReactNode}) => {
-    const [accessToken,setAccessToken] = useState<string | null>(null);
-    const [user, setUser] = useState<any | null>(null);
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+    const [accessToken, setAccessToken] = useState<string | null>(null);
+    const [user, setUser] = useState<AuthUser | null>(null);
     const [loading, setLoading] = useState(true);
+
+    const refreshPromiseRef = useRef<Promise<string | null> | null>(null);
 
     useEffect(() => {
         setAxiosToken(accessToken);
-    },[accessToken]);
+    }, [accessToken]);
 
-    const refresh = async () : Promise<string | null> => {
-        try {
-            const res = await refreshApi();
-            const newToken = res.data.data.accessToken;
-            setAccessToken(newToken);
-            return newToken;
-        } catch {
-            setAccessToken(null);
-            return null;
+    const refresh = useCallback(async (): Promise<string | null> => {
+        if (refreshPromiseRef.current) {
+            return refreshPromiseRef.current;
         }
-    }
+
+        refreshPromiseRef.current = refreshApi()
+            .then((res) => {
+                const payload = res.data.data;
+                const token = payload.accessToken;
+                const user = payload.user as AuthUser;
+
+                setAccessToken(token);
+                setUser(user);
+
+                return token;
+            })
+            .catch(() => {
+                setAccessToken(null);
+                setUser(null);
+                return null;
+            })
+            .finally(() => {
+                refreshPromiseRef.current = null;
+            });
+
+        return refreshPromiseRef.current;
+    }, []);
 
     useEffect(() => {
         setRefreshHandler(refresh);
-    },[]);
+    }, [refresh]);
 
-    const login = async (data : {
-        email : string;
-        password : string;
-    }) => {
+    useEffect(() => {
+        let cancelled = false;
+
+        const init = async () => {
+            try {
+                await refresh();
+            } finally {
+                if (!cancelled) setLoading(false);
+            }
+        };
+
+        init();
+
+        return () => { cancelled = true };
+    }, []);
+
+    const login = async (data: { email: string; password: string }): Promise<AuthUser> => {
         const res = await loginApi(data);
+        const payload = res.data.data;
 
-        const {accessToken,user} = res.data.data;
+        setAccessToken(payload.accessToken);
+        setUser(payload.user as AuthUser);
 
-        setAccessToken(accessToken);
-        setUser(user);
-    }
+        return payload.user as AuthUser;
+    };
 
     const logout = async () => {
         try {
             await logoutApi();
-        } catch (error) {
-            console.error("Logout Api failed :",error);
         } finally {
             setAccessToken(null);
             setUser(null);
         }
-    }
+    };
 
-    useEffect(() => {
-        const publicAuthPages = [
-            "/login",
-            "/signup",
-            "/forgot-password",
-            "/reset-password",
-            "/verify-email",
-            "/check-email",
-        ];
-
-        const currentPath = window.location.pathname;
-
-        if(publicAuthPages.includes(currentPath)){
-            setLoading(false);
-            return
-        }
-
-        const init = async () => {
-            const token = await refresh();
-            if(!token) {
-                setUser(null);
-            }
-            setLoading(false);
-        };
-        init();
-    },[]);
-
-    return(
-        <AuthContext.Provider 
+    return (
+        <AuthContext.Provider
             value={{
                 accessToken,
                 user,
                 login,
                 logout,
-                isAuthenticated : !!accessToken,
+                isAuthenticated: !!user,
                 loading,
-            }}>
+            }}
+        >
             {children}
         </AuthContext.Provider>
-    )
-}
+    );
+};
 
 export const useAuth = () => {
     const context = useContext(AuthContext);
-    if(!context) throw new Error("AuthProvider missing");
-    return context
-}
+    if (!context) throw new Error("AuthProvider missing");
+    return context;
+};

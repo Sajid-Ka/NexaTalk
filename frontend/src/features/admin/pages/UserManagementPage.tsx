@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search, UserPlus, SlidersHorizontal, UserCheck, UserMinus } from "lucide-react";
 import AdminSidebar from "../components/AdminSidebar";
 import UserTable from "../components/UserTable";
@@ -7,59 +7,61 @@ import UserDetailSidebar from "../components/UserDetailSidebar";
 import Input from "../../../shared/ui/Input";
 import Button from "../../../shared/ui/Button";
 import { cn } from "../../../shared/utils/cn";
+import { getUserDetailsApi, getUsersApi } from "../api/adminApi";
 
-const MOCK_USERS: User[] = [
-    {
-        id: "1",
-        username: "Luna_Cyber",
-        email: "luna@nexatalk.io",
-        role: "User",
-        status: "Online",
-        joinedDate: "Oct 24, 2023",
-        isPro: true,
-        initials: "LC",
-        avatarColor: "bg-purple-600"
-    },
-    {
-        id: "2",
-        username: "Neo_Matrix",
-        email: "neo@matrix.net",
-        role: "Admin",
-        status: "Offline",
-        joinedDate: "Sep 12, 2023",
-        isPro: false,
-        initials: "NM",
-        avatarColor: "bg-gray-600"
-    },
-    {
-        id: "3",
-        username: "Sarah_V",
-        email: "sarah.v@gmail.com",
-        role: "User",
-        status: "Online",
-        joinedDate: "Jan 05, 2024",
-        isPro: false,
-        initials: "SV",
-        avatarColor: "bg-teal-600"
-    },
-    {
-        id: "4",
-        username: "Kai_99",
-        email: "kai.stream@live.tv",
-        role: "User",
-        status: "Idle",
-        joinedDate: "Dec 12, 2023",
-        isPro: false,
-        isReported: true,
-        initials: "K9",
-        avatarColor: "bg-amber-600"
-    }
-];
 
 export default function UserManagementPage() {
-    const [selectedUser, setSelectedUser] = useState<User | null>(MOCK_USERS[0]);
+    const [users, setUsers] = useState<User[]>([]);
+    const [selectedUser, setSelectedUser] = useState<User | null>(null)
     const [activeTab, setActiveTab] = useState<"active" | "blocked">("active");
     const [searchQuery, setSearchQuery] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchQuery);
+        },400);
+
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try{
+                const res = await getUsersApi({
+                    status : activeTab,
+                    search : debouncedSearch,
+                });
+
+                const mappedUsers = (res.data.data?.users ?? []).map((u : any) => ({
+                    id : u.id,
+                    username : u.username,
+                    email : u.email,
+                    role : u.role === "admin" ? "Admin" : "User",
+                    status : u.status,
+                    joinedDate : new Date(u.createdAt).toLocaleDateString(),
+                    initials : u.username.slice(0,2).toUpperCase(),
+                    isPro : false,
+                }));
+
+                setUsers(mappedUsers)
+            }catch (error) {
+                console.error("failed to fetch users",error);
+            }
+        };
+
+        fetchUsers();
+    }, [activeTab, searchQuery])
+
+    const handleSelectUser = async (user : User) => {
+        try {
+            const res = await getUserDetailsApi(user.id);
+            setSelectedUser(res.data.data);
+        } catch (error) {
+            console.error("failed to load user details",error);
+        }
+
+    }
 
     return (
         <div className="flex h-screen w-full bg-[#0F121D] text-white overflow-hidden font-sans">
@@ -128,9 +130,9 @@ export default function UserManagementPage() {
 
                         {/* Table */}
                         <UserTable
-                            users={MOCK_USERS}
+                            users={users}
                             selectedUserId={selectedUser?.id}
-                            onSelectUser={setSelectedUser}
+                            onSelectUser={handleSelectUser}
                         />
                     </div>
 

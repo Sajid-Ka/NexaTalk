@@ -3,42 +3,44 @@ import { EmailVerificationToken } from "../../../domain/auth/entities/EmailVerif
 import { EmailVerificationTokenModel,IEmailVerificationTokenPersistence } from "../database/EmailVerificationTokenModel";
 import { BaseRepository } from "../../common/database/BaseRepository";
 import { injectable } from "inversify";
+import { ClientSession } from "mongoose";
+import { EmailVerificationTokenMapper } from "../mappers/EmailVerificationTokenMapper";
 
 @injectable()
-
 export class EmailVerificationTokenRepository extends BaseRepository<IEmailVerificationTokenPersistence> implements IEmailVerificationTokenRepository {
     constructor(){
         super(EmailVerificationTokenModel)
     }
 
-    async save(token : EmailVerificationToken) : Promise<void> {
-        await this.createRaw({
-            userId: token.userId,
-            tokenHash : token.tokenHash,
-            expiresAt : token.expiresAt,
-            used : token.used,
-        })
+    async save(token : EmailVerificationToken, session?: unknown) : Promise<void> {
+
+        const mongoSession = session as ClientSession | undefined;
+
+        await this.createRaw(
+            EmailVerificationTokenMapper.toPersistence(token),
+            mongoSession
+        )
     }
 
     async findByHash(tokenHash: string): Promise<EmailVerificationToken | null> {
         const doc = await this.findOneRaw({tokenHash});
         if(!doc) return null;
 
-        return new EmailVerificationToken({
-            id: doc._id.toString(),
-            userId : doc.userId,
-            tokenHash : doc.tokenHash,
-            expiresAt : doc.expiresAt,
-            used : doc.used,
-            createdAt :  doc.createdAt,
-        })
+        return EmailVerificationTokenMapper.toDomain(doc);
     }
 
-    async markAsUsed(id: string): Promise<void> {
-        await this.updateRaw(id, {$set : {used : true}});
+    async markAsUsed(id: string, session?: unknown): Promise<void> {
+        const mongoSession = session as ClientSession | undefined;
+
+        await this.updateRaw(id, {$set : {used : true}}, mongoSession);
     }
 
-    async deleteAllByUser(userId: string): Promise<void> {
-        await this.model.deleteMany({userId});
+    async deleteAllByUser(userId: string, session?: unknown): Promise<void> {
+        const mongoSession = (session as ClientSession | undefined) ?? null;
+
+        await this.model
+            .deleteMany({userId})
+            .session(mongoSession)
+            .exec();
     }
 }

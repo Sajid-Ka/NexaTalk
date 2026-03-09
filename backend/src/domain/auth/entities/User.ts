@@ -1,5 +1,5 @@
-export type UserStatus = "online" | "idle" | "offline";
-export type GlobalRole = "user" | "admin";
+import { GlobalRole,UserStatus } from "../../../shared/types/user.types";
+import { BadRequestError } from "../../errors/BadRequestError";
 
 export interface UserProps {
   id?: string;
@@ -17,6 +17,8 @@ export interface UserProps {
 
   lastSeenAt?: Date | null;
   deletedAt?: Date | null;
+  createdAt?: Date;
+  updatedAt?: Date;
 
   isEmailVerified?: boolean;
 }
@@ -37,11 +39,18 @@ export class User {
 
   public readonly lastSeenAt: Date | null;
   public readonly deletedAt: Date | null;
+  public readonly createdAt: Date;
+  public readonly updatedAt: Date;
 
   public readonly isEmailVerified : boolean;
 
   constructor(props: UserProps) {
-    this.id = props.id ?? "";
+
+    if(!props.username || props.username.trim().length < 3) throw new BadRequestError("Username must be atleast 3 characters");
+    if(!props.email || !props.email.includes("@")) throw new BadRequestError("Invalid email address");
+    if(!props.passwordHash) throw new BadRequestError("Invalid password hash"); 
+
+    this.id = props.id!;
     this.username = props.username;
     this.email = props.email;
     this.passwordHash = props.passwordHash;
@@ -56,6 +65,8 @@ export class User {
 
     this.lastSeenAt = props.lastSeenAt ?? null;
     this.deletedAt = props.deletedAt ?? null;
+    this.createdAt = props.createdAt ?? new Date();
+    this.updatedAt = props.updatedAt ?? new Date();
 
     this.isEmailVerified = props.isEmailVerified ?? false;
   }
