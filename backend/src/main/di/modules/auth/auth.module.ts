@@ -27,13 +27,20 @@ import { AuthController } from "../../../../presentation/auth/controllers/AuthCo
 import { SessionController } from "../../../../presentation/auth/controllers/SessionController";
 
 import { env } from "../../../../shared/config/env";
+import { CookieSameSite } from "../../../../shared/enums/cookie.enum";
+import { NodeEnv } from "../../../../shared/enums/environment.enum";
 
 export function loadAuthModule(container: Container) {
-
   container.bind(AUTH_TYPES.UserRepository).to(UserRepository).inSingletonScope();
   container.bind(AUTH_TYPES.RefreshTokenRepository).to(RefreshTokenRepository).inSingletonScope();
-  container.bind(AUTH_TYPES.EmailVerificationTokenRepository).to(EmailVerificationTokenRepository).inSingletonScope();
-  container.bind(AUTH_TYPES.ResetPasswordTokenRepository).to(ResetPasswordTokenRepository).inSingletonScope();
+  container
+    .bind(AUTH_TYPES.EmailVerificationTokenRepository)
+    .to(EmailVerificationTokenRepository)
+    .inSingletonScope();
+  container
+    .bind(AUTH_TYPES.ResetPasswordTokenRepository)
+    .to(ResetPasswordTokenRepository)
+    .inSingletonScope();
 
   container.bind(AUTH_TYPES.PasswordHasher).to(Argon2PasswordHasher).inSingletonScope();
   container.bind(AUTH_TYPES.TokenService).to(JwtTokenService).inSingletonScope();
@@ -64,14 +71,20 @@ export function loadAuthModule(container: Container) {
   container.bind<string>(AUTH_TYPES.AppBaseUrl).toConstantValue(env.APP_BASE_URL);
   container.bind<string>(AUTH_TYPES.ClientOrigin).toConstantValue(env.CLIENT_ORIGIN);
 
-  container.bind<number>(AUTH_TYPES.VerifyEmailTTLMinutes).toConstantValue(env.EMAIL_VERIFY_TTL_MINUTES);
-  container.bind<number>(AUTH_TYPES.ResetPasswordTTLMinutes).toConstantValue(env.RESET_PASSWORD_TTL_MINUTES);
-  container.bind<number>(AUTH_TYPES.RefreshTokenTTLDays).toConstantValue(env.REFRESH_TOKEN_TTL_DAYS);
+  container
+    .bind<number>(AUTH_TYPES.VerifyEmailTTLMinutes)
+    .toConstantValue(env.EMAIL_VERIFY_TTL_MINUTES);
+  container
+    .bind<number>(AUTH_TYPES.ResetPasswordTTLMinutes)
+    .toConstantValue(env.RESET_PASSWORD_TTL_MINUTES);
+  container
+    .bind<number>(AUTH_TYPES.RefreshTokenTTLDays)
+    .toConstantValue(env.REFRESH_TOKEN_TTL_DAYS);
   container.bind(AUTH_TYPES.RefreshCookieOptions).toConstantValue({
     httpOnly: true,
-    secure: false,
-    sameSite: "lax",
+    secure: env.NODE_ENV === NodeEnv.PRODUCTION,
+    sameSite: env.NODE_ENV === NodeEnv.PRODUCTION ? CookieSameSite.STRICT : CookieSameSite.LAX,
     path: "/",
-    maxAge: env.REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000,
-  })
+    maxAge: env.REFRESH_COOKIE_MAX_AGE_MS,
+  });
 }

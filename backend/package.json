@@ -4,8 +4,11 @@
   "description": "NexaTalk Backend API",
   "main": "dist/main/server.js",
   "scripts": {
+    "predev": "npm run lint",
     "dev": "ts-node-dev --respawn --transpile-only src/main/server.ts",
+    "prebuild": "npm run lint",
     "build": "tsc",
+    "prestart": "npm run lint",
     "start": "node dist/main/server.js",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",

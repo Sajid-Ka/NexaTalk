@@ -14,51 +14,46 @@ import { ILogger } from "../../../domain/common/services/ILogger";
 
 @injectable()
 export class RequestPasswordReset implements IRequestPasswordResetUsecase {
-    constructor(
-        @inject(AUTH_TYPES.UserRepository) private readonly _userRepo: IUserRepository,
-        @inject(AUTH_TYPES.TokenGenerator) private readonly _tokenGenerator: ITokenGenerator,
-        @inject(AUTH_TYPES.ResetPasswordTokenRepository) private readonly _resetRepo: IResetPasswordTokenRepository,
-        @inject(AUTH_TYPES.EmailService) private readonly _emailService: IEmailService,
-        @inject(COMMON_TYPES.CacheService) private readonly _cache: ICacheService,
-        @inject(AUTH_TYPES.ClientOrigin) private readonly _frontendUrl: string,
-        @inject(AUTH_TYPES.ResetPasswordTTLMinutes) private readonly _resetTTLMinutes : number,
-        @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger
-    ) { }
+  constructor(
+    @inject(AUTH_TYPES.UserRepository) private readonly _userRepo: IUserRepository,
+    @inject(AUTH_TYPES.TokenGenerator) private readonly _tokenGenerator: ITokenGenerator,
+    @inject(AUTH_TYPES.ResetPasswordTokenRepository)
+    private readonly _resetRepo: IResetPasswordTokenRepository,
+    @inject(AUTH_TYPES.EmailService) private readonly _emailService: IEmailService,
+    @inject(COMMON_TYPES.CacheService) private readonly _cache: ICacheService,
+    @inject(AUTH_TYPES.ClientOrigin) private readonly _frontendUrl: string,
+    @inject(AUTH_TYPES.ResetPasswordTTLMinutes) private readonly _resetTTLMinutes: number,
+    @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
+  ) {}
 
-    async execute(email: string) {
-        this._logger.info("Password reset requested", { email });
+  async execute(email: string) {
+    this._logger.info("Password reset requested");
 
-        const user = await this._userRepo.findByEmail(email);
+    const user = await this._userRepo.findByEmail(email);
 
-        if (!user) return;
+    if (!user) return;
 
-        const rawToken = this._tokenGenerator.generate();
-        const tokenHash = this._tokenGenerator.hash(rawToken);
+    const rawToken = this._tokenGenerator.generate();
+    const tokenHash = this._tokenGenerator.hash(rawToken);
 
-        const expiresAt = TimeUtil.addMinutes(new Date(), this._resetTTLMinutes);
+    const expiresAt = TimeUtil.addMinutes(new Date(), this._resetTTLMinutes);
 
-        const ttlSeconds = TimeUtil.minutesToSeconds(this._resetTTLMinutes)
+    const ttlSeconds = TimeUtil.minutesToSeconds(this._resetTTLMinutes);
 
-        await this._resetRepo.save(new ResetPasswordToken({
-            userId: user.id,
-            tokenHash,
-            expiresAt,
-        })
-        );
+    await this._resetRepo.save(
+      new ResetPasswordToken({
+        userId: user.id,
+        tokenHash,
+        expiresAt,
+      }),
+    );
 
-        const cacheKey = CACHE_KEYS.resetPassword(tokenHash);
+    const cacheKey = CACHE_KEYS.resetPassword(tokenHash);
 
-        await this._cache.set(
-            cacheKey,
-            { userId: user.id },
-            ttlSeconds
-        )
+    await this._cache.set(cacheKey, { userId: user.id }, ttlSeconds);
 
-        const resetLink = `${this._frontendUrl}/reset-password?token=${rawToken}`;
+    const resetLink = `${this._frontendUrl}/reset-password?token=${rawToken}`;
 
-        await this._emailService.sendPasswordResetEmail(
-            user.email,
-            resetLink
-        );
-    }
+    await this._emailService.sendPasswordResetEmail(user.email, resetLink);
+  }
 }

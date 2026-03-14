@@ -23,24 +23,25 @@ export class LoginUser implements ILoginUserUsecase {
     @inject(AUTH_TYPES.UserRepository) private readonly _userRepo: IUserRepository,
     @inject(AUTH_TYPES.PasswordHasher) private readonly _hasher: IPasswordHasher,
     @inject(AUTH_TYPES.TokenService) private readonly _tokenService: ITokenService,
-    @inject(AUTH_TYPES.RefreshTokenRepository) private readonly _refreshRepo: IRefreshTokenRepository,
+    @inject(AUTH_TYPES.RefreshTokenRepository)
+    private readonly _refreshRepo: IRefreshTokenRepository,
     @inject(AUTH_TYPES.TokenGenerator) private readonly _tokenGenerator: ITokenGenerator,
     @inject(COMMON_TYPES.CacheService) private readonly _cache: ICacheService,
-    @inject(AUTH_TYPES.RefreshTokenTTLDays) private readonly _refreshTTLDays : number,
-    @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger
+    @inject(AUTH_TYPES.RefreshTokenTTLDays) private readonly _refreshTTLDays: number,
+    @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
   ) {}
 
   async execute(dto: LoginUserRequest, ip?: string, ua?: string): Promise<LoginUserResponse> {
     this._logger.info("Login attempt", { email: dto.email });
 
     const user = await this._userRepo.findByEmail(dto.email);
-    if (!user){
+    if (!user) {
       this._logger.warn("Invalid credentials", { email: dto.email });
       throw new InvalidCredentialsError();
     }
 
     const valid = await this._hasher.compare(dto.password, user.passwordHash);
-    if (!valid){
+    if (!valid) {
       this._logger.warn("Invalid credentials", { email: dto.email });
       throw new InvalidCredentialsError();
     }
@@ -70,6 +71,5 @@ export class LoginUser implements ILoginUserUsecase {
     this._logger.info("Login success", { userId: user.id });
 
     return LoginUserMapper.toLoginResponse(user, accessToken, refreshTokenRaw);
-
   }
 }

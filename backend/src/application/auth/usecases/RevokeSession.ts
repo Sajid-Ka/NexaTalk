@@ -7,13 +7,14 @@ import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 
 @injectable()
 export class RevokeSession implements IRevokeSessionUsecase {
-    constructor(
-        @inject(AUTH_TYPES.RefreshTokenRepository) private readonly _refreshRepo : IRefreshTokenRepository,
-        @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger
-    ) {}
+  constructor(
+    @inject(AUTH_TYPES.RefreshTokenRepository)
+    private readonly _refreshRepo: IRefreshTokenRepository,
+    @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
+  ) {}
 
-    async execute(userId : string, sessionId : string) : Promise<void> {
-        await this._refreshRepo.revokeById(sessionId,userId);
-        this._logger.info("Session revoked", { userId, sessionId });
-    }
+  async execute(userId: string, sessionId: string): Promise<void> {
+    await this._refreshRepo.revokeById(sessionId, userId);
+    this._logger.info("Session revoked", { userId, sessionId });
+  }
 }

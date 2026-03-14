@@ -19,15 +19,11 @@ export const successResponse = <T>(data: T, message?: string): SuccessResponse<T
   data,
 });
 
-export const errorResponse = (
-  code: string,
-  message: string,
-  details?: unknown
-): ErrorResponse => ({
+export const errorResponse = (code: string, message: string, details?: unknown): ErrorResponse => ({
   success: false,
   error: {
-    code, 
+    code,
     message,
-    details, 
+    details,
   },
 });

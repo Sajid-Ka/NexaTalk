@@ -2,20 +2,26 @@ import { Users, MessageSquare, Users2, Mic2, Headphones, Settings } from "lucide
 import { cn } from "../../../shared/utils/cn";
 import Avatar from "../../../shared/ui/Avatar";
 import Badge from "../../../shared/ui/Badge";
+import { useAuth } from "../../auth/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 export default function NavSidebar() {
+
+    const {user} = useAuth();
+    const navigate = useNavigate();
+
     const mainItems = [
         { icon: Users, label: "Friends", active: true },
         { icon: MessageSquare, label: "Direct Messages", badge: 4 },
         { icon: Users2, label: "Group Messages" },
     ];
 
-    const recommendedPeople = [
-        { name: "Luna_Cyber", status: "online", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Luna" },
-        { name: "Ethan_Dev", status: "idle", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ethan" },
-        { name: "Dexter_01", status: "dnd", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Dexter" },
-        { name: "SarahVox", status: "online", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" },
-    ];
+    // const recommendedPeople = [
+    //     { name: "Luna_Cyber", status: "online", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Luna" },
+    //     { name: "Ethan_Dev", status: "idle", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ethan" },
+    //     { name: "Dexter_01", status: "dnd", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Dexter" },
+    //     { name: "SarahVox", status: "online", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" },
+    // ];
 
     return (
         <aside className="w-60 flex flex-col bg-[#0F121D] shrink-0 overflow-hidden">
@@ -42,11 +48,11 @@ export default function NavSidebar() {
                     </button>
                 ))}
 
-                <div className="mt-8 mb-4 px-3">
+                {/* <div className="mt-8 mb-4 px-3">
                     <h2 className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Recommended Servers</h2>
-                </div>
+                </div> */}
 
-                <div className="mt-8 mb-4 px-3">
+                {/* <div className="mt-8 mb-4 px-3">
                     <h2 className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Recommended People</h2>
                 </div>
 
@@ -57,16 +63,16 @@ export default function NavSidebar() {
                             <span className="text-sm font-semibold text-white/70 group-hover:text-white">{person.name}</span>
                         </button>
                     ))}
-                </div>
+                </div> */}
             </div>
 
             {/* User Status Footer */}
             <div className="p-2 bg-[#090B11] flex items-center gap-2">
                 <div className="flex flex-1 items-center gap-2 px-2 py-1 rounded-lg hover:bg-white/5 transition-colors cursor-pointer group">
-                    <Avatar status="online" fallback="AN" size="sm" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" />
+                    <Avatar status="online" fallback={user?.username?.slice(0,2).toUpperCase()?? "NA"} size="sm" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" />
                     <div className="flex-1 min-w-0">
-                        <p className="text-xs font-bold text-white truncate">Alex_Nexa</p>
-                        <p className="text-[10px] text-white/40 truncate">#5412 • Online</p>
+                        <p className="text-xs font-bold text-white truncate">{user?.username}</p>
+                        {/* <p className="text-[10px] text-white/40 truncate">#5412 • Online</p> */}
                     </div>
                 </div>
                 <div className="flex items-center gap-0.5">
@@ -76,7 +82,10 @@ export default function NavSidebar() {
                     <button className="p-1.5 rounded-lg text-white/50 hover:bg-white/10 hover:text-white transition-colors">
                         <Headphones size={16} />
                     </button>
-                    <button className="p-1.5 rounded-lg text-white/50 hover:bg-white/10 hover:text-white transition-colors">
+                    <button 
+                        onClick={() => navigate("/settings")}
+                        className="p-1.5 rounded-lg text-white/50 hover:bg-white/10 hover:text-white transition-colors"
+                    >
                         <Settings size={16} />
                     </button>
                 </div>

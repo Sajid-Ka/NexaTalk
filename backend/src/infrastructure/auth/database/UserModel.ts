@@ -1,21 +1,23 @@
 import { Schema, model, Types } from "mongoose";
+import { UserPresenceStatus } from "../../../shared/enums/userPresenceStatus.enum";
+import { GlobalRole } from "../../../shared/enums/userRole.enum";
 
 export interface IUserPersistence {
-  _id : Types.ObjectId;
+  _id: Types.ObjectId;
   username: string;
   email: string;
   passwordHash: string;
   avatar?: string;
-  status: "online" | "idle" | "offline";
-  globalRole: "user" | "admin";
+  status: UserPresenceStatus;
+  globalRole: GlobalRole;
   isProfilePublic: boolean;
-  isBlocked: boolean;
+  isBlocked?: boolean;
   blockedReason?: string | null;
   lastSeenAt?: Date | null;
-  createdAt : Date;
-  updatedAt : Date;
+  createdAt: Date;
+  updatedAt: Date;
   deletedAt?: Date | null;
-  isEmailVerified : boolean;
+  isEmailVerified: boolean;
 }
 
 const userSchema = new Schema<IUserPersistence>(
@@ -26,21 +28,21 @@ const userSchema = new Schema<IUserPersistence>(
     avatar: { type: String, default: "" },
     status: {
       type: String,
-      enum: ["online", "idle", "offline"],
-      default: "offline",
+      enum: Object.values(UserPresenceStatus),
+      default: UserPresenceStatus.OFFLINE,
     },
 
     globalRole: {
       type: String,
-      enum: ["user", "admin"],
-      default: "user",
+      enum: Object.values(GlobalRole),
+      default: GlobalRole.USER,
     },
     isProfilePublic: { type: Boolean, default: true },
     isBlocked: { type: Boolean, default: false },
     blockedReason: { type: String, default: null },
     lastSeenAt: { type: Date, default: null },
     deletedAt: { type: Date, default: null },
-    isEmailVerified : {type : Boolean, default : false},
+    isEmailVerified: { type: Boolean, default: false },
   },
   { timestamps: true },
 );

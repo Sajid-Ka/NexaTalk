@@ -6,6 +6,7 @@ import Switch from "../../../shared/ui/Switch";
 import Button from "../../../shared/ui/Button";
 import Avatar from "../../../shared/ui/Avatar";
 import ProfileCardPreview from "./ProfileCardPreview";
+import type { ProfileFormData } from "../types/settings.types";
 
 export default function ProfileSettings() {
     const [formData, setFormData] = useState({
@@ -16,7 +17,7 @@ export default function ProfileSettings() {
         showActivity: false,
     });
 
-    const handleChange = (field: string, value: any) => {
+    const handleChange =<K extends keyof ProfileFormData>(field: K, value: ProfileFormData[K]) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
     };
 

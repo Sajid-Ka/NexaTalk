@@ -24,17 +24,16 @@ export const AUTH_TYPES = {
   AuthController: Symbol.for("AuthController"),
   SessionController: Symbol.for("SessionController"),
 
-  JwtSecret : Symbol.for("JwtSecret"),
-  JwtAccessTtl : Symbol.for("JwtAccessTtl"),
+  JwtSecret: Symbol.for("JwtSecret"),
+  JwtAccessTtl: Symbol.for("JwtAccessTtl"),
 
-  EmailUser : Symbol.for("EmailUser"),
-  EmailPass : Symbol.for("EmailPass"),
+  EmailUser: Symbol.for("EmailUser"),
+  EmailPass: Symbol.for("EmailPass"),
   ClientOrigin: Symbol.for("ClientOrigin"),
   AppBaseUrl: Symbol.for("AppBaseUrl"),
 
-  VerifyEmailTTLMinutes : Symbol.for("VerifyEmailTTLMinutes"),
+  VerifyEmailTTLMinutes: Symbol.for("VerifyEmailTTLMinutes"),
   ResetPasswordTTLMinutes: Symbol.for("ResetPasswordTTLMinutes"),
   RefreshTokenTTLDays: Symbol.for("RefreshTokenTTLDays"),
-  RefreshCookieOptions : Symbol.for("RefreshCookieOptions")
-
+  RefreshCookieOptions: Symbol.for("RefreshCookieOptions"),
 };

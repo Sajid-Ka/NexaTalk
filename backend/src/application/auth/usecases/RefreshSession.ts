@@ -17,12 +17,14 @@ import { CACHE_KEYS } from "../../../shared/constants/cacheKeys";
 @injectable()
 export class RefreshSession implements IRefreshSessionUsecase {
   constructor(
-    @inject(AUTH_TYPES.RefreshTokenRepository) private readonly _refreshRepo: IRefreshTokenRepository,
+    @inject(AUTH_TYPES.RefreshTokenRepository)
+    private readonly _refreshRepo: IRefreshTokenRepository,
     @inject(AUTH_TYPES.TokenService) private readonly _tokenService: ITokenService,
     @inject(AUTH_TYPES.TokenGenerator) private readonly _tokenGenerator: ITokenGenerator,
     @inject(AUTH_TYPES.UserRepository) private readonly _userRepo: IUserRepository,
     @inject(COMMON_TYPES.CacheService) private readonly _cache: ICacheService,
-    @inject(COMMON_TYPES.TransactionManager) private readonly _transactionManager: ITransactionManager,
+    @inject(COMMON_TYPES.TransactionManager)
+    private readonly _transactionManager: ITransactionManager,
     @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
     @inject(AUTH_TYPES.RefreshTokenTTLDays) private readonly _refreshTTLDays: number,
   ) {}
@@ -73,16 +75,12 @@ export class RefreshSession implements IRefreshSessionUsecase {
           ipAddress: storedSession.ipAddress,
           userAgent: storedSession.userAgent,
         },
-        session
+        session,
       );
     });
 
     await this._cache.delete(cacheKey);
-    await this._cache.set(
-      CACHE_KEYS.refresh(newRefreshHash),
-      { userId: user.id },
-      ttlSeconds
-    );
+    await this._cache.set(CACHE_KEYS.refresh(newRefreshHash), { userId: user.id }, ttlSeconds);
 
     const accessToken = this._tokenService.generateAccessToken(user.id, user.globalRole);
 

@@ -13,12 +13,14 @@ import ResetPasswordPage from "../features/auth/pages/ResetPasswordPage";
 import AdminDashboardPage from "../features/admin/pages/AdminDashboardPage";
 import UserManagementPage from "../features/admin/pages/UserManagementPage";
 import AdminRoute from "../routes/AdminRoute";
+import NotFoundPage from "../shared/pages/NotFoundPage";
+import { AppRoute } from "../shared/constants/app-route.const";
 
 export default function AppRouter() {
     return (
         <Routes>
             <Route
-                path="/"
+                path={AppRoute.HOME}
                 element={
                     <PublicRoute>
                         <LandingPage />
@@ -26,7 +28,7 @@ export default function AppRouter() {
                 }
             />
             <Route
-                path="/signup"
+                path={AppRoute.SIGNUP}
                 element={
                     <PublicRoute>
                         <SignupPage />
@@ -34,7 +36,7 @@ export default function AppRouter() {
                 }
             />
             <Route
-                path="/login"
+                path={AppRoute.LOGIN}
                 element={
                     <PublicRoute>
                         <LoginPage />
@@ -42,7 +44,7 @@ export default function AppRouter() {
                 }
             />
             <Route
-                path="/home"
+                path={AppRoute.HOME_PAGE}
                 element={
                     <ProtectedRoute>
                         <HomePage />
@@ -50,7 +52,7 @@ export default function AppRouter() {
                 }
             />
             <Route
-                path="/settings"
+                path={AppRoute.SETTINGS}
                 element={
                     <ProtectedRoute>
                         <SettingsPage />
@@ -58,7 +60,7 @@ export default function AppRouter() {
                 }
             />
             <Route
-                path="/verify-email"
+                path={AppRoute.VERIFY_EMAIL}
                 element={
                     <PublicRoute>
                         <VerifyEmailPage />
@@ -66,7 +68,7 @@ export default function AppRouter() {
                 }
             />
             <Route
-                path="/check-email"
+                path={AppRoute.CHECK_EMAIL}
                 element={
                     <PublicRoute>
                         <CheckEmailPage />
@@ -75,7 +77,7 @@ export default function AppRouter() {
             />
 
             <Route
-                path="/forgot-password"
+                path={AppRoute.FORGOT_PASSWORD}
                 element={
                     <PublicRoute>
                         <ForgotPasswordPage />
@@ -84,7 +86,7 @@ export default function AppRouter() {
             />
 
             <Route
-                path="/reset-password"
+                path={AppRoute.RESET_PASSWORD}
                 element={
                     <PublicRoute>
                         <ResetPasswordPage />
@@ -93,7 +95,7 @@ export default function AppRouter() {
             />
 
             <Route
-                path="/admin"
+                path={AppRoute.ADMIN}
                 element={
                     <AdminRoute>
                         <AdminDashboardPage />
@@ -101,13 +103,14 @@ export default function AppRouter() {
                 }
             />
             <Route
-                path="/admin/users"
+                path={AppRoute.ADMIN_USERS}
                 element={
                     <AdminRoute>
                         <UserManagementPage />
                     </AdminRoute>
                 }
             />
+            <Route path="*" element={<NotFoundPage />} />
         </Routes>
     )
 }

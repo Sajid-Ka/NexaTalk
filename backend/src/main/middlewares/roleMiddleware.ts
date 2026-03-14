@@ -1,7 +1,7 @@
 import { Response, NextFunction } from "express";
 import { ForbiddenError } from "../../domain/errors/ForbiddenError";
 import { AuthenticatedRequest } from "../types/AuthenticatedRequest";
-import { GlobalRole } from "../../shared/types/user.types";
+import { GlobalRole } from "../../shared/enums/userRole.enum";
 
 export const requireRole =
   (...allowedRoles: GlobalRole[]) =>

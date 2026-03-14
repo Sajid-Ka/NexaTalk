@@ -1,6 +1,6 @@
 import "express-async-errors";
 import express from "express";
-import apiRoutes from "./routes"
+import apiRoutes from "./routes";
 import helmet from "helmet";
 import cors from "cors";
 import { env } from "../shared/config/env";
@@ -29,8 +29,8 @@ app.use(
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", "data:"],
         connectSrc: ["'self'", env.CLIENT_ORIGIN],
-        objectSrc : ["'none'"],
-        frameAncestors : ["'none'"]
+        objectSrc: ["'none'"],
+        frameAncestors: ["'none'"],
       },
     },
   }),
@@ -47,7 +47,7 @@ app.use(
 
 app.set("trust proxy", 1);
 
-app.use("/api",apiRoutes);
+app.use("/api", apiRoutes);
 
 app.use(errorInterceptor);
 

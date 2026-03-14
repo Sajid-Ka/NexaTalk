@@ -12,15 +12,19 @@ import { inject, injectable } from "inversify";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 import { ILogger } from "../../../domain/common/services/ILogger";
+import { GlobalRole } from "../../../shared/enums/userRole.enum";
+import { UserPresenceStatus } from "../../../shared/enums/userPresenceStatus.enum";
 
 @injectable()
 export class RegisterUser implements IRegisterUserUsecase {
   constructor(
     @inject(AUTH_TYPES.UserRepository) private readonly _userRepo: IUserRepository,
     @inject(AUTH_TYPES.PasswordHasher) private readonly _hasher: IPasswordHasher,
-    @inject(AUTH_TYPES.SendVerificationEmail) private readonly _sendVerificationEmail: ISendVerificationEmailUsecase,
-    @inject(COMMON_TYPES.TransactionManager) private readonly _transactionManager : ITransactionManager,
-    @inject(COMMON_TYPES.Logger) private readonly _logger : ILogger,
+    @inject(AUTH_TYPES.SendVerificationEmail)
+    private readonly _sendVerificationEmail: ISendVerificationEmailUsecase,
+    @inject(COMMON_TYPES.TransactionManager)
+    private readonly _transactionManager: ITransactionManager,
+    @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
   ) {}
 
   async execute(dto: RegisterUserRequest): Promise<RegisterUserResponse> {
@@ -33,14 +37,13 @@ export class RegisterUser implements IRegisterUserUsecase {
       username: dto.username,
       email: dto.email,
       passwordHash: hashedPassword,
-      globalRole: "user",
-      status: "offline",
+      globalRole: GlobalRole.USER,
+      status: UserPresenceStatus.OFFLINE,
       isProfilePublic: true,
-      isBlocked: false,
     });
 
     const user = await this._transactionManager.run(async (session) => {
-      const createUser = await this._userRepo.create(newUser,session);
+      const createUser = await this._userRepo.create(newUser, session);
       return createUser;
     });
 

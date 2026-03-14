@@ -1,4 +1,4 @@
 export interface ITokenGenerator {
-    generate() : string;
-    hash(token : string) : string;
+  generate(): string;
+  hash(token: string): string;
 }

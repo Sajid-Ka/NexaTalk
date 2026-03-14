@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../features/auth/context/AuthContext";
+import { useAuth } from "../features/auth/hooks/useAuth";
 import type { ReactNode } from "react";
 
 export default function AdminRoute({children} : {children : ReactNode}) {
@@ -9,7 +9,13 @@ export default function AdminRoute({children} : {children : ReactNode}) {
 
     if(!user) return <Navigate to="/login" replace />;
 
-    if(user.globalRole !== "admin") return <Navigate to="/home" replace />
+    if (user.isBlocked || user.accountStatus === "blocked" || user.accountStatus === "deleted") {
+      return <Navigate to="/login?blocked=true" replace />;
+    }
+
+    if(user.globalRole !== "admin" && user.globalRole !== "super_admin") {
+      return <Navigate to="/home" replace />
+    }
 
     return <>{children}</>;
 }
