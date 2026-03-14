@@ -1,27 +1,13 @@
-import { createContext, useContext, useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { loginApi, logoutApi, refreshApi } from "../api/authApi";
 import {
     setAccessToken as setAxiosToken,
     setRefreshHandler,
 } from "../../../shared/api/interceptors";
+import type { AuthUser } from "./AuthContext";
+import { AuthContext } from "./AuthContext";
 
-interface AuthUser {
-    id: string;
-    username: string;
-    email: string;
-    globalRole: "admin" | "user";
-}
 
-interface AuthContextType {
-    accessToken: string | null;
-    user: AuthUser | null;
-    login: (data: { email: string; password: string }) => Promise<AuthUser>;
-    logout: () => Promise<void>;
-    isAuthenticated: boolean;
-    loading: boolean;
-}
-
-const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [accessToken, setAccessToken] = useState<string | null>(null);
@@ -80,7 +66,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         init();
 
         return () => { cancelled = true };
-    }, []);
+    }, [refresh]);
 
     const login = async (data: { email: string; password: string }): Promise<AuthUser> => {
         const res = await loginApi(data);
@@ -115,10 +101,4 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             {children}
         </AuthContext.Provider>
     );
-};
-
-export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) throw new Error("AuthProvider missing");
-    return context;
 };

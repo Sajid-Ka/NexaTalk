@@ -8,12 +8,22 @@ import Input from "../../../shared/ui/Input";
 import Button from "../../../shared/ui/Button";
 import { cn } from "../../../shared/utils/cn";
 import { getUserDetailsApi, getUsersApi } from "../api/adminApi";
+import { UserRole, UserStatus, UserTab } from "../../../shared/constants/user.const";
 
+
+interface ApiUser {
+    id: string;
+    username: string;
+    email: string;
+    role: UserRole;
+    status: UserStatus;
+    createdAt: string;
+}
 
 export default function UserManagementPage() {
     const [users, setUsers] = useState<User[]>([]);
     const [selectedUser, setSelectedUser] = useState<User | null>(null)
-    const [activeTab, setActiveTab] = useState<"active" | "blocked">("active");
+    const [activeTab, setActiveTab] = useState<UserTab>(UserTab.ACTIVE);
     const [searchQuery, setSearchQuery] = useState("");
     const [debouncedSearch, setDebouncedSearch] = useState("");
 
@@ -33,11 +43,11 @@ export default function UserManagementPage() {
                     search : debouncedSearch,
                 });
 
-                const mappedUsers = (res.data.data?.users ?? []).map((u : any) => ({
+                const mappedUsers = (res.data.data?.users ?? []).map((u : ApiUser) => ({
                     id : u.id,
                     username : u.username,
                     email : u.email,
-                    role : u.role === "admin" ? "Admin" : "User",
+                    role : u.role === UserRole.ADMIN ? "Admin" : "User",
                     status : u.status,
                     joinedDate : new Date(u.createdAt).toLocaleDateString(),
                     initials : u.username.slice(0,2).toUpperCase(),
@@ -51,7 +61,7 @@ export default function UserManagementPage() {
         };
 
         fetchUsers();
-    }, [activeTab, searchQuery])
+    }, [activeTab, debouncedSearch])
 
     const handleSelectUser = async (user : User) => {
         try {
@@ -95,20 +105,20 @@ export default function UserManagementPage() {
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2 p-1 bg-[#0F121D] rounded-xl border border-white/5 w-fit">
                                 <button
-                                    onClick={() => setActiveTab("active")}
+                                    onClick={() => setActiveTab(UserTab.ACTIVE)}
                                     className={cn(
                                         "flex items-center gap-2 px-6 py-2 rounded-lg text-xs font-bold transition-all",
-                                        activeTab === "active" ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/30" : "text-gray-500 hover:text-white"
+                                        activeTab === UserTab.ACTIVE ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/30" : "text-gray-500 hover:text-white"
                                     )}
                                 >
                                     <UserCheck size={16} />
                                     Active Users
                                 </button>
                                 <button
-                                    onClick={() => setActiveTab("blocked")}
+                                    onClick={() => setActiveTab(UserTab.BLOCKED)}
                                     className={cn(
                                         "flex items-center gap-2 px-6 py-2 rounded-lg text-xs font-bold transition-all",
-                                        activeTab === "blocked" ? "bg-red-600 text-white shadow-lg shadow-red-500/30" : "text-gray-500 hover:text-white"
+                                        activeTab === UserTab.BLOCKED ? "bg-red-600 text-white shadow-lg shadow-red-500/30" : "text-gray-500 hover:text-white"
                                     )}
                                 >
                                     <UserMinus size={16} />

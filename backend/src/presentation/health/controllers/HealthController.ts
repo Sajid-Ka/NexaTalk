@@ -6,7 +6,8 @@ import { successResponse } from "../../../shared/response/responseFormatter";
 import {
   ConnectionStatus,
   RedisConnectionState,
-} from "../../../shared/enums/connection-status.enum";
+} from "../../../shared/constants/connection-status.const";
+import { HealthMessage } from "../../../shared/constants/messages.const";
 
 @injectable()
 export class HealthController {
@@ -24,13 +25,13 @@ export class HealthController {
     return res.status(200).json(
       successResponse(
         {
-          status: "ok",
+          status: HealthMessage.OK,
           mongo: mongoStatus,
           redis: redisStatus,
           uptime: process.uptime(),
           timeStamp: new Date().toISOString(),
         },
-        "Health check successful",
+        HealthMessage.HEALTH_CHECK_SUCCESS,
       ),
     );
   }

@@ -13,7 +13,8 @@ export const useSignup = () => {
 
             const res = await signupApi(data);
             return res.data;
-        } catch (err: any) {
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: { message?: string } } };
             setError(err.response?.data?.message || "Signup failed");
         } finally {
             setLoading(false)

@@ -1,7 +1,7 @@
 import { RefreshTokenData } from "../../../domain/auth/repositories/IRefreshTokenRepository";
 import { IRefreshTokenPersistence } from "../database/RefreshTokenModel";
 import { IMapper } from "../../common/mappers/IMapper";
-import { OmittedDatabaseFields } from "../../../shared/enums/database-field.enum";
+import { OmittedDatabaseFields } from "../../../shared/constants/database-field.const";
 
 export class RefreshTokenMapper implements IMapper<IRefreshTokenPersistence, RefreshTokenData> {
   toDomain(doc: IRefreshTokenPersistence): RefreshTokenData {

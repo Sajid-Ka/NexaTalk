@@ -1,7 +1,6 @@
-import { SortOrder } from "../../../shared/enums/sort.enum";
-import { SortField } from "../../../shared/enums/sort.enum";
-import { UserAccountStatus } from "../../../shared/enums/userAccountStatus.enum";
-import { GlobalRole } from "../../../shared/enums/userRole.enum";
+import { SortOrder, SortField } from "../../../shared/constants/sort.const";
+import { UserAccountStatus } from "../../../shared/constants/userAccountStatus.const";
+import { GlobalRole } from "../../../shared/constants/userRole.const";
 
 export interface AdminUserQuery {
   page?: number;

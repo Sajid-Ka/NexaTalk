@@ -2,8 +2,8 @@ import winston from "winston";
 import { env } from "../../../shared/config/env";
 import { ILogger } from "../../../domain/common/services/ILogger";
 import { injectable } from "inversify";
-import { LogLevel } from "../../../shared/enums/log-level.enum";
-import { NodeEnv } from "../../../shared/enums/environment.enum";
+import { LogLevel } from "../../../shared/constants/log-level.const";
+import { NodeEnv } from "../../../shared/constants/environment.const";
 
 @injectable()
 export class WinstonLogger implements ILogger {

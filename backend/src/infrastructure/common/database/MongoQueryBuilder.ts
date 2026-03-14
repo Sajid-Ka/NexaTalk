@@ -1,7 +1,7 @@
 import { Model } from "mongoose";
-import { UserAccountStatus } from "../../../shared/enums/userAccountStatus.enum";
-import { GlobalRole } from "../../../shared/enums/userRole.enum";
-import { SortField, SortOrder, sortOrderToMongo } from "../../../shared/enums/sort.enum";
+import { UserAccountStatus } from "../../../shared/constants/userAccountStatus.const";
+import { GlobalRole } from "../../../shared/constants/userRole.const";
+import { SortField, SortOrder, sortOrderToMongo } from "../../../shared/constants/sort.const";
 
 export interface QueryOptions {
   page?: number;

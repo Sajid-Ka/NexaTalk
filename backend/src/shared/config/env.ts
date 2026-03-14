@@ -3,14 +3,12 @@ import dotenv from "dotenv";
 import { container } from "../../main/di/container";
 import { COMMON_TYPES } from "../../main/di/modules/common/common.types";
 import { ILogger } from "../../domain/common/services/ILogger";
-import { NodeEnv } from "../enums/environment.enum";
+import { NodeEnv } from "../constants/environment.const";
 
 dotenv.config();
 
 const envSchema = z.object({
-  NODE_ENV: z
-    .enum([NodeEnv.DEVELOPMENT, NodeEnv.PRODUCTION, NodeEnv.TEST])
-    .default(NodeEnv.DEVELOPMENT),
+  NODE_ENV: z.enum(Object.values(NodeEnv) as [string, ...string[]]).default(NodeEnv.DEVELOPMENT),
 
   PORT: z.coerce.number().int().positive().default(5000),
 

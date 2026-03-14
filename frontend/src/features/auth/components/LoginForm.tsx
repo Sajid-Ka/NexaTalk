@@ -5,8 +5,9 @@ import { loginSchema, type LoginFormData } from "../validators/loginSchema";
 import Button from "../../../shared/ui/Button";
 import Card from "../../../shared/ui/Card";
 import LoginFields from "./LoginFields";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 import { useState } from "react";
+import { UserRole } from "../../../shared/constants/user.const";
 
 export default function LoginForm() {
     const navigate = useNavigate();
@@ -30,11 +31,12 @@ export default function LoginForm() {
 
             console.log("Logged in user", user);
 
-            if(user?.globalRole === "admin") navigate("/admin", {replace : true})
+            if(user?.globalRole === UserRole.ADMIN) navigate("/admin", {replace : true})
             else navigate("/home", {replace : true})
 
-        } catch (error: any) {
-            const message = error?.response?.data?.message;
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: { message?: string } } };
+            const message = err?.response?.data?.message;
             if (message === "Email not verified") {
                 setServerError("Please verify your email before logging in.");
             } else {

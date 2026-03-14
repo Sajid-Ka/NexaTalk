@@ -1,6 +1,7 @@
 import { Verified } from "lucide-react";
 import Avatar from "../../../shared/ui/Avatar";
 import Badge from "../../../shared/ui/Badge";
+import { BadgeVariant } from "../../../shared/constants/ui.const";
 
 interface ProfileCardPreviewProps {
     username: string;
@@ -54,7 +55,7 @@ export default function ProfileCardPreview({
                                 @{username?.toLowerCase() || "user"}
                             </p>
                         </div>
-                        <Badge variant="indigo" className="bg-indigo-500/10 text-indigo-400 border-indigo-500/20 text-[10px] py-0.5 px-2">
+                        <Badge variant={BadgeVariant.INDIGO} className="bg-indigo-500/10 text-indigo-400 border-indigo-500/20 text-[10px] py-0.5 px-2">
                             <div className="w-1 h-1 rounded-full bg-indigo-400 mr-1.5" />
                             PRO
                         </Badge>

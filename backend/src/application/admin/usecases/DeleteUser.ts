@@ -7,16 +7,16 @@ import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 
 @injectable()
 export class DeleteUser implements IDeleteUserUsecase {
-    constructor (
-        @inject(ADMIN_TYPES.AdminUserRepository) private readonly _repo : IAdminUserRepository,
-        @inject(COMMON_TYPES.Logger) private readonly _logger : ILogger,
-    ) {}
+  constructor(
+    @inject(ADMIN_TYPES.AdminUserRepository) private readonly _repo: IAdminUserRepository,
+    @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
+  ) {}
 
-    async execute(userId: string): Promise<void> {
-        this._logger.warn("Delete user attempt", {userId});
+  async execute(userId: string): Promise<void> {
+    this._logger.warn("Delete user attempt", { userId });
 
-        await this._repo.delete(userId);
+    await this._repo.delete(userId);
 
-        this._logger.warn("User deleted", {userId});
-    }
+    this._logger.warn("User deleted", { userId });
+  }
 }

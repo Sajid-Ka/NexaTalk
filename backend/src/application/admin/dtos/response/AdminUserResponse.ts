@@ -1,11 +1,11 @@
-import { GlobalRole, UserStatus } from "../../../../shared/types/user.types";
+import { GlobalRole } from "../../../../shared/constants/userRole.const";
+import { UserAccountStatus } from "../../../../shared/constants/userAccountStatus.const";
 
 export interface AdminUserResponse {
-    id : string;
-    username : string;
-    email : string;
-    role : GlobalRole;
-    status : UserStatus;
-    isBlocked : boolean;
-    createdAt : Date;
+  id: string;
+  username: string;
+  email: string;
+  role: GlobalRole;
+  status: UserAccountStatus;
+  createdAt: Date;
 }

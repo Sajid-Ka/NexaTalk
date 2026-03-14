@@ -12,8 +12,8 @@ import { inject, injectable } from "inversify";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 import { ILogger } from "../../../domain/common/services/ILogger";
-import { GlobalRole } from "../../../shared/enums/userRole.enum";
-import { UserPresenceStatus } from "../../../shared/enums/userPresenceStatus.enum";
+import { GlobalRole } from "../../../shared/constants/userRole.const";
+import { UserPresenceStatus } from "../../../shared/constants/userPresenceStatus.const";
 
 @injectable()
 export class RegisterUser implements IRegisterUserUsecase {

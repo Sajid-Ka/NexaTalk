@@ -26,12 +26,13 @@ export default function SignupForm() {
             toast.success("Account created Successfully");
 
             navigate("/check-email");
-        } catch (error: any) {
-            console.log("Signup error:", error.response);
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: { message?: string; error?: string } } };
+            console.log("Signup error:", err.response);
 
             const message =
-                error?.response?.data?.message ||
-                error?.response?.data?.error ||
+                err?.response?.data?.message ||
+                err?.response?.data?.error ||
                 "User already exists";
 
             toast.error(message);

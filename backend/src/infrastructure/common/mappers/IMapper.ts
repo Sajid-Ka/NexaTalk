@@ -1,4 +1,4 @@
-import { OmittedDatabaseFields } from "../../../shared/enums/database-field.enum";
+import { OmittedDatabaseFields } from "../../../shared/constants/database-field.const";
 
 export interface IMapper<TPersistence, TDomain> {
   toDomain(persistence: TPersistence): TDomain;

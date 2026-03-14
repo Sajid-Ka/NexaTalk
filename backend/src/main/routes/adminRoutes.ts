@@ -9,6 +9,8 @@ import { ADMIN_TYPES } from "../di/modules/admin/admin.types";
 import { validate } from "../../presentation/validators.ts/validate";
 import { listUsersQuerySchema } from "../../presentation/admin/validators/listUsersValidator";
 import { updateRoleSchema } from "../../presentation/admin/validators/updateRoleValidator";
+import { GlobalRole } from "../../shared/constants/userRole.const";
+import { ValidationSource } from "../../shared/constants/validation.const";
 
 const router = Router();
 
@@ -18,9 +20,9 @@ const tokenService = container.get<ITokenService>(AUTH_TYPES.TokenService);
 const authMiddleware = createAuthMiddleware(tokenService);
 
 router.use(authMiddleware);
-router.use(requireRole("admin"));
+router.use(requireRole(GlobalRole.ADMIN));
 
-router.get("/users", validate(listUsersQuerySchema,"query"), controller.listUsers);
+router.get("/users", validate(listUsersQuerySchema, ValidationSource.QUERY), controller.listUsers);
 router.get("/users/:id", controller.getUserDetails);
 router.patch("/users/:id/block", controller.blockUser);
 router.patch("/users/:id/unblock", controller.unblockUser);

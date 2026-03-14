@@ -1,6 +1,6 @@
 import { Schema, model, Types } from "mongoose";
-import { UserPresenceStatus } from "../../../shared/enums/userPresenceStatus.enum";
-import { GlobalRole } from "../../../shared/enums/userRole.enum";
+import { UserPresenceStatus } from "../../../shared/constants/userPresenceStatus.const";
+import { GlobalRole } from "../../../shared/constants/userRole.const";
 
 export interface IUserPersistence {
   _id: Types.ObjectId;
