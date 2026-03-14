@@ -1,54 +1,39 @@
 import { IResetPasswordTokenRepository } from "../../../domain/auth/repositories/IResetPasswordTokenRepository";
 import { ResetPasswordToken } from "../../../domain/auth/entities/ResetPasswordToken";
-import { ResetPasswordTokenModel,IResetPasswordTokenPersistence } from "../database/ResetPasswordTokenModel";
+import {
+  ResetPasswordTokenModel,
+  IResetPasswordTokenPersistence,
+} from "../database/ResetPasswordTokenModel";
 import { BaseRepository } from "../../common/database/BaseRepository";
 import { injectable } from "inversify";
 import { ClientSession } from "mongoose";
+import { ResetPasswordTokenMapper } from "../mappers/ResetPasswordTokenMapper";
 
 @injectable()
+export class ResetPasswordTokenRepository
+  extends BaseRepository<IResetPasswordTokenPersistence, ResetPasswordToken>
+  implements IResetPasswordTokenRepository
+{
+  constructor() {
+    super(ResetPasswordTokenModel, new ResetPasswordTokenMapper());
+  }
 
-export class ResetPasswordTokenRepository extends BaseRepository<IResetPasswordTokenPersistence> implements IResetPasswordTokenRepository {
-    
-    constructor() {
-        super(ResetPasswordTokenModel)
-    }
+  async save(token: ResetPasswordToken, session?: ClientSession): Promise<void> {
+    await this.create(token, session);
+  }
 
-    async save(token : ResetPasswordToken, session?: unknown) : Promise<void> {
-        const mongoSession = session as ClientSession | undefined;
+  async findByTokenHash(tokenHash: string): Promise<ResetPasswordToken | null> {
+    return this.findOne({ tokenHash } as Partial<ResetPasswordToken>);
+  }
 
-        await this.createRaw({
-            userId : token.userId,
-            tokenHash : token.tokenHash,
-            expiresAt : token.expiresAt,
-            used : token.used,
-        }, mongoSession);
-    }
+  async markAsUsed(id: string, session?: ClientSession): Promise<void> {
+    await this.update(id, { used: true } as Partial<ResetPasswordToken>, session);
+  }
 
-    async findByTokenHash(tokenHash: string): Promise<ResetPasswordToken | null> {
-        const doc = await this.findOneRaw({tokenHash});
-        if(!doc) return null;
-
-        return new ResetPasswordToken({
-            id: doc._id.toString(),
-            userId: doc.userId,
-            tokenHash: doc.tokenHash,
-            expiresAt: doc.expiresAt,
-            used: doc.used,
-            createdAt: doc.createdAt
-        })
-    }
-
-    async markAsUsed(id: string, session?: unknown): Promise<void> {
-        const mongoSession = session as ClientSession | undefined;
-        await this.updateRaw(id,{$set: { used : true}},mongoSession);
-    }
-
-    async deleteByUserId(userId: string,session?: unknown): Promise<void> {
-        const mongoSession = (session as ClientSession | undefined) ?? null;
-        await this.model.
-            deleteMany({userId})
-            .session(mongoSession)
-            .exec();
-    }
-
+  async deleteByUserId(userId: string, session?: ClientSession): Promise<void> {
+    await this.model
+      .deleteMany({ userId })
+      .session(session ?? null)
+      .exec();
+  }
 }

@@ -1,3 +1,3 @@
 export interface ISendVerificationEmailUsecase {
-    execute(userId : string) : Promise<void>;
+  execute(userId: string): Promise<void>;
 }

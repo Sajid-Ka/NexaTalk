@@ -1,4 +1,6 @@
-import { GlobalRole,UserStatus } from "../../../shared/types/user.types";
+import { GlobalRole } from "../../../shared/enums/userRole.enum";
+import { UserPresenceStatus } from "../../../shared/enums/userPresenceStatus.enum";
+import { UserAccountStatus } from "../../../shared/enums/userAccountStatus.enum";
 import { BadRequestError } from "../../errors/BadRequestError";
 
 export interface UserProps {
@@ -8,11 +10,11 @@ export interface UserProps {
   passwordHash: string;
 
   avatar?: string;
-  status?: UserStatus;
+  status?: UserPresenceStatus;
   globalRole?: GlobalRole;
 
+  accountStatus?: UserAccountStatus;
   isProfilePublic?: boolean;
-  isBlocked?: boolean;
   blockedReason?: string | null;
 
   lastSeenAt?: Date | null;
@@ -30,11 +32,11 @@ export class User {
   public readonly passwordHash: string;
 
   public readonly avatar?: string;
-  public readonly status: UserStatus;
+  public readonly status: UserPresenceStatus;
   public readonly globalRole: GlobalRole;
 
+  public readonly accountStatus: UserAccountStatus;
   public readonly isProfilePublic: boolean;
-  public readonly isBlocked: boolean;
   public readonly blockedReason: string | null;
 
   public readonly lastSeenAt: Date | null;
@@ -42,13 +44,14 @@ export class User {
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
 
-  public readonly isEmailVerified : boolean;
+  public readonly isEmailVerified: boolean;
 
   constructor(props: UserProps) {
-
-    if(!props.username || props.username.trim().length < 3) throw new BadRequestError("Username must be atleast 3 characters");
-    if(!props.email || !props.email.includes("@")) throw new BadRequestError("Invalid email address");
-    if(!props.passwordHash) throw new BadRequestError("Invalid password hash"); 
+    if (!props.username || props.username.trim().length < 3)
+      throw new BadRequestError("Username must be atleast 3 characters");
+    if (!props.email || !props.email.includes("@"))
+      throw new BadRequestError("Invalid email address");
+    if (!props.passwordHash) throw new BadRequestError("Invalid password hash");
 
     this.id = props.id!;
     this.username = props.username;
@@ -56,11 +59,11 @@ export class User {
     this.passwordHash = props.passwordHash;
 
     this.avatar = props.avatar ?? "";
-    this.status = props.status ?? "offline";
-    this.globalRole = props.globalRole ?? "user";
+    this.status = props.status ?? UserPresenceStatus.OFFLINE;
+    this.globalRole = props.globalRole ?? GlobalRole.USER;
 
+    this.accountStatus = props.accountStatus ?? UserAccountStatus.ACTIVE;
     this.isProfilePublic = props.isProfilePublic ?? true;
-    this.isBlocked = props.isBlocked ?? false;
     this.blockedReason = props.blockedReason ?? null;
 
     this.lastSeenAt = props.lastSeenAt ?? null;

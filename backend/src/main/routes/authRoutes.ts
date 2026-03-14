@@ -20,9 +20,23 @@ const sessionController = container.get<SessionController>(AUTH_TYPES.SessionCon
 const tokenService = container.get<ITokenService>(AUTH_TYPES.TokenService);
 const authMiddleware = createAuthMiddleware(tokenService);
 
-router.post("/signup", rateLimit("signup",env.RATE_LIMIT_SIGNUP,env.RATE_LIMIT_WINDOW_SECONDS), validate(registerSchema), authController.signup);
-router.post("/verify-email", validate(verifyEmailSchema), authController.verifyEmail.bind(authController));
-router.post("/login", rateLimit("login",env.RATE_LIMIT_LOGIN,env.RATE_LIMIT_WINDOW_SECONDS), validate(loginSchema), authController.login);
+router.post(
+  "/signup",
+  rateLimit("signup", env.RATE_LIMIT_SIGNUP, env.RATE_LIMIT_WINDOW_SECONDS),
+  validate(registerSchema),
+  authController.signup,
+);
+router.post(
+  "/verify-email",
+  validate(verifyEmailSchema),
+  authController.verifyEmail.bind(authController),
+);
+router.post(
+  "/login",
+  rateLimit("login", env.RATE_LIMIT_LOGIN, env.RATE_LIMIT_WINDOW_SECONDS),
+  validate(loginSchema),
+  authController.login,
+);
 router.post("/refresh", authController.refresh);
 
 router.post("/logout", sessionController.logout);
@@ -30,7 +44,11 @@ router.delete("/logout-all", authMiddleware, sessionController.logoutAll);
 router.get("/sessions", authMiddleware, sessionController.sessions);
 router.delete("/sessions/:sessionId", authMiddleware, sessionController.revoke);
 
-router.post("/request-password-reset", rateLimit("reset",env.RATE_LIMIT_RESET,env.RATE_LIMIT_WINDOW_SECONDS), authController.requestPasswordReset);
+router.post(
+  "/request-password-reset",
+  rateLimit("reset", env.RATE_LIMIT_RESET, env.RATE_LIMIT_WINDOW_SECONDS),
+  authController.requestPasswordReset,
+);
 router.post("/reset-password", authController.resetPassword);
 
 export default router;

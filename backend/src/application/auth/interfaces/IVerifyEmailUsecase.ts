@@ -1,3 +1,3 @@
 export interface IVerifyEmailUsecase {
-    execute(rawToken : string) : Promise<void>;
+  execute(rawToken: string): Promise<void>;
 }

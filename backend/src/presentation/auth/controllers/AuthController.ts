@@ -14,8 +14,8 @@ import { UnauthorizedError } from "../../../domain/errors/UnauthorizedError";
 import { inject, injectable } from "inversify";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
 import { CookieOptions } from "express";
-
-const REFRESH_COOKIE_NAME = "refreshTokenV2";
+import { HttpHeader } from "../../../shared/enums/http-headers.enum";
+import { CookieName } from "../../../shared/enums/cookie.enum";
 
 @injectable()
 export class AuthController {
@@ -24,10 +24,11 @@ export class AuthController {
     @inject(AUTH_TYPES.LoginUser) private readonly _loginUser: ILoginUserUsecase,
     @inject(AUTH_TYPES.RefreshSession) private readonly _refreshSession: IRefreshSessionUsecase,
     @inject(AUTH_TYPES.VerifyEmail) private readonly _verifyEmailUsecase: IVerifyEmailUsecase,
-    @inject(AUTH_TYPES.RequestPasswordReset) private readonly _requestPasswordReset: IRequestPasswordResetUsecase,
+    @inject(AUTH_TYPES.RequestPasswordReset)
+    private readonly _requestPasswordReset: IRequestPasswordResetUsecase,
     @inject(AUTH_TYPES.ResetPassword) private readonly _resetPassword: IResetPasswordUsecase,
     @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
-    @inject(AUTH_TYPES.RefreshCookieOptions) private readonly _cookieOptions: CookieOptions
+    @inject(AUTH_TYPES.RefreshCookieOptions) private readonly _cookieOptions: CookieOptions,
   ) {}
 
   signup = async (req: AuthenticatedRequest, res: Response) => {
@@ -55,12 +56,12 @@ export class AuthController {
     const result = await this._loginUser.execute(
       dto,
       req.ip ?? "unknown",
-      req.headers["user-agent"] || "unknown"
+      req.headers[HttpHeader.USER_AGENT] || "unknown",
     );
 
     this._logger.info("Login success", { userId: result.user.id });
 
-    res.cookie(REFRESH_COOKIE_NAME, result.refreshToken, this._cookieOptions);
+    res.cookie(CookieName.REFRESH_TOKEN, result.refreshToken, this._cookieOptions);
 
     return res.status(200).json(
       successResponse(
@@ -68,13 +69,13 @@ export class AuthController {
           accessToken: result.accessToken,
           user: result.user,
         },
-        "Login successful"
-      )
+        "Login successful",
+      ),
     );
   };
 
   refresh = async (req: AuthenticatedRequest, res: Response) => {
-    const refreshToken = req.cookies?.[REFRESH_COOKIE_NAME];
+    const refreshToken = req.cookies?.[CookieName.REFRESH_TOKEN];
 
     if (!refreshToken) {
       throw new UnauthorizedError("refresh token missing");
@@ -82,7 +83,7 @@ export class AuthController {
 
     const result = await this._refreshSession.execute(refreshToken);
 
-    res.cookie(REFRESH_COOKIE_NAME, result.refreshToken, this._cookieOptions);
+    res.cookie(CookieName.REFRESH_TOKEN, result.refreshToken, this._cookieOptions);
 
     return res.status(200).json(
       successResponse(
@@ -90,8 +91,8 @@ export class AuthController {
           accessToken: result.accessToken,
           user: result.user,
         },
-        "Token refreshed"
-      )
+        "Token refreshed",
+      ),
     );
   };
 
@@ -100,9 +101,9 @@ export class AuthController {
 
     await this._requestPasswordReset.execute(email);
 
-    return res.status(200).json(
-      successResponse(null, "If the email exists, reset link has been sent")
-    );
+    return res
+      .status(200)
+      .json(successResponse(null, "If the email exists, reset link has been sent"));
   };
 
   resetPassword = async (req: AuthenticatedRequest, res: Response) => {
@@ -110,8 +111,6 @@ export class AuthController {
 
     await this._resetPassword.execute(token, newPassword);
 
-    return res.status(200).json(
-      successResponse(null, "Password reset successfully")
-    );
+    return res.status(200).json(successResponse(null, "Password reset successfully"));
   };
 }

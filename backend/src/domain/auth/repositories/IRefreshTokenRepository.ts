@@ -1,5 +1,7 @@
+import { ClientSession } from "mongoose";
+
 export interface RefreshTokenData {
-  id?: string,
+  id?: string;
   userId: string;
   tokenHash: string;
   expiresAt: Date;
@@ -10,10 +12,15 @@ export interface RefreshTokenData {
 }
 
 export interface IRefreshTokenRepository {
-  save(token: RefreshTokenData, session?: unknown): Promise<void>;
+  save(token: RefreshTokenData, session?: ClientSession): Promise<void>;
   findByHash(tokenHash: string): Promise<RefreshTokenData | null>;
-  revokeByHash(tokenHash: string, session?: unknown): Promise<void>;
-  deleteAllByUser(userId: string, session?: unknown): Promise<void>;
+  revokeByHash(tokenHash: string, session?: ClientSession): Promise<void>;
+  deleteAllByUser(userId: string, session?: ClientSession): Promise<void>;
   findActiveByUser(userId: string): Promise<RefreshTokenData[]>;
-  revokeById(sessionId: string, userId: string, session?: unknown): Promise<void>;
+  revokeById(sessionId: string, userId: string, session?: ClientSession): Promise<void>;
+  update(
+    id: string,
+    data: Partial<RefreshTokenData>,
+    session?: ClientSession,
+  ): Promise<RefreshTokenData | null>;
 }
