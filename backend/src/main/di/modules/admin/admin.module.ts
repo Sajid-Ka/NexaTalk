@@ -1,7 +1,6 @@
 import { Container } from "inversify";
 import { ADMIN_TYPES } from "./admin.types";
-import { IUserRepository } from "../../../../domain/auth/repositories/IUserRepository";
-import { UserRepository } from "../../../../infrastructure/auth/repositories/UserRepository";
+import { AdminUserRepository } from "../../../../infrastructure/admin/repositories/AdminUserRepository";
 
 import { ListUsers } from "../../../../application/admin/usecases/ListUsers";
 import { GetUserDetails } from "../../../../application/admin/usecases/GetUserDetails";
@@ -11,14 +10,18 @@ import { UpdateUserRole } from "../../../../application/admin/usecases/UpdateUse
 import { DeleteUser } from "../../../../application/admin/usecases/DeleteUser";
 
 import { AdminUserController } from "../../../../presentation/admin/controllers/AdminUserController";
+import { IAdminUserRepository } from "../../../../domain/admin/repositories/IAdminUserRepository";
 
-export function loadAdminModule(container : Container) {
-    container.bind<IUserRepository>(ADMIN_TYPES.AdminUserRepository).to(UserRepository).inSingletonScope();
-    container.bind(ADMIN_TYPES.ListUsers).to(ListUsers);
-    container.bind(ADMIN_TYPES.GetUserDetails).to(GetUserDetails);
-    container.bind(ADMIN_TYPES.BlockUser).to(BlockUser);
-    container.bind(ADMIN_TYPES.UnblockUser).to(UnblockUser);
-    container.bind(ADMIN_TYPES.UpdateRole).to(UpdateUserRole);
-    container.bind(ADMIN_TYPES.DeleteUser).to(DeleteUser);
-    container.bind(ADMIN_TYPES.AdminUserController).to(AdminUserController);
+export function loadAdminModule(container: Container) {
+  container
+    .bind<IAdminUserRepository>(ADMIN_TYPES.AdminUserRepository)
+    .to(AdminUserRepository)
+    .inSingletonScope();
+  container.bind(ADMIN_TYPES.ListUsers).to(ListUsers);
+  container.bind(ADMIN_TYPES.GetUserDetails).to(GetUserDetails);
+  container.bind(ADMIN_TYPES.BlockUser).to(BlockUser);
+  container.bind(ADMIN_TYPES.UnblockUser).to(UnblockUser);
+  container.bind(ADMIN_TYPES.UpdateRole).to(UpdateUserRole);
+  container.bind(ADMIN_TYPES.DeleteUser).to(DeleteUser);
+  container.bind(ADMIN_TYPES.AdminUserController).to(AdminUserController);
 }

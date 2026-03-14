@@ -7,6 +7,6 @@ const router = Router();
 
 const controller = container.get<HealthController>(HEALTH_TYPES.HealthController);
 
-router.get("/",controller.check.bind(controller));
+router.get("/", controller.check.bind(controller));
 
 export default router;

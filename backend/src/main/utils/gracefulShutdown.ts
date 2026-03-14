@@ -8,39 +8,36 @@ import { Server } from "http";
 const logger = container.get<ILogger>(COMMON_TYPES.Logger);
 
 export function setupGracefulShutdown(server: Server) {
-    const shutdown = async (signal: string) => {
-        logger.info(`Received ${signal}. Starting graceful shutdown`);
+  const shutdown = async (signal: string) => {
+    logger.info(`Received ${signal}. Starting graceful shutdown`);
 
-        try {
+    try {
+      logger.info("Stopping HTTP server...");
 
-            logger.info("Stopping HTTP server...");
+      server.close(() => {
+        logger.info("HTTP server closed");
+      });
 
-            server.close(() => {
-                logger.info("HTTP server closed");
-            });
+      await mongoose.connection.close();
+      logger.info("Mongo connection closed");
 
-            await mongoose.connection.close();
-            logger.info("Mongo connection closed");
+      if (redisClient.status === "ready") {
+        await redisClient.quit();
+        logger.info("Redis connection closed");
+      }
 
-            if (redisClient.status === "ready") {
-                await redisClient.quit();
-                logger.info("Redis connection closed");
-            }
+      setTimeout(() => {
+        logger.error("Force shutdown after timeout");
+        process.exit(1);
+      }, 10000);
 
-            setTimeout(() => {
-                logger.error("Force shutdown after timeout");
-                process.exit(1);
-            }, 10000);
-
-
-            process.exit(0);
-
-        } catch (error) {
-            logger.error("Graceful shutdown failed", error);
-            process.exit(1);
-        }
+      process.exit(0);
+    } catch (error) {
+      logger.error("Graceful shutdown failed", error);
+      process.exit(1);
     }
+  };
 
-    process.on("SIGINT", shutdown);
-    process.on("SIGTERM", shutdown);
+  process.on("SIGINT", shutdown);
+  process.on("SIGTERM", shutdown);
 }
