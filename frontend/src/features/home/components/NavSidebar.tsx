@@ -2,12 +2,12 @@ import { Users, MessageSquare, Users2, Mic2, Headphones, Settings } from "lucide
 import { cn } from "../../../shared/utils/cn";
 import Avatar from "../../../shared/ui/Avatar";
 import Badge from "../../../shared/ui/Badge";
-import { useAuth } from "../../auth/hooks/useAuth";
+import { useAuth } from "../../auth/context/useAuth";
 import { useNavigate } from "react-router-dom";
 
 export default function NavSidebar() {
 
-    const {user} = useAuth();
+    const { user } = useAuth();
     const navigate = useNavigate();
 
     const mainItems = [
@@ -69,7 +69,7 @@ export default function NavSidebar() {
             {/* User Status Footer */}
             <div className="p-2 bg-[#090B11] flex items-center gap-2">
                 <div className="flex flex-1 items-center gap-2 px-2 py-1 rounded-lg hover:bg-white/5 transition-colors cursor-pointer group">
-                    <Avatar status="online" fallback={user?.username?.slice(0,2).toUpperCase()?? "NA"} size="sm" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" />
+                    <Avatar status="online" fallback={user?.username?.slice(0, 2).toUpperCase() ?? "NA"} size="sm" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" />
                     <div className="flex-1 min-w-0">
                         <p className="text-xs font-bold text-white truncate">{user?.username}</p>
                         {/* <p className="text-[10px] text-white/40 truncate">#5412 • Online</p> */}
@@ -82,7 +82,7 @@ export default function NavSidebar() {
                     <button className="p-1.5 rounded-lg text-white/50 hover:bg-white/10 hover:text-white transition-colors">
                         <Headphones size={16} />
                     </button>
-                    <button 
+                    <button
                         onClick={() => navigate("/settings")}
                         className="p-1.5 rounded-lg text-white/50 hover:bg-white/10 hover:text-white transition-colors"
                     >

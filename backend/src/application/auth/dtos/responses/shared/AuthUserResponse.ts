@@ -1,4 +1,4 @@
-import { GlobalRole } from "../../../../../shared/enums/userRole.enum";
+import { GlobalRole } from "../../../../../shared/constants/userRole.const";
 
 export interface AuthUserResponse {
   id: string;

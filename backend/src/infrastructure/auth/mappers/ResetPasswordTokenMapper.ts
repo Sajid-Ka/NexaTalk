@@ -1,7 +1,7 @@
 import { ResetPasswordToken } from "../../../domain/auth/entities/ResetPasswordToken";
 import { IResetPasswordTokenPersistence } from "../database/ResetPasswordTokenModel";
 import { IMapper } from "../../common/mappers/IMapper";
-import { OmittedDatabaseFields } from "../../../shared/enums/database-field.enum";
+import { OmittedDatabaseFields } from "../../../shared/constants/database-field.const";
 
 export class ResetPasswordTokenMapper implements IMapper<
   IResetPasswordTokenPersistence,

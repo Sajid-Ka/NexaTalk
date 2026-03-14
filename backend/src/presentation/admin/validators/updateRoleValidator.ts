@@ -1,5 +1,5 @@
 import { z } from "zod";
 
 export const updateRoleSchema = z.object({
-    role : z.enum(["user", "admin"])
-})
+  role: z.enum(["user", "admin"]),
+});

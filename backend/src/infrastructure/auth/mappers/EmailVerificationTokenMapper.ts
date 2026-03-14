@@ -1,7 +1,7 @@
 import { EmailVerificationToken } from "../../../domain/auth/entities/EmailVerificationToken";
 import { IEmailVerificationTokenPersistence } from "../database/EmailVerificationTokenModel";
 import { IMapper } from "../../common/mappers/IMapper";
-import { OmittedDatabaseFields } from "../../../shared/enums/database-field.enum";
+import { OmittedDatabaseFields } from "../../../shared/constants/database-field.const";
 
 export class EmailVerificationTokenMapper implements IMapper<
   IEmailVerificationTokenPersistence,

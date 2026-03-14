@@ -3,7 +3,7 @@ import { container } from "../../../main/di/container";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 import { ILogger } from "../../../domain/common/services/ILogger";
 import { RequestWithId } from "../../../main/types/RequestWithId";
-import { HttpHeader } from "../../../shared/enums/http-headers.enum";
+import { HttpHeader } from "../../../shared/constants/http-headers.const";
 
 const logger = container.get<ILogger>(COMMON_TYPES.Logger);
 

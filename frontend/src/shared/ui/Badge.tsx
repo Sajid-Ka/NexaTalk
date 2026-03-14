@@ -1,24 +1,25 @@
 import { cn } from "../utils/cn";
+import { BadgeVariant } from "../constants/ui.const";
 
 interface BadgeProps {
     children: React.ReactNode;
-    variant?: "primary" | "danger" | "warning" | "success" | "secondary" | "indigo" | "purple";
+    variant?: BadgeVariant;
     className?: string;
 }
 
 export default function Badge({
     children,
-    variant = "primary",
+    variant = BadgeVariant.PRIMARY,
     className,
 }: BadgeProps) {
-    const variants = {
-        primary: "bg-blue-600 text-white",
-        danger: "bg-red-500 text-white",
-        warning: "bg-yellow-500 text-white",
-        success: "bg-green-500 text-white",
-        secondary: "bg-white/10 text-white/70",
-        indigo: "bg-indigo-600 text-white",
-        purple: "bg-purple-600 text-white"
+    const variants: Record<BadgeVariant, string> = {
+        [BadgeVariant.PRIMARY]: "bg-blue-600 text-white",
+        [BadgeVariant.DANGER]: "bg-red-500 text-white",
+        [BadgeVariant.WARNING]: "bg-yellow-500 text-white",
+        [BadgeVariant.SUCCESS]: "bg-green-500 text-white",
+        [BadgeVariant.SECONDARY]: "bg-white/10 text-white/70",
+        [BadgeVariant.INDIGO]: "bg-indigo-600 text-white",
+        [BadgeVariant.PURPLE]: "bg-purple-600 text-white"
     };
 
     return (

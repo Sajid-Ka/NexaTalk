@@ -1,5 +1,5 @@
-import { AuthProvider } from "../features/auth/context/AuthContext";
+import { AuthProvider } from "../features/auth/context/AuthProvider";
 
-export default function Providers({children} : {children : React.ReactNode}){
+export default function Providers({ children }: { children: React.ReactNode }) {
     return <AuthProvider>{children}</AuthProvider>
 }

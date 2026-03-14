@@ -1,10 +1,11 @@
 import { api } from "../../../shared/api/axios";
+import { UserStatus } from "../../../shared/constants/user.const";
 
 export const getUsersApi = (params?: {
     page?: number;
     limit?: number;
     search?: string;
-    status?: "active" | "blocked";
+    status?: UserStatus;
 }) => api.get("/admin/users", {params});
 
 export const getUserDetailsApi = (id : string) => 

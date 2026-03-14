@@ -40,8 +40,9 @@ export default function ResetPasswordForm() {
             setTimeout(() => {
                 navigate("/login");
             }, 3000);
-        } catch (error: any) {
-            setServerError(error?.response?.data?.message || "Failed to reset password. The link may be expired.");
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: { message?: string } } };
+            setServerError(err?.response?.data?.message || "Failed to reset password. The link may be expired.");
         }
     };
 

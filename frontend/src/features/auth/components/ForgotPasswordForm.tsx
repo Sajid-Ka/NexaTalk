@@ -25,8 +25,9 @@ export default function ForgotPasswordForm() {
             setServerError(null);
             await requestPasswordResetApi(data.email);
             setIsSuccess(true);
-        } catch (error: any) {
-            setServerError(error?.response?.data?.message || "Something went wrong. Please try again.");
+        } catch (error: unknown) {
+            const err = error as {response?:{data?:{message?: string}}}
+            setServerError(err?.response?.data?.message || "Something went wrong. Please try again.");
         }
     };
 

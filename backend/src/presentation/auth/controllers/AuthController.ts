@@ -14,8 +14,9 @@ import { UnauthorizedError } from "../../../domain/errors/UnauthorizedError";
 import { inject, injectable } from "inversify";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
 import { CookieOptions } from "express";
-import { HttpHeader } from "../../../shared/enums/http-headers.enum";
-import { CookieName } from "../../../shared/enums/cookie.enum";
+import { HttpHeader } from "../../../shared/constants/http-headers.const";
+import { CookieName } from "../../../shared/constants/cookie.const";
+import { AuthMessage, ErrorMessage } from "../../../shared/constants/messages.const";
 
 @injectable()
 export class AuthController {
@@ -33,19 +34,19 @@ export class AuthController {
 
   signup = async (req: AuthenticatedRequest, res: Response) => {
     const result = await this._registerUser.execute(req.body);
-    return res.status(201).json(successResponse(result, "User registered successfully"));
+    return res.status(201).json(successResponse(result, AuthMessage.USER_REGISTERED));
   };
 
   verifyEmail = async (req: AuthenticatedRequest, res: Response) => {
     const { token } = req.body;
 
     if (!token) {
-      return res.status(400).json(errorResponse("TOKEN_MISSING", "Token missing"));
+      return res.status(400).json(errorResponse("TOKEN_MISSING", ErrorMessage.TOKEN_MISSING));
     }
 
     await this._verifyEmailUsecase.execute(token);
 
-    return res.status(200).json(successResponse(null, "Email verified successfully"));
+    return res.status(200).json(successResponse(null, AuthMessage.EMAIL_VERIFIED));
   };
 
   login = async (req: AuthenticatedRequest, res: Response) => {
@@ -69,7 +70,7 @@ export class AuthController {
           accessToken: result.accessToken,
           user: result.user,
         },
-        "Login successful",
+        AuthMessage.LOGIN_SUCCESS,
       ),
     );
   };
@@ -78,7 +79,7 @@ export class AuthController {
     const refreshToken = req.cookies?.[CookieName.REFRESH_TOKEN];
 
     if (!refreshToken) {
-      throw new UnauthorizedError("refresh token missing");
+      throw new UnauthorizedError(ErrorMessage.REFRESH_TOKEN_MISSING);
     }
 
     const result = await this._refreshSession.execute(refreshToken);
@@ -91,7 +92,7 @@ export class AuthController {
           accessToken: result.accessToken,
           user: result.user,
         },
-        "Token refreshed",
+        AuthMessage.TOKEN_REFRESHED,
       ),
     );
   };
@@ -101,9 +102,7 @@ export class AuthController {
 
     await this._requestPasswordReset.execute(email);
 
-    return res
-      .status(200)
-      .json(successResponse(null, "If the email exists, reset link has been sent"));
+    return res.status(200).json(successResponse(null, AuthMessage.PASSWORD_RESET_LINK_SENT));
   };
 
   resetPassword = async (req: AuthenticatedRequest, res: Response) => {
@@ -111,6 +110,6 @@ export class AuthController {
 
     await this._resetPassword.execute(token, newPassword);
 
-    return res.status(200).json(successResponse(null, "Password reset successfully"));
+    return res.status(200).json(successResponse(null, AuthMessage.PASSWORD_RESET_SUCCESS));
   };
 }

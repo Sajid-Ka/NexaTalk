@@ -11,7 +11,8 @@ import { IRevokeSessionUsecase } from "../../../application/auth/interfaces/IRev
 import { inject, injectable } from "inversify";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
 import { CookieOptions } from "express";
-import { CookieName } from "../../../shared/enums/cookie.enum";
+import { CookieName } from "../../../shared/constants/cookie.const";
+import { SessionMessage, ErrorMessage } from "../../../shared/constants/messages.const";
 
 @injectable()
 export class SessionController {
@@ -29,39 +30,39 @@ export class SessionController {
     const refreshToken = req.cookies?.refreshTokenV2;
 
     if (!refreshToken) {
-      return res.status(200).json(successResponse(null, "Logged out"));
+      return res.status(200).json(successResponse(null, SessionMessage.LOGGED_OUT));
     }
 
     await this._logoutUser.execute(refreshToken);
 
     res.clearCookie(CookieName.REFRESH_TOKEN, this._cookieOptions);
 
-    return res.status(200).json(successResponse(null, "Logged out successfully"));
+    return res.status(200).json(successResponse(null, SessionMessage.LOGGED_OUT_SUCCESS));
   };
 
   logoutAll = async (req: AuthenticatedRequest, res: Response) => {
-    if (!req.user) throw new UnauthorizedError("Unauthorized");
+    if (!req.user) throw new UnauthorizedError(ErrorMessage.UNAUTHORIZED);
 
     this._logger.warn("Logout all triggered", { userId: req.user.userId });
 
     await this._logoutAllDevice.execute(req.user.userId);
 
-    return res.status(200).json(successResponse(null, "Logged out from all devices"));
+    return res.status(200).json(successResponse(null, SessionMessage.LOGGED_OUT_ALL));
   };
 
   sessions = async (req: AuthenticatedRequest, res: Response) => {
-    if (!req.user) throw new UnauthorizedError("Unauthorized");
+    if (!req.user) throw new UnauthorizedError(ErrorMessage.UNAUTHORIZED);
 
     const result = await this._listUserSessions.execute(req.user.userId);
 
-    return res.status(200).json(successResponse(result, "Active sessions fetched"));
+    return res.status(200).json(successResponse(result, SessionMessage.SESSIONS_FETCHED));
   };
 
   revoke = async (req: AuthenticatedRequest, res: Response) => {
-    if (!req.user) throw new UnauthorizedError("Unauthorized");
+    if (!req.user) throw new UnauthorizedError(ErrorMessage.UNAUTHORIZED);
 
     await this._revokeSession.execute(req.user.userId, req.params.sessionId);
 
-    return res.status(200).json(successResponse(null, "Session revoked successfully"));
+    return res.status(200).json(successResponse(null, SessionMessage.SESSION_REVOKED));
   };
 }

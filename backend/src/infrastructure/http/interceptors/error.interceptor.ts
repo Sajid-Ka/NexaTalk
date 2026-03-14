@@ -7,8 +7,9 @@ import { errorResponse } from "../../../shared/response/responseFormatter";
 import { RequestWithId } from "../../../main/types/RequestWithId";
 import { InvalidRefreshTokenError } from "../../../domain/auth/errors/InvalidRefreshTokenError";
 import { env } from "../../../shared/config/env";
-import { CookieName, CookieSameSite } from "../../../shared/enums/cookie.enum";
-import { NodeEnv } from "../../../shared/enums/environment.enum";
+import { CookieName, CookieSameSite } from "../../../shared/constants/cookie.const";
+import { NodeEnv } from "../../../shared/constants/environment.const";
+import { ErrorMessage } from "../../../shared/constants/messages.const";
 
 const logger = container.get<ILogger>(COMMON_TYPES.Logger);
 
@@ -40,5 +41,7 @@ export function errorInterceptor(
     return res.status(err.statusCode).json(errorResponse(err.code ?? err.name, err.message));
   }
 
-  return res.status(500).json(errorResponse("INTERNAL_SERVER_ERROR", "Internal server error"));
+  return res
+    .status(500)
+    .json(errorResponse("INTERNAL_SERVER_ERROR", ErrorMessage.INTERNAL_SERVER_ERROR));
 }

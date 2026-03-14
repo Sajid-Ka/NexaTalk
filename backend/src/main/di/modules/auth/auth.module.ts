@@ -27,8 +27,8 @@ import { AuthController } from "../../../../presentation/auth/controllers/AuthCo
 import { SessionController } from "../../../../presentation/auth/controllers/SessionController";
 
 import { env } from "../../../../shared/config/env";
-import { CookieSameSite } from "../../../../shared/enums/cookie.enum";
-import { NodeEnv } from "../../../../shared/enums/environment.enum";
+import { CookieSameSite } from "../../../../shared/constants/cookie.const";
+import { NodeEnv } from "../../../../shared/constants/environment.const";
 
 export function loadAuthModule(container: Container) {
   container.bind(AUTH_TYPES.UserRepository).to(UserRepository).inSingletonScope();

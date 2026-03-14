@@ -1,10 +1,8 @@
 import { User } from "../../../domain/auth/entities/User";
 import { IUserPersistence } from "../database/UserModel";
 import { IMapper } from "../../common/mappers/IMapper";
-import { UserAccountStatus } from "../../../shared/enums/userAccountStatus.enum";
-import { UserPresenceStatus } from "../../../shared/enums/userPresenceStatus.enum";
-import { GlobalRole } from "../../../shared/enums/userRole.enum";
-import { OmittedDatabaseFields } from "../../../shared/enums/database-field.enum";
+import { UserAccountStatus } from "../../../shared/constants/userAccountStatus.const";
+import { OmittedDatabaseFields } from "../../../shared/constants/database-field.const";
 
 export class UserPersistenceMapper implements IMapper<IUserPersistence, User> {
   toDomain(doc: IUserPersistence): User {
@@ -14,8 +12,8 @@ export class UserPersistenceMapper implements IMapper<IUserPersistence, User> {
       email: doc.email,
       passwordHash: doc.passwordHash,
       avatar: doc.avatar,
-      status: doc.status as UserPresenceStatus,
-      globalRole: doc.globalRole as GlobalRole,
+      status: doc.status,
+      globalRole: doc.globalRole,
       accountStatus: doc.isBlocked ? UserAccountStatus.BLOCKED : UserAccountStatus.ACTIVE,
       isProfilePublic: doc.isProfilePublic,
       blockedReason: doc.blockedReason,

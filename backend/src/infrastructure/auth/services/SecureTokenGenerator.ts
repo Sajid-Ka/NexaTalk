@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import { ITokenGenerator } from "../../../domain/auth/services/ITokenGenerator";
 import { injectable } from "inversify";
-import { Encoding, HashAlgorithm } from "../../../shared/enums/crypto.enum";
+import { Encoding, HashAlgorithm } from "../../../shared/constants/crypto.const";
 
 @injectable()
 export class SecureTokenGenerator implements ITokenGenerator {

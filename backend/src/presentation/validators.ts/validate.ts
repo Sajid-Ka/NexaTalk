@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { ValidationError } from "../../domain/errors/ValidationError";
 import { ZodTypeAny } from "zod";
-import { ValidationSource } from "../../shared/enums/validation.enum";
+import { ValidationSource } from "../../shared/constants/validation.const";
 
 export const validate =
   <T extends ZodTypeAny>(schema: T, source: ValidationSource = ValidationSource.BODY) =>

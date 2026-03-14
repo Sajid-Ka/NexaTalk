@@ -1,7 +1,7 @@
 import { Model, ClientSession, UpdateQuery, Types, HydratedDocument } from "mongoose";
 import { IBaseRepository } from "../../../domain/common/repositories/IBaseRepository";
 import { IMapper } from "../mappers/IMapper";
-import { OmittedDatabaseFields } from "../../../shared/enums/database-field.enum";
+import { OmittedDatabaseFields } from "../../../shared/constants/database-field.const";
 
 type Filter = Record<string, unknown>;
 

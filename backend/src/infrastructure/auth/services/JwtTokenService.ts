@@ -3,8 +3,8 @@ import { ITokenService } from "../../../domain/auth/services/ITokenService";
 import { AccessTokenPayload } from "../../../domain/auth/types/AccessTokenPayload";
 import { inject, injectable } from "inversify";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
-import { GlobalRole } from "../../../shared/enums/userRole.enum";
-import { TokenType } from "../../../shared/enums/token-type.enum";
+import { GlobalRole } from "../../../shared/constants/userRole.const";
+import { TokenType } from "../../../shared/constants/token-type.const";
 
 @injectable()
 export class JwtTokenService implements ITokenService {

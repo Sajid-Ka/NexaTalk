@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import nodemailer from "nodemailer";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
-import { EmailServiceProvider } from "../../../shared/enums/email-service.enum";
+import { EmailServiceProvider } from "../../../shared/constants/email-service.const";
 
 @injectable()
 export class NodemailerEmailService {

@@ -1,9 +1,9 @@
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../features/auth/hooks/useAuth";
+import { useAuth } from "../features/auth/context/useAuth";
 import type { ReactNode } from "react";
 import { UserRole } from "../shared/constants/user.const";
 
-export default function PublicRoute({ children }: {children : ReactNode}) {
+export default function PublicRoute({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
 
   if (loading) return null;

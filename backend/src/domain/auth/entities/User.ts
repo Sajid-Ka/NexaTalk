@@ -1,6 +1,6 @@
-import { GlobalRole } from "../../../shared/enums/userRole.enum";
-import { UserPresenceStatus } from "../../../shared/enums/userPresenceStatus.enum";
-import { UserAccountStatus } from "../../../shared/enums/userAccountStatus.enum";
+import { GlobalRole } from "../../../shared/constants/userRole.const";
+import { UserPresenceStatus } from "../../../shared/constants/userPresenceStatus.const";
+import { UserAccountStatus } from "../../../shared/constants/userAccountStatus.const";
 import { BadRequestError } from "../../errors/BadRequestError";
 
 export interface UserProps {
