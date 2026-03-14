@@ -8,6 +8,7 @@ import { IDeleteUserUsecase } from "../../../application/admin/interface/IDelete
 import { ADMIN_TYPES } from "../../../main/di/modules/admin/admin.types";
 import { IGetUserDetailsUsecase } from "../../../application/admin/interface/IGetUserDetailsUsecase";
 import { successResponse } from "../../../shared/response/responseFormatter";
+import { AuthenticatedRequest } from "../../../main/types/AuthenticatedRequest";
 
 @injectable()
 export class AdminUserController {
@@ -36,13 +37,13 @@ export class AdminUserController {
     res.json(successResponse(result, "User details fetched"));
   };
 
-  blockUser = async (req: Request, res: Response) => {
-    await this._blockUser.execute(req.params.id);
+  blockUser = async (req: AuthenticatedRequest, res: Response) => {
+    await this._blockUser.execute(req.params.id, req.user!.userId);
     res.json(successResponse(null, "User blocked"));
   };
 
-  unblockUser = async (req: Request, res: Response) => {
-    await this._unblockUser.execute(req.params.id);
+  unblockUser = async (req: AuthenticatedRequest, res: Response) => {
+    await this._unblockUser.execute(req.params.id, req.user!.userId);
     res.json(successResponse(null, "User unblocked"));
   };
 
@@ -51,8 +52,8 @@ export class AdminUserController {
     res.json(successResponse(null, "Role Updated"));
   };
 
-  deleteUser = async (req: Request, res: Response) => {
-    await this._deleteUser.execute(req.params.id);
+  deleteUser = async (req: AuthenticatedRequest, res: Response) => {
+    await this._deleteUser.execute(req.params.id, req.user!.userId);
     res.json(successResponse(null, "User deleted"));
   };
 }

@@ -1,3 +1,3 @@
 export interface IDeleteUserUsecase {
-  execute(userId: string): Promise<void>;
+  execute(userId: string, adminId: string): Promise<void>;
 }

@@ -5,7 +5,7 @@ import { AuthenticatedRequest } from "../types/AuthenticatedRequest";
 
 export const createAuthMiddleware =
   (tokenService: ITokenService) =>
-  (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
+  async (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -19,7 +19,7 @@ export const createAuthMiddleware =
     }
 
     try {
-      req.user = tokenService.verifyAccessToken(token);
+      req.user = await tokenService.verifyAccessToken(token);
       next();
     } catch {
       next(new UnauthorizedError("Invalid or expired token"));

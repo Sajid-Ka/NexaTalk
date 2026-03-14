@@ -1,116 +1,213 @@
-import { Eye, Ban, LogOut, Trash2 } from "lucide-react";
+// src/features/admin/components/UserTable.tsx
+import { Eye, Ban, Unlock, Trash2 } from "lucide-react";
+import { useState } from "react";
 import Avatar from "../../../shared/ui/Avatar";
 import Badge from "../../../shared/ui/Badge";
-import { cn } from "../../../shared/utils/cn";
+import { Table } from "../../../shared/ui/Table/Table";
+import type { Column } from "../../../shared/ui/Table/Table";
+import ConfirmModal from "../../../shared/ui/ConfirmModal";
+import { useAuth } from "../../auth/context/useAuth";
 
 export interface User {
     id: string;
     username: string;
     email: string;
-    role: "Admin" | "User" | "Creator";
-    status: "Online" | "Offline" | "Idle";
+    role: "Admin" | "User";
+    status: "Online" | "Offline";
     joinedDate: string;
-    isPro: boolean;
-    isReported?: boolean;
     initials: string;
-    avatarColor?: string;
 }
 
 interface UserTableProps {
     users: User[];
     selectedUserId?: string;
     onSelectUser: (user: User) => void;
+    onBlockUser: (userId: string) => void;
+    onUnblockUser: (userId: string) => void;
+    onDeleteUser: (userId: string) => void;
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
+    onSort?: (key: string) => void;
 }
 
-export default function UserTable({ users, selectedUserId, onSelectUser }: UserTableProps) {
-    return (
-        <div className="w-full overflow-hidden rounded-2xl bg-[#0F121D]/50 border border-white/5">
-            <table className="w-full text-left border-collapse">
-                <thead>
-                    <tr className="border-b border-white/5 text-[10px] uppercase tracking-widest text-gray-500 font-bold">
-                        <th className="px-6 py-4">User</th>
-                        <th className="px-6 py-4">Email</th>
-                        <th className="px-6 py-4">Role</th>
-                        <th className="px-6 py-4">Status</th>
-                        <th className="px-6 py-4">Joined Date</th>
-                        <th className="px-6 py-4 text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5">
-                    {users.map((user) => (
-                        <tr
-                            key={user.id}
-                            onClick={() => onSelectUser(user)}
-                            className={cn(
-                                "group cursor-pointer transition-colors hover:bg-white/[0.02]",
-                                selectedUserId === user.id && "bg-white/[0.04]"
-                            )}
+export default function UserTable({ 
+    users, 
+    selectedUserId, 
+    onSelectUser,
+    onBlockUser,
+    onUnblockUser,
+    onDeleteUser,
+    sortBy,
+    sortOrder,
+    onSort
+}: UserTableProps) {
+    const { user: currentUser } = useAuth();
+    const [deleteModal, setDeleteModal] = useState<{
+        isOpen: boolean;
+        userId: string;
+        username: string;
+    }>({
+        isOpen: false,
+        userId: "",
+        username: ""
+    });
+
+    const columns: Column<User>[] = [
+        {
+            key: "username",
+            header: "User",
+            sortable: true,
+            render: (_, row) => (
+                <div className="flex items-center gap-3">
+                    <Avatar
+                        fallback={row.initials}
+                        size="sm"
+                    />
+                    <span className="text-sm font-bold text-white">{row.username}</span>
+                </div>
+            )
+        },
+        {
+            key: "email",
+            header: "Email",
+            render: (email) => (
+                <span className="text-xs text-gray-400">{email}</span>
+            )
+        },
+        {
+            key: "role",
+            header: "Role",
+            sortable: true,
+            render: (role) => (
+                <Badge
+                    variant={role === "Admin" ? "indigo" : "secondary"}
+                >
+                    {role as string}
+                </Badge>
+            )
+        },
+        {
+            key: "status",
+            header: "Status",
+            sortable: true,
+            render: (status) => (
+                <div className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${
+                        status === "Online" ? "bg-green-500" : "bg-gray-500"
+                    }`} />
+                    <span className="text-xs text-gray-300">{status as string}</span>
+                </div>
+            )
+        },
+        {
+            key: "joinedDate",
+            header: "Joined",
+            sortable: true,
+            render: (date) => (
+                <span className="text-xs text-gray-400">{date as string}</span>
+            )
+        },
+        {
+            key: "id",
+            header: "Actions",
+            align: "right",
+            render: (_, row) => {
+                const isSelf = currentUser?.id === row.id;
+
+                return (
+                    <div className="flex items-center justify-end gap-2">
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onSelectUser(row);
+                            }}
+                            className="p-1.5 text-gray-500 hover:text-white"
+                            title="View Details"
                         >
-                            <td className="px-6 py-4">
-                                <div className="flex items-center gap-3">
-                                    <Avatar
-                                        fallback={user.initials}
-                                        size="sm"
-                                        className={cn("ring-2 ring-transparent group-hover:ring-indigo-500/30 transition-all", user.avatarColor)}
-                                    />
-                                    <div className="flex flex-col">
-                                        <span className="text-sm font-bold text-white leading-tight">{user.username}</span>
-                                        {user.isPro && (
-                                            <span className="text-[10px] text-indigo-400 font-medium">Pro Member</span>
-                                        )}
-                                        {user.isReported && (
-                                            <span className="text-[10px] text-amber-500 font-medium">Reported</span>
-                                        )}
-                                    </div>
-                                </div>
-                            </td>
-                            <td className="px-6 py-4">
-                                <span className="text-xs text-gray-400 font-medium">{user.email}</span>
-                            </td>
-                            <td className="px-6 py-4">
-                                <Badge
-                                    variant={user.role === "Admin" ? "indigo" : "secondary"}
-                                    className={cn(
-                                        "capitalize px-3 py-1",
-                                        user.role === "Admin" ? "bg-indigo-500/20 text-indigo-400 border border-indigo-500/20" : "bg-white/5 text-gray-400"
-                                    )}
+                            <Eye size={16} />
+                        </button>
+
+                        {!isSelf && (
+                            row.status === "Online" ? (
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onBlockUser(row.id);
+                                    }}
+                                    className="p-1.5 text-gray-500 hover:text-red-500"
+                                    title="Block User"
                                 >
-                                    {user.role}
-                                </Badge>
-                            </td>
-                            <td className="px-6 py-4">
-                                <div className="flex items-center gap-2">
-                                    <span className={cn(
-                                        "w-1.5 h-1.5 rounded-full",
-                                        user.status === "Online" ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]" :
-                                            user.status === "Idle" ? "bg-amber-500" : "bg-gray-500"
-                                    )} />
-                                    <span className="text-xs text-gray-300 font-medium">{user.status}</span>
-                                </div>
-                            </td>
-                            <td className="px-6 py-4">
-                                <span className="text-xs text-gray-400 font-medium">{user.joinedDate}</span>
-                            </td>
-                            <td className="px-6 py-4">
-                                <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button className="p-1.5 text-gray-500 hover:text-white transition-colors">
-                                        <Eye size={16} />
-                                    </button>
-                                    <button className="p-1.5 text-gray-500 hover:text-white transition-colors">
-                                        <Ban size={16} />
-                                    </button>
-                                    <button className="p-1.5 text-gray-500 hover:text-white transition-colors">
-                                        <LogOut size={16} />
-                                    </button>
-                                    <button className="p-1.5 text-gray-500 hover:text-red-500 transition-colors">
-                                        <Trash2 size={16} />
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
+                                    <Ban size={16} />
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onUnblockUser(row.id);
+                                    }}
+                                    className="p-1.5 text-gray-500 hover:text-green-500"
+                                    title="Unblock User"
+                                >
+                                    <Unlock size={16} />
+                                </button>
+                            )
+                        )}
+
+                        {!isSelf && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setDeleteModal({
+                                        isOpen: true,
+                                        userId: row.id,
+                                        username: row.username
+                                    });
+                                }}
+                                className="p-1.5 text-gray-500 hover:text-red-500"
+                                title="Delete User"
+                            >
+                                <Trash2 size={16} />
+                            </button>
+                        )}
+
+                        {isSelf && (
+                            <span className="text-xs text-gray-500 italic px-2">
+                                (You)
+                            </span>
+                        )}
+                    </div>
+                );
+            }
+        }
+    ];
+
+    const handleConfirmDelete = () => {
+        onDeleteUser(deleteModal.userId);
+        setDeleteModal({ isOpen: false, userId: "", username: "" });
+    };
+
+    return (
+        <>
+            <Table
+                columns={columns}
+                data={users}
+                selectedRowId={selectedUserId}
+                onRowClick={onSelectUser}
+                sortBy={sortBy}
+                sortOrder={sortOrder}
+                onSort={onSort}
+                emptyMessage="No users found"
+            />
+            <ConfirmModal
+                isOpen={deleteModal.isOpen}
+                onClose={() => setDeleteModal({ isOpen: false, userId: "", username: "" })}
+                onConfirm={handleConfirmDelete}
+                title="Delete User"
+                message={`Are you sure you want to delete user "${deleteModal.username}"? This action cannot be undone.`}
+                confirmText="Delete"
+                cancelText="Cancel"
+                variant="danger"
+            />
+        </>
     );
 }

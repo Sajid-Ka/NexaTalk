@@ -6,6 +6,7 @@ import { IUnblockUserUsecase } from "../interface/IUnblockUserUsecase";
 import { ILogger } from "../../../domain/common/services/ILogger";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 import { UserAccountStatus } from "../../../shared/constants/userAccountStatus.const";
+import { ForbiddenError } from "../../../domain/errors/ForbiddenError";
 
 @injectable()
 export class UnblockUser implements IUnblockUserUsecase {
@@ -14,8 +15,13 @@ export class UnblockUser implements IUnblockUserUsecase {
     @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
   ) {}
 
-  async execute(userId: string): Promise<void> {
+  async execute(userId: string, adminId: string): Promise<void> {
     this._logger.info("Unblock user attempt", { userId });
+
+    if (userId === adminId) {
+      this._logger.warn("Admin attempted to unblock themselves", { adminId });
+      throw new ForbiddenError("You cannot unblock your own account");
+    }
 
     const user = await this._repo.findById(userId);
 

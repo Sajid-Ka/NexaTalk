@@ -6,16 +6,25 @@ import { IBlockUserUsecase } from "../interface/IBlockUserUsecase";
 import { ILogger } from "../../../domain/common/services/ILogger";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 import { UserAccountStatus } from "../../../shared/constants/userAccountStatus.const";
+import { ForbiddenError } from "../../../domain/errors/ForbiddenError";
+import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
+import { ITokenService } from "../../../domain/auth/services/ITokenService";
 
 @injectable()
 export class BlockUser implements IBlockUserUsecase {
   constructor(
     @inject(ADMIN_TYPES.AdminUserRepository) private readonly _repo: IAdminUserRepository,
     @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
+    @inject(AUTH_TYPES.TokenService) private readonly _tokenService: ITokenService,
   ) {}
 
-  async execute(userId: string): Promise<void> {
+  async execute(userId: string, adminId: string): Promise<void> {
     this._logger.info("Block user attempt", { userId });
+
+    if (userId === adminId) {
+      this._logger.warn("Admin attempted to block themselves", { adminId });
+      throw new ForbiddenError("You cannot block your own account");
+    }
 
     const user = await this._repo.findById(userId);
 
@@ -25,6 +34,8 @@ export class BlockUser implements IBlockUserUsecase {
     }
 
     await this._repo.update(userId, { accountStatus: UserAccountStatus.BLOCKED });
+
+    await this._tokenService.revokeUserTokens?.(userId);
 
     this._logger.warn("ADMIN_ACTION_BLOCK_USER", { targetUserId: userId });
   }

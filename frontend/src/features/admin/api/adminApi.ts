@@ -1,4 +1,5 @@
 import { api } from "../../../shared/api/axios";
+import { AppRoute } from "../../../shared/constants/app-route.const";
 import { UserStatus } from "../../../shared/constants/user.const";
 
 export const getUsersApi = (params?: {
@@ -6,16 +7,16 @@ export const getUsersApi = (params?: {
     limit?: number;
     search?: string;
     status?: UserStatus;
-}) => api.get("/admin/users", {params});
+}) => api.get(`${AppRoute.ADMIN_USERS}`, {params});
 
 export const getUserDetailsApi = (id : string) => 
-    api.get(`/admin/users/${id}`);
+    api.get(`${AppRoute.ADMIN_USERS}/${id}`);
 
 export const blockUserApi = (id : string) =>
-    api.patch(`/admin/users/${id}/block`);
+    api.patch(`${AppRoute.ADMIN_USERS}/${id}/block`);
 
 export const unblockUserApi = (id : string) => 
-    api.patch(`/admin/users/${id}/unblock`);
+    api.patch(`${AppRoute.ADMIN_USERS}/${id}/unblock`);
 
 export const deleteUserApi = (id : string) => 
-    api.delete(`/admin/users/${id}`)
+    api.delete(`${AppRoute.ADMIN_USERS}/${id}`)
