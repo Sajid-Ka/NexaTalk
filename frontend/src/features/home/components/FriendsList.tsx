@@ -2,6 +2,7 @@ import { Users, Search, MessageSquare, Phone, MoreVertical } from "lucide-react"
 import Avatar from "../../../shared/ui/Avatar";
 import Button from "../../../shared/ui/Button";
 import { cn } from "../../../shared/utils/cn";
+import type { FriendStatus } from "../types/friend.types";
 
 export default function FriendsList() {
     const tabs = ["Online", "All", "Pending", "Blocked"];
@@ -69,7 +70,7 @@ export default function FriendsList() {
                         {friends.map((friend) => (
                             <div key={friend.name} className="group flex items-center justify-between px-4 py-3 rounded-xl hover:bg-white/5 transition-all cursor-pointer border border-transparent hover:border-white/5">
                                 <div className="flex items-center gap-4">
-                                    <Avatar src={friend.avatar} fallback={friend.name} status={friend.status as any} size="md" />
+                                    <Avatar src={friend.avatar} fallback={friend.name} status={friend.status as FriendStatus} size="md" />
                                     <div className="min-w-0">
                                         <div className="flex items-center gap-2">
                                             <p className="font-bold text-sm text-white">{friend.name}</p>
