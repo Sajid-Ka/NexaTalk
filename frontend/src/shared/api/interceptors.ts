@@ -53,7 +53,7 @@ api.interceptors.response.use(
                         originalRequest.headers.Authorization = `Bearer ${newToken}`;
                         return api(originalRequest);
                     }
-                } catch (error) {
+                } catch {
                     pendingRequests.forEach((cb) => cb(null));
                     pendingRequests = [];
                     isRefreshing = false;
