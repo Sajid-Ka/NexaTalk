@@ -1,7 +1,7 @@
 import { User } from "../../../domain/auth/entities/User";
 import { IUserPersistence } from "../database/UserModel";
 import { IMapper } from "../../common/mappers/IMapper";
-import { UserAccountStatus } from "../../../shared/constants/userAccountStatus.const";
+import { UserAccountStatus } from "../../../shared/constants/authStatus.const";
 import { OmittedDatabaseFields } from "../../../shared/constants/database-field.const";
 
 export class UserPersistenceMapper implements IMapper<IUserPersistence, User> {
@@ -22,6 +22,7 @@ export class UserPersistenceMapper implements IMapper<IUserPersistence, User> {
       updatedAt: doc.updatedAt,
       deletedAt: doc.deletedAt,
       isEmailVerified: doc.isEmailVerified,
+      sessionVersion: doc.sessionVersion,
     });
   }
 
@@ -39,6 +40,7 @@ export class UserPersistenceMapper implements IMapper<IUserPersistence, User> {
       lastSeenAt: user.lastSeenAt ?? undefined,
       deletedAt: user.deletedAt ?? undefined,
       isEmailVerified: user.isEmailVerified,
+      sessionVersion: user.sessionVersion,
     };
   }
 
@@ -57,6 +59,7 @@ export class UserPersistenceMapper implements IMapper<IUserPersistence, User> {
     if (data.lastSeenAt !== undefined) update.lastSeenAt = data.lastSeenAt;
     if (data.deletedAt !== undefined) update.deletedAt = data.deletedAt;
     if (data.isEmailVerified !== undefined) update.isEmailVerified = data.isEmailVerified;
+    if (data.sessionVersion !== undefined) update.sessionVersion = data.sessionVersion;
     return update;
   }
 }

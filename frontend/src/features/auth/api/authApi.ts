@@ -23,3 +23,6 @@ export const requestPasswordResetApi = (email: string) =>
 
 export const resetPasswordApi = (data: { token: string; newPassword: string }) =>
     api.post("/auth/reset-password", data);
+
+export const checkStatusApi = () =>
+    api.get("/auth/check-status");

@@ -28,6 +28,19 @@ api.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
+        const errorMsg = error.response?.data?.error?.message?.toLowerCase() || "";
+        const isBlockedOrDeleted = (error.response?.status === 401 || error.response?.status === 403) &&
+            (errorMsg.includes("blocked") || errorMsg.includes("deleted") || errorMsg.includes("revoked"));
+
+        if(isBlockedOrDeleted) {
+            setAccessToken(null);
+            if (window.location.pathname !== "/login") {
+                window.dispatchEvent(new Event("force-logout"));
+                window.location.href = "/login?blocked=true";
+            }
+            return Promise.reject(error);
+        }
+
         if(
             error.response?.status === 401 &&
             refreshHandler &&
@@ -53,10 +66,17 @@ api.interceptors.response.use(
                         originalRequest.headers.Authorization = `Bearer ${newToken}`;
                         return api(originalRequest);
                     }
-                } catch {
+                } catch (refreshError) {
                     pendingRequests.forEach((cb) => cb(null));
                     pendingRequests = [];
                     isRefreshing = false;
+                    
+                    // If refresh itself fails with 401/403, and we aren't already on login, redirect
+                    if (window.location.pathname !== "/login") {
+                        setAccessToken(null);
+                        window.location.href = "/login?session=expired";
+                    }
+                    return Promise.reject(refreshError);
                 }
             }
 

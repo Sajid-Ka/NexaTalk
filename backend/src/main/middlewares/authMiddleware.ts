@@ -2,9 +2,10 @@ import { Response, NextFunction } from "express";
 import { ITokenService } from "../../domain/auth/services/ITokenService";
 import { UnauthorizedError } from "../../domain/errors/UnauthorizedError";
 import { AuthenticatedRequest } from "../types/AuthenticatedRequest";
+import { IUserStatusService } from "../../domain/auth/services/IUserStatusService";
 
 export const createAuthMiddleware =
-  (tokenService: ITokenService) =>
+  (tokenService: ITokenService, userStatusService: IUserStatusService) =>
   async (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
 
@@ -19,9 +20,16 @@ export const createAuthMiddleware =
     }
 
     try {
-      req.user = await tokenService.verifyAccessToken(token);
+      const payload = await tokenService.verifyAccessToken(token);
+      await userStatusService.validate(payload.userId, payload.sessionVersion);
+
+      req.user = payload;
       next();
-    } catch {
-      next(new UnauthorizedError("Invalid or expired token"));
+    } catch (error) {
+      next(
+        error instanceof UnauthorizedError
+          ? error
+          : new UnauthorizedError("Invalid or expired token"),
+      );
     }
   };

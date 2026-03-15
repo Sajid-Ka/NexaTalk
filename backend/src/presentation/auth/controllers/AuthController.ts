@@ -112,4 +112,16 @@ export class AuthController {
 
     return res.status(200).json(successResponse(null, AuthMessage.PASSWORD_RESET_SUCCESS));
   };
+
+  checkStatus = async (req: AuthenticatedRequest, res: Response) => {
+    res.json(
+      successResponse(
+        {
+          id: req.user!.userId,
+          role: req.user!.role,
+        },
+        "User is active",
+      ),
+    );
+  };
 }

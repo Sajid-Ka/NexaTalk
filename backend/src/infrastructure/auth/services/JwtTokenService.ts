@@ -17,8 +17,8 @@ export class JwtTokenService implements ITokenService {
     @inject(COMMON_TYPES.CacheService) private readonly _cacheService: RedisCacheService,
   ) {}
 
-  generateAccessToken(userId: string, role: GlobalRole): string {
-    return jwt.sign({ sub: userId, role, type: TokenType.ACCESS }, this._secret, {
+  generateAccessToken(userId: string, role: GlobalRole, sessionVersion: number): string {
+    return jwt.sign({ sub: userId, role, sessionVersion, type: TokenType.ACCESS }, this._secret, {
       expiresIn: this._accessTtl,
     });
   }
@@ -28,20 +28,23 @@ export class JwtTokenService implements ITokenService {
   }
 
   async verifyAccessToken(token: string): Promise<AccessTokenPayload> {
-    const decoded = jwt.verify(token, this._secret) as JwtPayload & {
-      sub: string;
-      role: GlobalRole;
-    };
+    try {
+      const decoded = jwt.verify(token, this._secret) as JwtPayload & {
+        sub: string;
+        role: GlobalRole;
+        sessionVersion: number;
+      };
 
-    //check user is blocked or deleted
-    const isBlacklisted = await this._cacheService.get(`blacklist:user:${decoded.sub}`);
-    if (isBlacklisted) {
-      throw new UnauthorizedError("User account is blocked or deleted");
+      return {
+        userId: decoded.sub,
+        role: decoded.role,
+        sessionVersion: decoded.sessionVersion,
+      };
+    } catch (error) {
+      if (error instanceof jwt.JsonWebTokenError) {
+        throw new UnauthorizedError("Invalid token");
+      }
+      throw error;
     }
-
-    return {
-      userId: decoded.sub,
-      role: decoded.role,
-    };
   }
 }

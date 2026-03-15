@@ -1,5 +1,5 @@
 import { Model } from "mongoose";
-import { UserAccountStatus } from "../../../shared/constants/userAccountStatus.const";
+import { UserAccountStatus } from "../../../shared/constants/authStatus.const";
 import { GlobalRole } from "../../../shared/constants/userRole.const";
 import { SortField, SortOrder, sortOrderToMongo } from "../../../shared/constants/sort.const";
 

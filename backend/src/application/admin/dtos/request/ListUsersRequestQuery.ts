@@ -1,4 +1,4 @@
-import { UserAccountStatus } from "../../../../shared/constants/userAccountStatus.const";
+import { UserAccountStatus } from "../../../../shared/constants/authStatus.const";
 
 export interface ListUsersRequestQuery {
   page?: number;

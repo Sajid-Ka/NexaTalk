@@ -8,6 +8,7 @@ export const AUTH_TYPES = {
   TokenService: Symbol.for("TokenService"),
   TokenGenerator: Symbol.for("TokenGenerator"),
   EmailService: Symbol.for("EmailService"),
+  UserStatusService: Symbol.for("UserStatusService"),
 
   RegisterUser: Symbol.for("RegisterUser"),
   LoginUser: Symbol.for("LoginUser"),

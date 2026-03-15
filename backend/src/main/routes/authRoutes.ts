@@ -11,6 +11,7 @@ import { ITokenService } from "../../domain/auth/services/ITokenService";
 import { AuthController } from "../../presentation/auth/controllers/AuthController";
 import { SessionController } from "../../presentation/auth/controllers/SessionController";
 import { env } from "../../shared/config/env";
+import { IUserStatusService } from "../../domain/auth/services/IUserStatusService";
 
 const router = Router();
 
@@ -18,7 +19,8 @@ const authController = container.get<AuthController>(AUTH_TYPES.AuthController);
 const sessionController = container.get<SessionController>(AUTH_TYPES.SessionController);
 
 const tokenService = container.get<ITokenService>(AUTH_TYPES.TokenService);
-const authMiddleware = createAuthMiddleware(tokenService);
+const userStatusService = container.get<IUserStatusService>(AUTH_TYPES.UserStatusService);
+const authMiddleware = createAuthMiddleware(tokenService, userStatusService);
 
 router.post(
   "/signup",
@@ -50,5 +52,7 @@ router.post(
   authController.requestPasswordReset,
 );
 router.post("/reset-password", authController.resetPassword);
+
+router.get("/check-status", authMiddleware, authController.checkStatus);
 
 export default router;

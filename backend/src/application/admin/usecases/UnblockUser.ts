@@ -5,7 +5,7 @@ import { NotFoundError } from "../../../domain/errors/NotFoundError";
 import { IUnblockUserUsecase } from "../interface/IUnblockUserUsecase";
 import { ILogger } from "../../../domain/common/services/ILogger";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
-import { UserAccountStatus } from "../../../shared/constants/userAccountStatus.const";
+import { UserAccountStatus } from "../../../shared/constants/authStatus.const";
 import { ForbiddenError } from "../../../domain/errors/ForbiddenError";
 
 @injectable()
@@ -30,7 +30,10 @@ export class UnblockUser implements IUnblockUserUsecase {
       throw new NotFoundError("User not found");
     }
 
-    await this._repo.update(userId, { accountStatus: UserAccountStatus.ACTIVE });
+    await this._repo.update(userId, {
+      accountStatus: UserAccountStatus.ACTIVE,
+      sessionVersion: (user.sessionVersion || 1) + 1,
+    });
 
     this._logger.info("User unblocked", { userId });
   }

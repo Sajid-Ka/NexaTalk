@@ -13,6 +13,7 @@ import { ITransactionManager } from "../../../domain/common/services/ITransactio
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 import { TimeUtil } from "../../../shared/utils/time/time.util";
 import { CACHE_KEYS } from "../../../shared/constants/cacheKeys";
+import { UserAccountStatus } from "../../../shared/constants/authStatus.const";
 
 @injectable()
 export class RefreshSession implements IRefreshSessionUsecase {
@@ -58,6 +59,16 @@ export class RefreshSession implements IRefreshSessionUsecase {
       throw new InvalidRefreshTokenError();
     }
 
+    if (user.accountStatus !== UserAccountStatus.ACTIVE) {
+      await this._refreshRepo.revokeByHash(tokenHash);
+      await this._cache.delete(cacheKey);
+      this._logger.warn("Refresh attempt for inactive user", {
+        userId: user.id,
+        status: user.accountStatus,
+      });
+      throw new InvalidRefreshTokenError();
+    }
+
     const newRefreshRaw = this._tokenGenerator.generate();
     const newRefreshHash = this._tokenGenerator.hash(newRefreshRaw);
 
@@ -82,7 +93,11 @@ export class RefreshSession implements IRefreshSessionUsecase {
     await this._cache.delete(cacheKey);
     await this._cache.set(CACHE_KEYS.refresh(newRefreshHash), { userId: user.id }, ttlSeconds);
 
-    const accessToken = this._tokenService.generateAccessToken(user.id, user.globalRole);
+    const accessToken = this._tokenService.generateAccessToken(
+      user.id,
+      user.globalRole,
+      user.sessionVersion,
+    );
 
     return {
       accessToken,

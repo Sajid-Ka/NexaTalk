@@ -1,7 +1,6 @@
-import { Mail, RefreshCw } from "lucide-react";
 import type { User } from "./UserTable";
 import Avatar from "../../../shared/ui/Avatar";
-import Button from "../../../shared/ui/Button";
+
 
 interface UserDetailSidebarProps {
     user: User | null;
@@ -52,46 +51,6 @@ export default function UserDetailSidebar({ user }: UserDetailSidebarProps) {
                     <span className="text-sm text-white font-medium">{user.joinedDate}</span>
                 </div>
             </div>
-
-            {/* Action Buttons */}
-            <div className="flex flex-col gap-3">
-                <Button variant="outline" className="w-full justify-center gap-2 bg-indigo-500/5 border-indigo-500/20 text-indigo-400 hover:bg-indigo-500/10">
-                    <Mail size={16} />
-                    Message User
-                </Button>
-                <Button variant="outline" className="w-full justify-center gap-2 text-gray-400 hover:text-white">
-                    <RefreshCw size={16} />
-                    Reset Password
-                </Button>
-            </div>
-
-            {/* Activity Log */}
-            {/* <div className="mt-auto space-y-4">
-                <h3 className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Recent Activity Log</h3>
-                <div className="space-y-4 relative before:absolute before:left-1.5 before:top-2 before:bottom-2 before:w-[1px] before:bg-white/5">
-                    <div className="flex gap-4 relative">
-                        <div className="w-3 h-3 rounded-full bg-green-500 mt-1 z-10" />
-                        <div className="space-y-0.5">
-                            <p className="text-[10px] text-gray-500 font-medium">2 mins ago</p>
-                            <p className="text-xs font-bold">Logged in from US-West</p>
-                        </div>
-                    </div>
-                    <div className="flex gap-4 relative">
-                        <div className="w-3 h-3 rounded-full bg-purple-500 mt-1 z-10" />
-                        <div className="space-y-0.5">
-                            <p className="text-[10px] text-gray-500 font-medium">1 day ago</p>
-                            <p className="text-xs font-bold">Upgraded to Pro Plan</p>
-                        </div>
-                    </div>
-                    <div className="flex gap-4 relative">
-                        <div className="w-3 h-3 rounded-full bg-gray-600 mt-1 z-10" />
-                        <div className="space-y-0.5">
-                            <p className="text-[10px] text-gray-500 font-medium">3 days ago</p>
-                            <p className="text-xs font-bold">Changed password</p>
-                        </div>
-                    </div>
-                </div>
-            </div> */}
         </div>
     );
 }

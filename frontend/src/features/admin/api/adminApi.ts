@@ -20,3 +20,6 @@ export const unblockUserApi = (id : string) =>
 
 export const deleteUserApi = (id : string) => 
     api.delete(`${AppRoute.ADMIN_USERS}/${id}`)
+
+export const forceLogoutUserApi = (id: string) => 
+    api.post(`${AppRoute.ADMIN_USERS}/${id}/force-logout`);

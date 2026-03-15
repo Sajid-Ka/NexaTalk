@@ -5,7 +5,7 @@ import { NotFoundError } from "../../../domain/errors/NotFoundError";
 import { IBlockUserUsecase } from "../interface/IBlockUserUsecase";
 import { ILogger } from "../../../domain/common/services/ILogger";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
-import { UserAccountStatus } from "../../../shared/constants/userAccountStatus.const";
+import { UserAccountStatus } from "../../../shared/constants/authStatus.const";
 import { ForbiddenError } from "../../../domain/errors/ForbiddenError";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
 import { ITokenService } from "../../../domain/auth/services/ITokenService";
@@ -33,7 +33,10 @@ export class BlockUser implements IBlockUserUsecase {
       throw new NotFoundError("User not found");
     }
 
-    await this._repo.update(userId, { accountStatus: UserAccountStatus.BLOCKED });
+    await this._repo.update(userId, {
+      accountStatus: UserAccountStatus.BLOCKED,
+      sessionVersion: (user.sessionVersion || 1) + 1,
+    });
 
     await this._tokenService.revokeUserTokens?.(userId);
 

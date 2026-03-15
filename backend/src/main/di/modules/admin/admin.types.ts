@@ -5,6 +5,7 @@ export const ADMIN_TYPES = {
   BlockUser: Symbol.for("BlockUser"),
   UnblockUser: Symbol.for("UnblockUser"),
   UpdateRole: Symbol.for("UpdateUserRole"),
+  ForceLogoutUser: Symbol.for("ForceLogoutUser"),
   DeleteUser: Symbol.for("DeleteUser"),
   AdminUserController: Symbol.for("AdminUserController"),
 };

@@ -10,6 +10,7 @@ import { Argon2PasswordHasher } from "../../../../infrastructure/auth/services/A
 import { JwtTokenService } from "../../../../infrastructure/auth/services/JwtTokenService";
 import { SecureTokenGenerator } from "../../../../infrastructure/auth/services/SecureTokenGenerator";
 import { NodemailerEmailService } from "../../../../infrastructure/auth/services/NodemailerEmailService";
+import { UserStatusService } from "../../../../infrastructure/auth/services/UserStatusService";
 
 import { RegisterUser } from "../../../../application/auth/usecases/RegisterUser";
 import { LoginUser } from "../../../../application/auth/usecases/LoginUser";
@@ -46,6 +47,7 @@ export function loadAuthModule(container: Container) {
   container.bind(AUTH_TYPES.TokenService).to(JwtTokenService).inSingletonScope();
   container.bind(AUTH_TYPES.TokenGenerator).to(SecureTokenGenerator).inSingletonScope();
   container.bind(AUTH_TYPES.EmailService).to(NodemailerEmailService).inSingletonScope();
+  container.bind(AUTH_TYPES.UserStatusService).to(UserStatusService).inSingletonScope();
 
   container.bind(AUTH_TYPES.RegisterUser).to(RegisterUser);
   container.bind(AUTH_TYPES.LoginUser).to(LoginUser);

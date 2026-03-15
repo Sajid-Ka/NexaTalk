@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { loginApi, logoutApi, refreshApi } from "../api/authApi";
+import { checkStatusApi, loginApi, logoutApi, refreshApi } from "../api/authApi";
 import {
     setAccessToken as setAxiosToken,
     setRefreshHandler,
 } from "../../../shared/api/interceptors";
 import type { AuthUser } from "./AuthContext";
 import { AuthContext } from "./AuthContext";
+import { UserStatus } from "../../../shared/constants/user.const";
+import axios from "axios";
 
 
 
@@ -20,6 +22,44 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setAxiosToken(accessToken);
     }, [accessToken]);
 
+    useEffect(() => {
+        const handleForceLogout = () => {
+            setAccessToken(null);
+            setUser(null);
+            window.location.href = "/login?forceLogout=true";
+        };
+
+        window.addEventListener("force-logout", handleForceLogout);
+        
+        return () => {
+            window.removeEventListener("force-logout", handleForceLogout);
+        };
+    }, []);
+
+    const checkUserStatus = useCallback(async () => {
+        if (!accessToken || !user) return;
+        
+        try {
+            await checkStatusApi();
+        } catch (error: unknown) {
+            if(axios.isAxiosError(error)){
+                if (error.response?.data?.error?.message?.includes("blocked or deleted")) {
+                    setAccessToken(null);
+                    setUser(null);
+                    window.location.href = "/login?blocked=true";
+                }
+            }
+        }
+    }, [accessToken, user]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            checkUserStatus();
+        }, 30000); // Check every 30 seconds
+        
+        return () => clearInterval(interval);
+    }, [checkUserStatus]);
+
     const refresh = useCallback(async (): Promise<string | null> => {
         if (refreshPromiseRef.current) {
             return refreshPromiseRef.current;
@@ -31,12 +71,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 const token = payload.accessToken;
                 const user = payload.user as AuthUser;
 
+                if(user.isBlocked || user.accountStatus === UserStatus.BLOCKED || user.accountStatus === UserStatus.DELETED ) {
+                    setAccessToken(null);
+                    setUser(null);
+                    return null;
+                }
+
                 setAccessToken(token);
                 setUser(user);
 
                 return token;
             })
-            .catch(() => {
+            .catch((error) => {
+                if(error.response?.data?.error?.message?.includes("blocked or deleted")) {
+                    window.location.href = "/login?blocked=true";
+                }
                 setAccessToken(null);
                 setUser(null);
                 return null;

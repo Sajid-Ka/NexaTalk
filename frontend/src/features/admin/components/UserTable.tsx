@@ -1,5 +1,4 @@
-// src/features/admin/components/UserTable.tsx
-import { Eye, Ban, Unlock, Trash2 } from "lucide-react";
+import { Eye, Ban, Unlock, Trash2, LogOut } from "lucide-react";
 import { useState } from "react";
 import Avatar from "../../../shared/ui/Avatar";
 import Badge from "../../../shared/ui/Badge";
@@ -24,6 +23,7 @@ interface UserTableProps {
     onSelectUser: (user: User) => void;
     onBlockUser: (userId: string) => void;
     onUnblockUser: (userId: string) => void;
+    onForceLogout: (userId: string) => void;
     onDeleteUser: (userId: string) => void;
     sortBy?: string;
     sortOrder?: "asc" | "desc";
@@ -36,6 +36,7 @@ export default function UserTable({
     onSelectUser,
     onBlockUser,
     onUnblockUser,
+    onForceLogout,
     onDeleteUser,
     sortBy,
     sortOrder,
@@ -151,6 +152,19 @@ export default function UserTable({
                                     <Unlock size={16} />
                                 </button>
                             )
+                        )}
+
+                        {!isSelf && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onForceLogout(row.id);
+                                }}
+                                className="p-1.5 text-gray-500 hover:text-yellow-500"
+                                title="Force Logout"
+                            >
+                                <LogOut size={16} />
+                            </button>
                         )}
 
                         {!isSelf && (

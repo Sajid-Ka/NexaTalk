@@ -1,17 +1,16 @@
 import { inject, injectable } from "inversify";
 import { ADMIN_TYPES } from "../../../main/di/modules/admin/admin.types";
 import { IAdminUserRepository } from "../../../domain/admin/repositories/IAdminUserRepository";
-import { IDeleteUserUsecase } from "../interface/IDeleteUserUsecase";
 import { ILogger } from "../../../domain/common/services/ILogger";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 import { ForbiddenError } from "../../../domain/errors/ForbiddenError";
 import { NotFoundError } from "../../../domain/errors/NotFoundError";
-import { UserAccountStatus } from "../../../shared/constants/authStatus.const";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
 import { ITokenService } from "../../../domain/auth/services/ITokenService";
+import { IForceLogoutUserUsecase } from "../interface/IForceLogoutUserUsecase";
 
 @injectable()
-export class DeleteUser implements IDeleteUserUsecase {
+export class ForceLogoutUser implements IForceLogoutUserUsecase {
   constructor(
     @inject(ADMIN_TYPES.AdminUserRepository) private readonly _repo: IAdminUserRepository,
     @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
@@ -19,11 +18,11 @@ export class DeleteUser implements IDeleteUserUsecase {
   ) {}
 
   async execute(userId: string, adminId: string): Promise<void> {
-    this._logger.warn("Delete user attempt", { userId });
+    this._logger.info("Force logout user attempt", { userId, adminId });
 
     if (userId === adminId) {
-      this._logger.warn("Admin attempted to delete themselves", { adminId });
-      throw new ForbiddenError("You cannot delete your own account");
+      this._logger.warn("Admin attempted to force logout themselves", { adminId });
+      throw new ForbiddenError("You cannot force logout yourself");
     }
 
     const user = await this._repo.findById(userId);
@@ -32,12 +31,11 @@ export class DeleteUser implements IDeleteUserUsecase {
     }
 
     await this._repo.update(userId, {
-      accountStatus: UserAccountStatus.DELETED,
-      deletedAt: new Date(),
+      sessionVersion: (user.sessionVersion || 1) + 1,
     });
 
     await this._tokenService.revokeUserTokens?.(userId);
 
-    this._logger.warn("User deleted", { userId, adminId });
+    this._logger.info("User force logged out successfully", { userId, adminId });
   }
 }

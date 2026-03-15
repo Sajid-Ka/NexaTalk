@@ -9,6 +9,8 @@ import { LoginUserResponse } from "../dtos/responses/LoginUserResponse";
 import { ILoginUserUsecase } from "../interfaces/ILoginUserUsecase";
 import { ITokenGenerator } from "../../../domain/auth/services/ITokenGenerator";
 import { EmailNotVerifiedError } from "../../../domain/auth/errors/EmailNotVerifiedError";
+import { UserBlockedError } from "../../../domain/auth/errors/UserBlockedError";
+import { UserAccountStatus } from "../../../shared/constants/authStatus.const";
 import { injectable, inject } from "inversify";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
 import { ICacheService } from "../../../domain/common/services/ICacheService";
@@ -48,7 +50,19 @@ export class LoginUser implements ILoginUserUsecase {
 
     if (!user.isEmailVerified) throw new EmailNotVerifiedError();
 
-    const accessToken = this._tokenService.generateAccessToken(user.id, user.globalRole);
+    if (user.accountStatus !== UserAccountStatus.ACTIVE) {
+      this._logger.warn("Login attempt for inactive user", {
+        userId: user.id,
+        status: user.accountStatus,
+      });
+      throw new UserBlockedError();
+    }
+
+    const accessToken = this._tokenService.generateAccessToken(
+      user.id,
+      user.globalRole,
+      user.sessionVersion,
+    );
     const refreshTokenRaw = this._tokenGenerator.generate();
     const refreshTokenHash = this._tokenGenerator.hash(refreshTokenRaw);
 

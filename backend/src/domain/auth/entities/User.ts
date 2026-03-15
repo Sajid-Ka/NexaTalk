@@ -1,6 +1,6 @@
 import { GlobalRole } from "../../../shared/constants/userRole.const";
 import { UserPresenceStatus } from "../../../shared/constants/userPresenceStatus.const";
-import { UserAccountStatus } from "../../../shared/constants/userAccountStatus.const";
+import { UserAccountStatus } from "../../../shared/constants/authStatus.const";
 import { BadRequestError } from "../../errors/BadRequestError";
 
 export interface UserProps {
@@ -23,6 +23,7 @@ export interface UserProps {
   updatedAt?: Date;
 
   isEmailVerified?: boolean;
+  sessionVersion?: number;
 }
 
 export class User {
@@ -45,6 +46,7 @@ export class User {
   public readonly updatedAt: Date;
 
   public readonly isEmailVerified: boolean;
+  public readonly sessionVersion: number;
 
   constructor(props: UserProps) {
     if (!props.username || props.username.trim().length < 3)
@@ -72,5 +74,6 @@ export class User {
     this.updatedAt = props.updatedAt ?? new Date();
 
     this.isEmailVerified = props.isEmailVerified ?? false;
+    this.sessionVersion = props.sessionVersion ?? 1;
   }
 }

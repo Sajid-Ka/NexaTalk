@@ -1,4 +1,3 @@
-// src/features/admin/pages/UserManagementPage.tsx
 import { useEffect, useState } from "react";
 import { Search, UserCheck, UserMinus } from "lucide-react";
 import AdminSidebar from "../components/AdminSidebar";
@@ -12,7 +11,8 @@ import {
     getUserDetailsApi, 
     blockUserApi, 
     unblockUserApi, 
-    deleteUserApi 
+    deleteUserApi,
+    forceLogoutUserApi 
 } from "../api/adminApi";
 import { UserRole, UserStatus, UserTab } from "../../../shared/constants/user.const";
 import toast from "react-hot-toast";
@@ -81,7 +81,19 @@ export default function UserManagementPage() {
     const handleSelectUser = async (user: User) => {
         try {
             const res = await getUserDetailsApi(user.id);
-            setSelectedUser(res.data.data);
+            const userData = res.data.data;
+
+            const mappedUser: User = {
+                id: userData.id,
+                username: userData.username,
+                email: userData.email,
+                role: userData.role === "admin" ? "Admin" : "User",
+                status: userData.status === "active" ? "Online" : "Offline",
+                joinedDate: new Date(userData.createdAt).toLocaleDateString(),
+                initials: userData.username.slice(0, 2).toUpperCase(),
+            };
+
+            setSelectedUser(mappedUser);
         } catch (error) {
             console.error("Failed to load user details", error);
             toast.error("Failed to load user details");
@@ -126,6 +138,20 @@ export default function UserManagementPage() {
                 toast.error("An unexpected error occurred");
             }
             
+        }
+    };
+
+    const handleForceLogout = async (userId: string) => {
+        try {
+            await forceLogoutUserApi(userId);
+            toast.success("User logged out successfully");
+        } catch (error: unknown) {
+            if(axios.isAxiosError(error)){
+                const message = error.response?.data?.message || "Failed to force logout";
+                toast.error(message);
+            } else {
+                toast.error("An unexpected error occurred");
+            }
         }
     };
 
@@ -202,6 +228,7 @@ export default function UserManagementPage() {
                             onSelectUser={handleSelectUser}
                             onBlockUser={handleBlockUser}
                             onUnblockUser={handleUnblockUser}
+                            onForceLogout={handleForceLogout}
                             onDeleteUser={handleDeleteUser}
                             sortBy={sortBy}
                             sortOrder={sortOrder}

@@ -9,6 +9,7 @@ import { ADMIN_TYPES } from "../../../main/di/modules/admin/admin.types";
 import { IGetUserDetailsUsecase } from "../../../application/admin/interface/IGetUserDetailsUsecase";
 import { successResponse } from "../../../shared/response/responseFormatter";
 import { AuthenticatedRequest } from "../../../main/types/AuthenticatedRequest";
+import { IForceLogoutUserUsecase } from "../../../application/admin/interface/IForceLogoutUserUsecase";
 
 @injectable()
 export class AdminUserController {
@@ -19,6 +20,7 @@ export class AdminUserController {
     @inject(ADMIN_TYPES.UnblockUser) private readonly _unblockUser: IUnblockUserUsecase,
     @inject(ADMIN_TYPES.UpdateRole) private readonly _updateRole: IUpdateUserRoleUsecase,
     @inject(ADMIN_TYPES.DeleteUser) private readonly _deleteUser: IDeleteUserUsecase,
+    @inject(ADMIN_TYPES.ForceLogoutUser) private readonly _forceLogoutUser: IForceLogoutUserUsecase,
   ) {}
 
   listUsers = async (req: Request, res: Response) => {
@@ -50,6 +52,11 @@ export class AdminUserController {
   updateRole = async (req: Request, res: Response) => {
     await this._updateRole.execute(req.params.id, req.body.role);
     res.json(successResponse(null, "Role Updated"));
+  };
+
+  forceLogoutUser = async (req: AuthenticatedRequest, res: Response) => {
+    await this._forceLogoutUser.execute(req.params.id, req.user!.userId);
+    res.json(successResponse(null, "User force logged out successfully"));
   };
 
   deleteUser = async (req: AuthenticatedRequest, res: Response) => {
