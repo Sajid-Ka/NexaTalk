@@ -7,6 +7,7 @@ import { ForbiddenError } from "../../../domain/errors/ForbiddenError";
 import { NotFoundError } from "../../../domain/errors/NotFoundError";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
 import { ITokenService } from "../../../domain/auth/services/ITokenService";
+import { IRefreshTokenRepository } from "../../../domain/auth/repositories/IRefreshTokenRepository";
 import { IForceLogoutUserUsecase } from "../interface/IForceLogoutUserUsecase";
 
 @injectable()
@@ -15,6 +16,8 @@ export class ForceLogoutUser implements IForceLogoutUserUsecase {
     @inject(ADMIN_TYPES.AdminUserRepository) private readonly _repo: IAdminUserRepository,
     @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
     @inject(AUTH_TYPES.TokenService) private readonly _tokenService: ITokenService,
+    @inject(AUTH_TYPES.RefreshTokenRepository)
+    private readonly _refreshRepo: IRefreshTokenRepository,
   ) {}
 
   async execute(userId: string, adminId: string): Promise<void> {
@@ -33,6 +36,9 @@ export class ForceLogoutUser implements IForceLogoutUserUsecase {
     await this._repo.update(userId, {
       sessionVersion: (user.sessionVersion || 1) + 1,
     });
+
+    // Revoke all refresh tokens to prevent automatic re-authentication
+    await this._refreshRepo.deleteAllByUser(userId);
 
     await this._tokenService.revokeUserTokens?.(userId);
 
