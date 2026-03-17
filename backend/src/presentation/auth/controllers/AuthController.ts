@@ -1,28 +1,22 @@
 import { Response } from "express";
-import { IRegisterUserUsecase } from "../../../application/auth/interfaces/IRegisterUserUsecase";
-import { successResponse } from "../../../shared/response/responseFormatter";
+import { successResponse, errorResponse } from "../../../shared/response/responseFormatter";
 import { LoginUserRequest } from "../../../application/auth/dtos/requests/LoginUserRequest";
 import { AuthenticatedRequest } from "../../../main/types/AuthenticatedRequest";
-import { logger } from "../../../infrastructure/common/logger/WinstonLogger";
+import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
+import { ILogger } from "../../../domain/common/services/ILogger";
 import { ILoginUserUsecase } from "../../../application/auth/interfaces/ILoginUserUsecase";
+import { IRegisterUserUsecase } from "../../../application/auth/interfaces/IRegisterUserUsecase";
 import { IRefreshSessionUsecase } from "../../../application/auth/interfaces/IRefreshSessionUsecase";
-import { env } from "../../../shared/config/env";
-import { UnauthorizedError } from "../../../domain/errors/UnauthorizedError";
-import { IVerifyEmailUsecase } from "../../../application/auth/interfaces/IVerifyEmailUsecase";
 import { IRequestPasswordResetUsecase } from "../../../application/auth/interfaces/IRequestPasswordResetUsecase";
 import { IResetPasswordUsecase } from "../../../application/auth/interfaces/IResetPasswordUsecase";
+import { IVerifyEmailUsecase } from "../../../application/auth/interfaces/IVerifyEmailUsecase";
+import { UnauthorizedError } from "../../../domain/errors/UnauthorizedError";
 import { inject, injectable } from "inversify";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
-
-const REFRESH_COOKIE_NAME = "refreshToken";
-
-const REFRESH_COOKIE_OPTION = {
-  httpOnly : true,
-  secure : env.NODE_ENV === "production",
-  sameSite : "strict" as const,
-  path : "/api/auth/refresh",
-  maxAge : 7 * 24 * 60 * 60 * 1000,
-}
+import { CookieOptions } from "express";
+import { HttpHeader } from "../../../shared/constants/http-headers.const";
+import { CookieName } from "../../../shared/constants/cookie.const";
+import { AuthMessage, ErrorMessage } from "../../../shared/constants/messages.const";
 
 @injectable()
 export class AuthController {
@@ -30,95 +24,104 @@ export class AuthController {
     @inject(AUTH_TYPES.RegisterUser) private readonly _registerUser: IRegisterUserUsecase,
     @inject(AUTH_TYPES.LoginUser) private readonly _loginUser: ILoginUserUsecase,
     @inject(AUTH_TYPES.RefreshSession) private readonly _refreshSession: IRefreshSessionUsecase,
-    @inject(AUTH_TYPES.VerifyEmail) private readonly _verifyEmailUsecase : IVerifyEmailUsecase,
-    @inject(AUTH_TYPES.RequestPasswordReset) private readonly _requestPasswordReset: IRequestPasswordResetUsecase,
+    @inject(AUTH_TYPES.VerifyEmail) private readonly _verifyEmailUsecase: IVerifyEmailUsecase,
+    @inject(AUTH_TYPES.RequestPasswordReset)
+    private readonly _requestPasswordReset: IRequestPasswordResetUsecase,
     @inject(AUTH_TYPES.ResetPassword) private readonly _resetPassword: IResetPasswordUsecase,
+    @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
+    @inject(AUTH_TYPES.RefreshCookieOptions) private readonly _cookieOptions: CookieOptions,
   ) {}
 
   signup = async (req: AuthenticatedRequest, res: Response) => {
     const result = await this._registerUser.execute(req.body);
-    return res.status(201).json(successResponse(result, "User registered successfully"));
+    return res.status(201).json(successResponse(result, AuthMessage.USER_REGISTERED));
   };
 
-  verifyEmail = async (req : AuthenticatedRequest, res : Response) => {
+  verifyEmail = async (req: AuthenticatedRequest, res: Response) => {
     const { token } = req.body;
-    if(!token) {
-      return res.status(400).json({
-        success : false,
-        message : "Token missing",
-      })
+
+    if (!token) {
+      return res.status(400).json(errorResponse("TOKEN_MISSING", ErrorMessage.TOKEN_MISSING));
     }
 
     await this._verifyEmailUsecase.execute(token);
 
-    return res.status(200).json({
-      success : true,
-      message : "Email verified successfully",
-    })
-  }
+    return res.status(200).json(successResponse(null, AuthMessage.EMAIL_VERIFIED));
+  };
 
   login = async (req: AuthenticatedRequest, res: Response) => {
     const dto: LoginUserRequest = req.body;
 
-    logger.info("Login attempt", { email: dto.email });
+    this._logger.info("Login attempt", { email: dto.email });
 
     const result = await this._loginUser.execute(
       dto,
       req.ip ?? "unknown",
-      req.headers["user-agent"] || "unknown"
+      req.headers[HttpHeader.USER_AGENT] || "unknown",
     );
 
-    logger.info("Login success", { userId: result.user.id });
+    this._logger.info("Login success", { userId: result.user.id });
 
-    res.cookie(REFRESH_COOKIE_NAME, result.refreshToken,REFRESH_COOKIE_OPTION);
+    res.cookie(CookieName.REFRESH_TOKEN, result.refreshToken, this._cookieOptions);
 
     return res.status(200).json(
       successResponse(
         {
-          accessToken : result.accessToken,
-          user : result.user,
+          accessToken: result.accessToken,
+          user: result.user,
         },
-        "Login successful"));
+        AuthMessage.LOGIN_SUCCESS,
+      ),
+    );
   };
 
   refresh = async (req: AuthenticatedRequest, res: Response) => {
-    const refreshToken = req.cookies?.[REFRESH_COOKIE_NAME];
+    const refreshToken = req.cookies?.[CookieName.REFRESH_TOKEN];
 
-    if(!refreshToken) throw new UnauthorizedError("refresh token missing");
+    if (!refreshToken) {
+      throw new UnauthorizedError(ErrorMessage.REFRESH_TOKEN_MISSING);
+    }
 
     const result = await this._refreshSession.execute(refreshToken);
 
-    res.cookie(REFRESH_COOKIE_NAME, result.refreshToken, REFRESH_COOKIE_OPTION);
+    res.cookie(CookieName.REFRESH_TOKEN, result.refreshToken, this._cookieOptions);
 
     return res.status(200).json(
       successResponse(
         {
-          accessToken : result.accessToken,
-        }, 
-        "Token refreshed"
-      )
+          accessToken: result.accessToken,
+          user: result.user,
+        },
+        AuthMessage.TOKEN_REFRESHED,
+      ),
     );
   };
 
-  requestPasswordReset = async (req : AuthenticatedRequest, res : Response) => {
-    const {email} = req.body;
+  requestPasswordReset = async (req: AuthenticatedRequest, res: Response) => {
+    const { email } = req.body;
 
     await this._requestPasswordReset.execute(email);
 
-    return res.status(200).json({
-      success : true,
-      message : "If the email exists, reset link has been sent",
-    });
-  }
+    return res.status(200).json(successResponse(null, AuthMessage.PASSWORD_RESET_LINK_SENT));
+  };
 
-  resetPassword = async (req : AuthenticatedRequest, res : Response) => {
-    const {token, newPassword} = req.body;
+  resetPassword = async (req: AuthenticatedRequest, res: Response) => {
+    const { token, newPassword } = req.body;
 
-    await this._resetPassword.execute(token,newPassword);
+    await this._resetPassword.execute(token, newPassword);
 
-    return res.status(200).json({
-      success : true,
-      message: "Password reset successfully",
-    })
-  }
+    return res.status(200).json(successResponse(null, AuthMessage.PASSWORD_RESET_SUCCESS));
+  };
+
+  checkStatus = async (req: AuthenticatedRequest, res: Response) => {
+    res.json(
+      successResponse(
+        {
+          id: req.user!.userId,
+          role: req.user!.role,
+        },
+        "User is active",
+      ),
+    );
+  };
 }

@@ -1,17 +1,17 @@
-import React from "react";
-import ServerSidebar from "./ServerSidebar";
+// import React from "react";
+// import ServerSidebar from "./ServerSidebar";
 import NavSidebar from "./NavSidebar";
-import ActivitySidebar from "./ActivitySidebar";
+// import ActivitySidebar from "./ActivitySidebar";
 
 interface DashboardLayoutProps {
-    children: React.ReactNode;
+    children?: React.ReactNode;
 }
 
-export default function DashboardLayout({ children }: DashboardLayoutProps) {
+export default function DashboardLayout({ children : children }: DashboardLayoutProps) {
     return (
         <div className="flex h-screen w-full bg-[#0F121D] text-white overflow-hidden">
             {/* 1st Column: Server Sidebar */}
-            <ServerSidebar />
+            {/* <ServerSidebar /> */}
 
             {/* 2nd Column: Navigation Sidebar */}
             <NavSidebar />
@@ -22,7 +22,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </main>
 
             {/* 4th Column: Activity Sidebar */}
-            <ActivitySidebar />
+            {/* <ActivitySidebar /> */}
         </div>
     );
 }

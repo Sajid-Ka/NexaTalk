@@ -5,68 +5,109 @@ import { IUserRepository } from "../../../domain/auth/repositories/IUserReposito
 import { InvalidRefreshTokenError } from "../../../domain/auth/errors/InvalidRefreshTokenError";
 import { RefreshTokenResponse } from "../dtos/responses/RefreshTokenResponse";
 import { IRefreshSessionUsecase } from "../interfaces/IRefreshSessionUsecase";
-import { ILogger } from "../../../domain/common/interfaces/ILogger";
-import { injectable,inject } from "inversify";
+import { ILogger } from "../../../domain/common/services/ILogger";
+import { injectable, inject } from "inversify";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
-
-const REFRESH_TTL_DAYS = 7;
+import { ICacheService } from "../../../domain/common/services/ICacheService";
+import { ITransactionManager } from "../../../domain/common/services/ITransactionManager";
+import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
+import { TimeUtil } from "../../../shared/utils/time/time.util";
+import { CACHE_KEYS } from "../../../shared/constants/cacheKeys";
+import { UserAccountStatus } from "../../../shared/constants/authStatus.const";
 
 @injectable()
 export class RefreshSession implements IRefreshSessionUsecase {
   constructor(
-    @inject(AUTH_TYPES.RefreshTokenRepository) private _refreshRepo: IRefreshTokenRepository,
-    @inject(AUTH_TYPES.TokenService) private _tokenService: ITokenService,
-    @inject(AUTH_TYPES.TokenGenerator) private _tokenGenerator: ITokenGenerator,
-    @inject(AUTH_TYPES.UserRepository) private _userRepo: IUserRepository,
-    @inject(AUTH_TYPES.Logger) private _logger: ILogger,
+    @inject(AUTH_TYPES.RefreshTokenRepository)
+    private readonly _refreshRepo: IRefreshTokenRepository,
+    @inject(AUTH_TYPES.TokenService) private readonly _tokenService: ITokenService,
+    @inject(AUTH_TYPES.TokenGenerator) private readonly _tokenGenerator: ITokenGenerator,
+    @inject(AUTH_TYPES.UserRepository) private readonly _userRepo: IUserRepository,
+    @inject(COMMON_TYPES.CacheService) private readonly _cache: ICacheService,
+    @inject(COMMON_TYPES.TransactionManager)
+    private readonly _transactionManager: ITransactionManager,
+    @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
+    @inject(AUTH_TYPES.RefreshTokenTTLDays) private readonly _refreshTTLDays: number,
   ) {}
 
   async execute(refreshTokenRaw: string): Promise<RefreshTokenResponse> {
     const tokenHash = this._tokenGenerator.hash(refreshTokenRaw);
-    const storedSession = await this._refreshRepo.findByHash(tokenHash);
+    const cacheKey = CACHE_KEYS.refresh(tokenHash);
 
-    if (!storedSession) throw new InvalidRefreshTokenError();
+    const storedSession = await this._refreshRepo.findByHash(tokenHash);
+    if (!storedSession) {
+      this._logger.warn("Refresh token not found", { tokenHash });
+      throw new InvalidRefreshTokenError();
+    }
 
     if (storedSession.revoked) {
       await this._refreshRepo.deleteAllByUser(storedSession.userId);
-
       this._logger.warn("Refresh token reuse detected", { userId: storedSession.userId });
-
       throw new InvalidRefreshTokenError();
     }
 
     if (storedSession.expiresAt.getTime() <= Date.now()) {
       await this._refreshRepo.revokeByHash(tokenHash);
+      await this._cache.delete(cacheKey);
       throw new InvalidRefreshTokenError();
     }
 
     const user = await this._userRepo.findById(storedSession.userId);
     if (!user) {
       await this._refreshRepo.revokeByHash(tokenHash);
+      await this._cache.delete(cacheKey);
       throw new InvalidRefreshTokenError();
     }
 
-    await this._refreshRepo.revokeByHash(tokenHash);
+    if (user.accountStatus !== UserAccountStatus.ACTIVE) {
+      await this._refreshRepo.revokeByHash(tokenHash);
+      await this._cache.delete(cacheKey);
+      this._logger.warn("Refresh attempt for inactive user", {
+        userId: user.id,
+        status: user.accountStatus,
+      });
+      throw new InvalidRefreshTokenError();
+    }
 
     const newRefreshRaw = this._tokenGenerator.generate();
     const newRefreshHash = this._tokenGenerator.hash(newRefreshRaw);
 
-    const newExpires = new Date();
-    newExpires.setDate(newExpires.getDate() + REFRESH_TTL_DAYS);
+    const newExpires = TimeUtil.addDays(new Date(), this._refreshTTLDays);
+    const ttlSeconds = TimeUtil.daysToSeconds(this._refreshTTLDays);
 
-    await this._refreshRepo.save({
-      userId: user.id,
-      tokenHash: newRefreshHash,
-      expiresAt: newExpires,
-      ipAddress: storedSession.ipAddress,
-      userAgent: storedSession.userAgent,
+    await this._transactionManager.run(async (session) => {
+      await this._refreshRepo.revokeByHash(tokenHash, session);
+
+      await this._refreshRepo.save(
+        {
+          userId: user.id,
+          tokenHash: newRefreshHash,
+          expiresAt: newExpires,
+          ipAddress: storedSession.ipAddress,
+          userAgent: storedSession.userAgent,
+        },
+        session,
+      );
     });
 
-    const accessToken = this._tokenService.generateAccessToken(user.id, user.globalRole);
+    await this._cache.delete(cacheKey);
+    await this._cache.set(CACHE_KEYS.refresh(newRefreshHash), { userId: user.id }, ttlSeconds);
+
+    const accessToken = this._tokenService.generateAccessToken(
+      user.id,
+      user.globalRole,
+      user.sessionVersion,
+    );
 
     return {
       accessToken,
       refreshToken: newRefreshRaw,
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        globalRole: user.globalRole,
+      },
     };
   }
 }

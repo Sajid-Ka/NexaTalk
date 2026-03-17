@@ -1,5 +1,7 @@
-export type UserStatus = "online" | "idle" | "offline";
-export type GlobalRole = "user" | "admin";
+import { GlobalRole } from "../../../shared/constants/userRole.const";
+import { UserPresenceStatus } from "../../../shared/constants/userPresenceStatus.const";
+import { UserAccountStatus } from "../../../shared/constants/authStatus.const";
+import { BadRequestError } from "../../errors/BadRequestError";
 
 export interface UserProps {
   id?: string;
@@ -8,17 +10,20 @@ export interface UserProps {
   passwordHash: string;
 
   avatar?: string;
-  status?: UserStatus;
+  status?: UserPresenceStatus;
   globalRole?: GlobalRole;
 
+  accountStatus?: UserAccountStatus;
   isProfilePublic?: boolean;
-  isBlocked?: boolean;
   blockedReason?: string | null;
 
   lastSeenAt?: Date | null;
   deletedAt?: Date | null;
+  createdAt?: Date;
+  updatedAt?: Date;
 
   isEmailVerified?: boolean;
+  sessionVersion?: number;
 }
 
 export class User {
@@ -28,35 +33,47 @@ export class User {
   public readonly passwordHash: string;
 
   public readonly avatar?: string;
-  public readonly status: UserStatus;
+  public readonly status: UserPresenceStatus;
   public readonly globalRole: GlobalRole;
 
+  public readonly accountStatus: UserAccountStatus;
   public readonly isProfilePublic: boolean;
-  public readonly isBlocked: boolean;
   public readonly blockedReason: string | null;
 
   public readonly lastSeenAt: Date | null;
   public readonly deletedAt: Date | null;
+  public readonly createdAt: Date;
+  public readonly updatedAt: Date;
 
-  public readonly isEmailVerified : boolean;
+  public readonly isEmailVerified: boolean;
+  public readonly sessionVersion: number;
 
   constructor(props: UserProps) {
-    this.id = props.id ?? "";
+    if (!props.username || props.username.trim().length < 3)
+      throw new BadRequestError("Username must be atleast 3 characters");
+    if (!props.email || !props.email.includes("@"))
+      throw new BadRequestError("Invalid email address");
+    if (!props.passwordHash) throw new BadRequestError("Invalid password hash");
+
+    this.id = props.id!;
     this.username = props.username;
     this.email = props.email;
     this.passwordHash = props.passwordHash;
 
     this.avatar = props.avatar ?? "";
-    this.status = props.status ?? "offline";
-    this.globalRole = props.globalRole ?? "user";
+    this.status = props.status ?? UserPresenceStatus.OFFLINE;
+    this.globalRole = props.globalRole ?? GlobalRole.USER;
 
+    this.accountStatus = props.accountStatus ?? UserAccountStatus.ACTIVE;
     this.isProfilePublic = props.isProfilePublic ?? true;
-    this.isBlocked = props.isBlocked ?? false;
     this.blockedReason = props.blockedReason ?? null;
 
     this.lastSeenAt = props.lastSeenAt ?? null;
     this.deletedAt = props.deletedAt ?? null;
+    this.createdAt = props.createdAt ?? new Date();
+    this.updatedAt = props.updatedAt ?? new Date();
 
     this.isEmailVerified = props.isEmailVerified ?? false;
+    this.sessionVersion = props.sessionVersion ?? 1;
   }
 }

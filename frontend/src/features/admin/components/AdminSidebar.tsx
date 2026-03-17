@@ -11,6 +11,9 @@ import {
     LogOut
 } from "lucide-react";
 import { cn } from "../../../shared/utils/cn";
+import { useNavigate,useLocation } from "react-router-dom";
+import { useAuth } from "../../auth/context/useAuth";
+import toast from "react-hot-toast";
 
 interface NavItemProps {
     icon: ElementType;
@@ -39,11 +42,21 @@ const NavItem = ({ icon: Icon, label, active, badge, onClick }: NavItemProps) =>
     </div>
 );
 
-import { useNavigate, useLocation } from "react-router-dom";
-
 export default function AdminSidebar() {
     const navigate = useNavigate();
     const location = useLocation();
+    const {logout} = useAuth();
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            toast.success("Logged out successfully");
+            navigate("/login",{replace: true});
+        } catch (error) {
+            console.error("Logout failed: ",error);
+            toast.error("Failed to loggout");           
+        }
+    }
 
     return (
         <aside className="w-64 h-full bg-[#0F121D] border-r border-white/5 flex flex-col py-6">
@@ -79,7 +92,10 @@ export default function AdminSidebar() {
             </nav>
 
             <div className="px-4 mt-auto">
-                <div className="flex items-center gap-3 px-4 py-3 text-red-500 cursor-pointer hover:bg-red-500/10 rounded-xl transition-colors">
+                <div 
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 px-4 py-3 text-red-500 cursor-pointer hover:bg-red-500/10 rounded-xl transition-colors"
+                >
                     <LogOut size={20} />
                     <span className="text-sm font-medium">Logout</span>
                 </div>

@@ -5,6 +5,8 @@ import AuthLayout from "../components/AuthLayout";
 import Card from "../../../shared/ui/Card";
 import Button from "../../../shared/ui/Button";
 import { verifyEmailApi } from "../api/authApi";
+import { ComponentStatus } from "../../../shared/constants/ui.const";
+import { AuthMessage } from "../../../shared/constants/messages.const";
 
 export default function VerifyEmailPage() {
     const [searchParams] = useSearchParams();
@@ -12,31 +14,26 @@ export default function VerifyEmailPage() {
 
     const navigate = useNavigate();
 
-    const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
+    const [status, setStatus] = useState<ComponentStatus>(ComponentStatus.LOADING);
     const [message, setMessage] = useState("");
 
     const hasVerified = useRef(false);
 
     useEffect(() => {
-        if (!token) {
-            setStatus("error");
-            setMessage("No verification token found.");
-            return;
-        }
-
-        if(hasVerified.current) return
+        if (!token || hasVerified.current) return;
+        
         hasVerified.current = true;
 
         const verifyEmail = async () => {
             try {
                 const response = await verifyEmailApi(token);
-                setStatus("success");
-                setMessage(response.data.message || "Email verified successfully!");
-            } catch (error: any) {
-                setStatus("error");
+                setStatus(ComponentStatus.SUCCESS);
+                setMessage(response.data.message || AuthMessage.VERIFY_SUCCESS_DEFAULT);
+            } catch (error: unknown) {
+                const err = error as { response?: { data?: { message?: string } } };
+                setStatus(ComponentStatus.ERROR);
                 setMessage(
-                    error?.response?.data?.message ||
-                    "Failed to verify email. The link may be invalid or expired."
+                    err?.response?.data?.message || AuthMessage.VERIFY_FAILED_DEFAULT
                 );
             }
         };
@@ -45,7 +42,7 @@ export default function VerifyEmailPage() {
     }, [token]);
 
     useEffect(() => {
-        if(status === "success") {
+        if(status === ComponentStatus.SUCCESS) {
             const timer  = setTimeout(() => {
                 navigate("/login",{replace: true});
             },3000);
@@ -61,27 +58,27 @@ export default function VerifyEmailPage() {
         >
             <Card className="p-8 bg-[#0F121D] border border-white/5 shadow-2xl backdrop-blur-sm text-center">
                 <div className="flex flex-col items-center justify-center space-y-6 py-4">
-                    {status === "loading" && (
+                    {status === ComponentStatus.LOADING && (
                         <>
                             <div className="relative">
                                 <div className="absolute inset-0 bg-indigo-500/20 blur-xl rounded-full" />
                                 <Loader2 className="w-16 h-16 text-indigo-500 animate-spin relative" />
                             </div>
                             <div className="space-y-2">
-                                <h3 className="text-xl font-semibold text-white">Verifying...</h3>
-                                <p className="text-white/40 text-sm">Please wait while we confirm your email.</p>
+                                <h3 className="text-xl font-semibold text-white">{AuthMessage.VERIFYING_EMAIL}</h3>
+                                <p className="text-white/40 text-sm">{AuthMessage.VERIFY_WAIT_MSG}</p>
                             </div>
                         </>
                     )}
 
-                    {status === "success" && (
+                    {status === ComponentStatus.SUCCESS && (
                         <>
                             <div className="relative">
                                 <div className="absolute inset-0 bg-green-500/20 blur-xl rounded-full" />
                                 <CheckCircle2 className="w-16 h-16 text-green-500 relative" />
                             </div>
                             <div className="space-y-2">
-                                <h3 className="text-xl font-semibold text-white">Verification successful!</h3>
+                                <h3 className="text-xl font-semibold text-white">{AuthMessage.VERIFY_SUCCESS_TITLE}</h3>
                                 <p className="text-white/40 text-sm">{message}</p>
                             </div>
                             <Link to="/login" className="w-full">
@@ -92,14 +89,14 @@ export default function VerifyEmailPage() {
                         </>
                     )}
 
-                    {status === "error" && (
+                    {status === ComponentStatus.ERROR && (
                         <>
                             <div className="relative">
                                 <div className="absolute inset-0 bg-red-500/20 blur-xl rounded-full" />
                                 <XCircle className="w-16 h-16 text-red-500 relative" />
                             </div>
                             <div className="space-y-2">
-                                <h3 className="text-xl font-semibold text-white">Verification failed</h3>
+                                <h3 className="text-xl font-semibold text-white">{AuthMessage.VERIFY_FAILED_TITLE}</h3>
                                 <p className="text-white/40 text-sm">{message}</p>
                             </div>
                             <div className="flex flex-col gap-3 w-full mt-4">

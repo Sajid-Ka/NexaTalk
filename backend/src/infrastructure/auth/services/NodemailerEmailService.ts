@@ -1,6 +1,7 @@
 import { inject, injectable } from "inversify";
 import nodemailer from "nodemailer";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
+import { EmailServiceProvider } from "../../../shared/constants/email-service.const";
 
 @injectable()
 export class NodemailerEmailService {
@@ -8,17 +9,17 @@ export class NodemailerEmailService {
 
   constructor(
     @inject(AUTH_TYPES.EmailUser) private _emailUser: string,
-    @inject(AUTH_TYPES.EmailPass) private _emailPass: string
+    @inject(AUTH_TYPES.EmailPass) private _emailPass: string,
   ) {
     this._transporter = nodemailer.createTransport({
-      service: "gmail",
+      service: EmailServiceProvider.GMAIL,
       auth: {
         user: this._emailUser,
         pass: this._emailPass,
       },
-      connectionTimeout : 5000,
-      greetingTimeout : 5000,
-      socketTimeout : 5000,
+      connectionTimeout: 5000,
+      greetingTimeout: 5000,
+      socketTimeout: 5000,
     });
   }
 
@@ -50,17 +51,17 @@ export class NodemailerEmailService {
     });
   }
 
-  async sendPasswordResetEmail(email : string, link : string) : Promise<void> {
+  async sendPasswordResetEmail(email: string, link: string): Promise<void> {
     await this._transporter.sendMail({
-      from : `NexaTalk <${this._emailUser}>`,
-      to:email,
-      subject : "Reset your Password",
-      html : `
+      from: `NexaTalk <${this._emailUser}>`,
+      to: email,
+      subject: "Reset your Password",
+      html: `
          <h2>Password Reset</h2>
         <p>Click the link below to reset your password:</p>
         <a href="${link}">${link}</a>
         <p>This link will expire in 15 minutes.</p>
-      `
+      `,
     });
   }
 }

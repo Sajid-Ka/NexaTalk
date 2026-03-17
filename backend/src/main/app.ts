@@ -1,20 +1,23 @@
 import "express-async-errors";
 import express from "express";
-import authRoutes from "./routes/authRoutes";
-import { errorHandler } from "./middlewares/errorHandler";
+import apiRoutes from "./routes";
 import helmet from "helmet";
 import cors from "cors";
 import { env } from "../shared/config/env";
 import { requestIdMiddleware } from "./middlewares/requestIdMiddleware";
-import swaggerUi from "swagger-ui-express";
-import { swaggerSpec } from "../shared/docs/swagger";
 import cookieParser from "cookie-parser";
+import { requestLoggerInterceptor } from "../infrastructure/http/interceptors/request-logger.interceptor";
+import { errorInterceptor } from "../infrastructure/http/interceptors/error.interceptor";
 
 const app = express();
 
 app.disable("x-powered-by");
 app.use(express.json());
 app.use(cookieParser());
+
+app.use(requestIdMiddleware);
+
+app.use(requestLoggerInterceptor);
 
 app.use(
   helmet({
@@ -26,6 +29,8 @@ app.use(
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", "data:"],
         connectSrc: ["'self'", env.CLIENT_ORIGIN],
+        objectSrc: ["'none'"],
+        frameAncestors: ["'none'"],
       },
     },
   }),
@@ -40,13 +45,10 @@ app.use(
   }),
 );
 
-app.use(requestIdMiddleware);
-
 app.set("trust proxy", 1);
 
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use("/api/auth", authRoutes);
+app.use("/api", apiRoutes);
 
-app.use(errorHandler);
+app.use(errorInterceptor);
 
 export default app;

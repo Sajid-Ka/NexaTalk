@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../auth/context/AuthContext";
+import { useAuth } from "../../auth/context/useAuth";
 import {
     User,
     Shield,
@@ -29,15 +29,15 @@ const sidebarItems = [
 
 export default function SettingsSidebar() {
     const navigate = useNavigate();
-    const {logout}  = useAuth();
+    const { logout } = useAuth();
 
     const handleLogout = async () => {
         try {
             await logout();
         } catch (error) {
-            console.error("Logout failed",error);
+            console.error("Logout failed", error);
         } finally {
-            navigate("/login",{replace : true});
+            navigate("/login", { replace: true });
         }
     }
 
@@ -84,7 +84,7 @@ export default function SettingsSidebar() {
 
             {/* Log Out */}
             <div className="p-4 border-t border-white/5">
-                <button 
+                <button
                     onClick={handleLogout}
                     className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-400/10 rounded-xl transition-all duration-200"
                 >

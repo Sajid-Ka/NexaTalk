@@ -2,22 +2,34 @@ import { Response, NextFunction } from "express";
 import { ITokenService } from "../../domain/auth/services/ITokenService";
 import { UnauthorizedError } from "../../domain/errors/UnauthorizedError";
 import { AuthenticatedRequest } from "../types/AuthenticatedRequest";
+import { IUserStatusService } from "../../domain/auth/services/IUserStatusService";
 
 export const createAuthMiddleware =
-  (tokenService: ITokenService) =>
-    (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
-      const authHeader = req.headers.authorization;
+  (tokenService: ITokenService, userStatusService: IUserStatusService) =>
+  async (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
+    const authHeader = req.headers.authorization;
 
-      if (!authHeader || !authHeader.startsWith("Bearer")) {
-        return next(new UnauthorizedError("Access token missing"));
-      }
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return next(new UnauthorizedError("Access token missing"));
+    }
 
-      const token = authHeader.split(" ")[1];
+    const token = authHeader.split(" ")[1];
 
-      try {
-        req.user = tokenService.verifyAccessToken(token);
-        next();
-      } catch {
-        next(new UnauthorizedError("Invalid or expired token"));
-      }
-    };
+    if (!token) {
+      return next(new UnauthorizedError("Access token missing"));
+    }
+
+    try {
+      const payload = await tokenService.verifyAccessToken(token);
+      await userStatusService.validate(payload.userId, payload.sessionVersion);
+
+      req.user = payload;
+      next();
+    } catch (error) {
+      next(
+        error instanceof UnauthorizedError
+          ? error
+          : new UnauthorizedError("Invalid or expired token"),
+      );
+    }
+  };

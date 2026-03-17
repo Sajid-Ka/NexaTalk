@@ -5,20 +5,30 @@ import SignupPage from "../features/auth/pages/SignupPage";
 import HomePage from "../features/home/pages/HomePage";
 import SettingsPage from "../features/settings/pages/SettingsPage";
 import ProtectedRoute from "../routes/ProtectedRoute";
-import PublicRoute from "../shared/router/GuestRoute";
+import PublicRoute from "../routes/PublicRoute";
 import VerifyEmailPage from "../features/auth/pages/VerifyEmailPage";
 import CheckEmailPage from "../features/auth/pages/CheckEmailPage";
 import ForgotPasswordPage from "../features/auth/pages/ForgotPasswordPage";
 import ResetPasswordPage from "../features/auth/pages/ResetPasswordPage";
 import AdminDashboardPage from "../features/admin/pages/AdminDashboardPage";
 import UserManagementPage from "../features/admin/pages/UserManagementPage";
+import AdminRoute from "../routes/AdminRoute";
+import NotFoundPage from "../shared/pages/NotFoundPage";
+import { AppRoute } from "../shared/constants/app-route.const";
 
 export default function AppRouter() {
     return (
         <Routes>
-            <Route path="/" element={<LandingPage />} />
             <Route
-                path="/signup"
+                path={AppRoute.HOME}
+                element={
+                    <PublicRoute>
+                        <LandingPage />
+                    </PublicRoute>
+                }
+            />
+            <Route
+                path={AppRoute.SIGNUP}
                 element={
                     <PublicRoute>
                         <SignupPage />
@@ -26,7 +36,7 @@ export default function AppRouter() {
                 }
             />
             <Route
-                path="/login"
+                path={AppRoute.LOGIN}
                 element={
                     <PublicRoute>
                         <LoginPage />
@@ -34,7 +44,7 @@ export default function AppRouter() {
                 }
             />
             <Route
-                path="/home"
+                path={AppRoute.HOME_PAGE}
                 element={
                     <ProtectedRoute>
                         <HomePage />
@@ -42,7 +52,7 @@ export default function AppRouter() {
                 }
             />
             <Route
-                path="/settings"
+                path={AppRoute.SETTINGS}
                 element={
                     <ProtectedRoute>
                         <SettingsPage />
@@ -50,7 +60,7 @@ export default function AppRouter() {
                 }
             />
             <Route
-                path="/verify-email"
+                path={AppRoute.VERIFY_EMAIL}
                 element={
                     <PublicRoute>
                         <VerifyEmailPage />
@@ -58,7 +68,7 @@ export default function AppRouter() {
                 }
             />
             <Route
-                path="/check-email"
+                path={AppRoute.CHECK_EMAIL}
                 element={
                     <PublicRoute>
                         <CheckEmailPage />
@@ -67,7 +77,7 @@ export default function AppRouter() {
             />
 
             <Route
-                path="/forgot-password"
+                path={AppRoute.FORGOT_PASSWORD}
                 element={
                     <PublicRoute>
                         <ForgotPasswordPage />
@@ -76,7 +86,7 @@ export default function AppRouter() {
             />
 
             <Route
-                path="/reset-password"
+                path={AppRoute.RESET_PASSWORD}
                 element={
                     <PublicRoute>
                         <ResetPasswordPage />
@@ -85,21 +95,22 @@ export default function AppRouter() {
             />
 
             <Route
-                path="/admin"
+                path={AppRoute.ADMIN}
                 element={
-                    <ProtectedRoute>
+                    <AdminRoute>
                         <AdminDashboardPage />
-                    </ProtectedRoute>
+                    </AdminRoute>
                 }
             />
             <Route
-                path="/admin/users"
+                path={AppRoute.ADMIN_USERS}
                 element={
-                    <ProtectedRoute>
+                    <AdminRoute>
                         <UserManagementPage />
-                    </ProtectedRoute>
+                    </AdminRoute>
                 }
             />
+            <Route path="*" element={<NotFoundPage />} />
         </Routes>
     )
 }

@@ -1,12 +1,7 @@
-import { GlobalRole } from "../../../../domain/auth/entities/User";
+import { AuthUserResponse } from "./shared/AuthUserResponse";
 
 export interface LoginUserResponse {
   accessToken: string;
   refreshToken: string;
-  user: {
-    id: string;
-    username: string;
-    email: string;
-    globalRole: GlobalRole;
-  };
+  user: AuthUserResponse;
 }

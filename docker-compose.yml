@@ -1,4 +1,7 @@
+version: "3.9"
+
 services:
+
   backend:
     build:
       context: ./backend
@@ -9,6 +12,7 @@ services:
       - "5000"
     depends_on:
       - mongo
+      - redis
 
   frontend:
     build:
@@ -24,10 +28,19 @@ services:
   mongo:
     image: mongo:7
     container_name: nexatalk-mongo
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
     ports:
       - "27018:27017"
     volumes:
       - mongo_data:/data/db
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    container_name: nexatalk-redis
+    ports:
+      - "6379:6379"
+    restart: always
 
 volumes:
   mongo_data:

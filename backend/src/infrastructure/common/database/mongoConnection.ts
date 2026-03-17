@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 import { env } from "../../../shared/config/env";
-import { logger } from "../logger/WinstonLogger";
+import { ILogger } from "../../../domain/common/services/ILogger";
+import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
+import { container } from "../../../main/di/container";
+
+const logger = container.get<ILogger>(COMMON_TYPES.Logger);
 
 export const connectDB = async (): Promise<void> => {
   try {

@@ -5,8 +5,9 @@ import { loginSchema, type LoginFormData } from "../validators/loginSchema";
 import Button from "../../../shared/ui/Button";
 import Card from "../../../shared/ui/Card";
 import LoginFields from "./LoginFields";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 import { useState } from "react";
+import { UserRole } from "../../../shared/constants/user.const";
 
 export default function LoginForm() {
     const navigate = useNavigate();
@@ -26,12 +27,16 @@ export default function LoginForm() {
         try {
             setServerError(null);
 
-            await login(data);
+            const user = await login(data);
 
-            navigate("/home", { replace: true });
+            console.log("Logged in user", user);
 
-        } catch (error: any) {
-            const message = error?.response?.data?.message;
+            if(user?.globalRole === UserRole.ADMIN) navigate("/admin", {replace : true})
+            else navigate("/home", {replace : true})
+
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: { message?: string } } };
+            const message = err?.response?.data?.message;
             if (message === "Email not verified") {
                 setServerError("Please verify your email before logging in.");
             } else {
@@ -70,24 +75,7 @@ export default function LoginForm() {
                 </Button>
             </form>
 
-            <div className="relative my-8">
-                <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-white/10"></div>
-                </div>
-                <div className="relative flex justify-center text-xs uppercase px-2 text-white/40 bg-[#0F121D]">
-                    Or continue with
-                </div>
-            </div>
-
-            <Button
-                type="button"
-                variant="secondary"
-                className="w-full bg-[#1A1D2D] hover:bg-white/5 border border-white/10 mb-6 flex items-center gap-2"
-            >
-                Google
-            </Button>
-
-            <div className="text-center text-sm text-white/40">
+            <div className="text-center text-sm text-white/40 mt-4">
                 Need an account?{" "}
                 <Link
                     to="/signup"

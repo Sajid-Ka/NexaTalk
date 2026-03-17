@@ -1,15 +1,15 @@
-import {Schema,model,Types} from "mongoose";
+import { Schema, model, Types } from "mongoose";
 
 export interface IRefreshTokenPersistence {
-  _id : Types.ObjectId;
-  userId : string;
-  tokenHash : string;
-  expiresAt : Date;
+  _id: Types.ObjectId;
+  userId: string;
+  tokenHash: string;
+  expiresAt: Date;
   ipAddress?: string;
   userAgent?: string;
-  revoked : boolean;
-  createdAt : Date;
-  updatedAt : Date;
+  revoked: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const refreshTokenSchema = new Schema<IRefreshTokenPersistence>(
@@ -24,4 +24,10 @@ const refreshTokenSchema = new Schema<IRefreshTokenPersistence>(
   { timestamps: true },
 );
 
-export const RefreshTokenModel = model<IRefreshTokenPersistence>("RefreshToken", refreshTokenSchema);
+refreshTokenSchema.index({ userId: 1 });
+refreshTokenSchema.index({ expiresAt: 1 });
+
+export const RefreshTokenModel = model<IRefreshTokenPersistence>(
+  "RefreshToken",
+  refreshTokenSchema,
+);

@@ -4,13 +4,25 @@
   "description": "NexaTalk Backend API",
   "main": "dist/main/server.js",
   "scripts": {
+    "predev": "npm run lint",
     "dev": "ts-node-dev --respawn --transpile-only src/main/server.ts",
+    "prebuild": "npm run lint",
     "build": "tsc",
+    "prestart": "npm run lint",
     "start": "node dist/main/server.js",
-    "lint": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
     "format": "prettier --write .",
-    "prepare": "husky install"
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,js}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
   },
   "author": "Sajid",
   "license": "ISC",
@@ -26,6 +38,7 @@
     "helmet": "^8.1.0",
     "install": "^0.13.0",
     "inversify": "^7.11.0",
+    "ioredis": "^5.10.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.2.1",
     "nodemailer": "^8.0.1",

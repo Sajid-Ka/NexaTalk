@@ -9,34 +9,64 @@ import { LoginUserResponse } from "../dtos/responses/LoginUserResponse";
 import { ILoginUserUsecase } from "../interfaces/ILoginUserUsecase";
 import { ITokenGenerator } from "../../../domain/auth/services/ITokenGenerator";
 import { EmailNotVerifiedError } from "../../../domain/auth/errors/EmailNotVerifiedError";
-import { injectable,inject } from "inversify";
+import { UserBlockedError } from "../../../domain/auth/errors/UserBlockedError";
+import { UserAccountStatus } from "../../../shared/constants/authStatus.const";
+import { injectable, inject } from "inversify";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
+import { ICacheService } from "../../../domain/common/services/ICacheService";
+import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
+import { TimeUtil } from "../../../shared/utils/time/time.util";
+import { CACHE_KEYS } from "../../../shared/constants/cacheKeys";
+import { ILogger } from "../../../domain/common/services/ILogger";
 
 @injectable()
 export class LoginUser implements ILoginUserUsecase {
   constructor(
-    @inject(AUTH_TYPES.UserRepository) private _userRepo: IUserRepository,
-    @inject(AUTH_TYPES.PasswordHasher) private _hasher: IPasswordHasher,
-    @inject(AUTH_TYPES.TokenService) private _tokenService: ITokenService,
-    @inject(AUTH_TYPES.RefreshTokenRepository) private _refreshRepo: IRefreshTokenRepository,
-    @inject(AUTH_TYPES.TokenGenerator) private _tokenGenerator: ITokenGenerator,
-  ) { }
+    @inject(AUTH_TYPES.UserRepository) private readonly _userRepo: IUserRepository,
+    @inject(AUTH_TYPES.PasswordHasher) private readonly _hasher: IPasswordHasher,
+    @inject(AUTH_TYPES.TokenService) private readonly _tokenService: ITokenService,
+    @inject(AUTH_TYPES.RefreshTokenRepository)
+    private readonly _refreshRepo: IRefreshTokenRepository,
+    @inject(AUTH_TYPES.TokenGenerator) private readonly _tokenGenerator: ITokenGenerator,
+    @inject(COMMON_TYPES.CacheService) private readonly _cache: ICacheService,
+    @inject(AUTH_TYPES.RefreshTokenTTLDays) private readonly _refreshTTLDays: number,
+    @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
+  ) {}
 
   async execute(dto: LoginUserRequest, ip?: string, ua?: string): Promise<LoginUserResponse> {
+    this._logger.info("Login attempt", { email: dto.email });
+
     const user = await this._userRepo.findByEmail(dto.email);
-    if (!user) throw new InvalidCredentialsError();
+    if (!user) {
+      this._logger.warn("Invalid credentials", { email: dto.email });
+      throw new InvalidCredentialsError();
+    }
 
     const valid = await this._hasher.compare(dto.password, user.passwordHash);
-    if (!valid) throw new InvalidCredentialsError();
+    if (!valid) {
+      this._logger.warn("Invalid credentials", { email: dto.email });
+      throw new InvalidCredentialsError();
+    }
 
     if (!user.isEmailVerified) throw new EmailNotVerifiedError();
 
-    const accessToken = this._tokenService.generateAccessToken(user.id, user.globalRole);
+    if (user.accountStatus !== UserAccountStatus.ACTIVE) {
+      this._logger.warn("Login attempt for inactive user", {
+        userId: user.id,
+        status: user.accountStatus,
+      });
+      throw new UserBlockedError();
+    }
+
+    const accessToken = this._tokenService.generateAccessToken(
+      user.id,
+      user.globalRole,
+      user.sessionVersion,
+    );
     const refreshTokenRaw = this._tokenGenerator.generate();
     const refreshTokenHash = this._tokenGenerator.hash(refreshTokenRaw);
 
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
+    const expiresAt = TimeUtil.addDays(new Date(), this._refreshTTLDays);
 
     await this._refreshRepo.save({
       userId: user.id,
@@ -45,6 +75,14 @@ export class LoginUser implements ILoginUserUsecase {
       ipAddress: ip,
       userAgent: ua,
     });
+
+    await this._cache.set(
+      CACHE_KEYS.refresh(refreshTokenHash),
+      { userId: user.id },
+      TimeUtil.daysToSeconds(this._refreshTTLDays),
+    );
+
+    this._logger.info("Login success", { userId: user.id });
 
     return LoginUserMapper.toLoginResponse(user, accessToken, refreshTokenRaw);
   }

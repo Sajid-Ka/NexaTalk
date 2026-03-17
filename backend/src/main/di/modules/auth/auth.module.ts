@@ -10,6 +10,7 @@ import { Argon2PasswordHasher } from "../../../../infrastructure/auth/services/A
 import { JwtTokenService } from "../../../../infrastructure/auth/services/JwtTokenService";
 import { SecureTokenGenerator } from "../../../../infrastructure/auth/services/SecureTokenGenerator";
 import { NodemailerEmailService } from "../../../../infrastructure/auth/services/NodemailerEmailService";
+import { UserStatusService } from "../../../../infrastructure/auth/services/UserStatusService";
 
 import { RegisterUser } from "../../../../application/auth/usecases/RegisterUser";
 import { LoginUser } from "../../../../application/auth/usecases/LoginUser";
@@ -25,22 +26,28 @@ import { ResetPassword } from "../../../../application/auth/usecases/ResetPasswo
 
 import { AuthController } from "../../../../presentation/auth/controllers/AuthController";
 import { SessionController } from "../../../../presentation/auth/controllers/SessionController";
-import { logger } from "../../../../infrastructure/common/logger/WinstonLogger";
 
 import { env } from "../../../../shared/config/env";
+import { CookieSameSite } from "../../../../shared/constants/cookie.const";
+import { NodeEnv } from "../../../../shared/constants/environment.const";
 
 export function loadAuthModule(container: Container) {
-
-  container.bind(AUTH_TYPES.Logger).toConstantValue(logger);
   container.bind(AUTH_TYPES.UserRepository).to(UserRepository).inSingletonScope();
   container.bind(AUTH_TYPES.RefreshTokenRepository).to(RefreshTokenRepository).inSingletonScope();
-  container.bind(AUTH_TYPES.EmailVerificationTokenRepository).to(EmailVerificationTokenRepository).inSingletonScope();
-  container.bind(AUTH_TYPES.ResetPasswordTokenRepository).to(ResetPasswordTokenRepository).inSingletonScope();
+  container
+    .bind(AUTH_TYPES.EmailVerificationTokenRepository)
+    .to(EmailVerificationTokenRepository)
+    .inSingletonScope();
+  container
+    .bind(AUTH_TYPES.ResetPasswordTokenRepository)
+    .to(ResetPasswordTokenRepository)
+    .inSingletonScope();
 
   container.bind(AUTH_TYPES.PasswordHasher).to(Argon2PasswordHasher).inSingletonScope();
   container.bind(AUTH_TYPES.TokenService).to(JwtTokenService).inSingletonScope();
   container.bind(AUTH_TYPES.TokenGenerator).to(SecureTokenGenerator).inSingletonScope();
   container.bind(AUTH_TYPES.EmailService).to(NodemailerEmailService).inSingletonScope();
+  container.bind(AUTH_TYPES.UserStatusService).to(UserStatusService).inSingletonScope();
 
   container.bind(AUTH_TYPES.RegisterUser).to(RegisterUser);
   container.bind(AUTH_TYPES.LoginUser).to(LoginUser);
@@ -66,4 +73,20 @@ export function loadAuthModule(container: Container) {
   container.bind<string>(AUTH_TYPES.AppBaseUrl).toConstantValue(env.APP_BASE_URL);
   container.bind<string>(AUTH_TYPES.ClientOrigin).toConstantValue(env.CLIENT_ORIGIN);
 
+  container
+    .bind<number>(AUTH_TYPES.VerifyEmailTTLMinutes)
+    .toConstantValue(env.EMAIL_VERIFY_TTL_MINUTES);
+  container
+    .bind<number>(AUTH_TYPES.ResetPasswordTTLMinutes)
+    .toConstantValue(env.RESET_PASSWORD_TTL_MINUTES);
+  container
+    .bind<number>(AUTH_TYPES.RefreshTokenTTLDays)
+    .toConstantValue(env.REFRESH_TOKEN_TTL_DAYS);
+  container.bind(AUTH_TYPES.RefreshCookieOptions).toConstantValue({
+    httpOnly: true,
+    secure: env.NODE_ENV === NodeEnv.PRODUCTION,
+    sameSite: env.NODE_ENV === NodeEnv.PRODUCTION ? CookieSameSite.STRICT : CookieSameSite.LAX,
+    path: "/",
+    maxAge: env.REFRESH_COOKIE_MAX_AGE_MS,
+  });
 }
