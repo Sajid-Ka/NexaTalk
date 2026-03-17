@@ -12,6 +12,9 @@ export const refreshApi = () =>
 export const logoutApi = () =>
     api.post("/auth/logout");
 
+export const adminLogoutApi = () =>
+    api.post("/auth/logout");
+
 export const sessionsApi = () =>
     api.get("/auth/sessions");
 

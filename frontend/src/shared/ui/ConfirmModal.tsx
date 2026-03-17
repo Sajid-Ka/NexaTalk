@@ -1,4 +1,3 @@
-// src/shared/ui/ConfirmModal.tsx
 import { X } from "lucide-react";
 import { cn } from "../utils/cn";
 import Button from "./Button";
