@@ -40,6 +40,7 @@ export class RegisterUser implements IRegisterUserUsecase {
       globalRole: GlobalRole.USER,
       status: UserPresenceStatus.OFFLINE,
       isProfilePublic: true,
+      hasCompletedOnboarding: false,
     });
 
     const user = await this._transactionManager.run(async (session) => {

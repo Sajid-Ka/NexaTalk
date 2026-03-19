@@ -19,6 +19,7 @@ export interface IUserPersistence {
   deletedAt?: Date | null;
   isEmailVerified: boolean;
   sessionVersion: number;
+  hasCompletedOnboarding?: boolean;
 }
 
 const userSchema = new Schema<IUserPersistence>(
@@ -45,6 +46,7 @@ const userSchema = new Schema<IUserPersistence>(
     deletedAt: { type: Date, default: null },
     isEmailVerified: { type: Boolean, default: false },
     sessionVersion: { type: Number, default: 1 },
+    hasCompletedOnboarding: { type: Boolean, default: false },
   },
   { timestamps: true },
 );

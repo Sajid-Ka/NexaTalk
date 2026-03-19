@@ -4,4 +4,5 @@ export interface LoginUserResponse {
   accessToken: string;
   refreshToken: string;
   user: AuthUserResponse;
+  requiresOnboarding: boolean;
 }

@@ -4,4 +4,5 @@ export interface RefreshTokenResponse {
   accessToken: string;
   refreshToken: string;
   user: AuthUserResponse;
+  requiresOnboarding: boolean;
 }

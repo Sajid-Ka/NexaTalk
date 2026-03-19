@@ -13,6 +13,8 @@ export const AppRoute = {
   ADMIN: "/admin",
   ADMIN_USERS: "/admin/users",
   
+  ONBOARDING: "/onboarding",
+
   NOT_FOUND: "*",
 } as const;
 

@@ -23,6 +23,7 @@ export class UserPersistenceMapper implements IMapper<IUserPersistence, User> {
       deletedAt: doc.deletedAt,
       isEmailVerified: doc.isEmailVerified,
       sessionVersion: doc.sessionVersion,
+      hasCompletedOnboarding: doc.hasCompletedOnboarding ?? false,
     });
   }
 
@@ -41,6 +42,7 @@ export class UserPersistenceMapper implements IMapper<IUserPersistence, User> {
       deletedAt: user.deletedAt ?? undefined,
       isEmailVerified: user.isEmailVerified,
       sessionVersion: user.sessionVersion,
+      hasCompletedOnboarding: user.hasCompletedOnboarding,
     };
   }
 
@@ -60,6 +62,8 @@ export class UserPersistenceMapper implements IMapper<IUserPersistence, User> {
     if (data.deletedAt !== undefined) update.deletedAt = data.deletedAt;
     if (data.isEmailVerified !== undefined) update.isEmailVerified = data.isEmailVerified;
     if (data.sessionVersion !== undefined) update.sessionVersion = data.sessionVersion;
+    if (data.hasCompletedOnboarding !== undefined)
+      update.hasCompletedOnboarding = data.hasCompletedOnboarding;
     return update;
   }
 }

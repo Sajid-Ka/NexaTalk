@@ -24,6 +24,7 @@ export interface UserProps {
 
   isEmailVerified?: boolean;
   sessionVersion?: number;
+  hasCompletedOnboarding?: boolean;
 }
 
 export class User {
@@ -47,6 +48,7 @@ export class User {
 
   public readonly isEmailVerified: boolean;
   public readonly sessionVersion: number;
+  public readonly hasCompletedOnboarding: boolean;
 
   constructor(props: UserProps) {
     if (!props.username || props.username.trim().length < 3)
@@ -75,5 +77,6 @@ export class User {
 
     this.isEmailVerified = props.isEmailVerified ?? false;
     this.sessionVersion = props.sessionVersion ?? 1;
+    this.hasCompletedOnboarding = props.hasCompletedOnboarding ?? false;
   }
 }

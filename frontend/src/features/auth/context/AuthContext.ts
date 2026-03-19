@@ -8,6 +8,7 @@ export interface AuthUser {
     globalRole: UserRole;
     isBlocked: boolean;
     accountStatus: UserStatus;
+    hasCompletedOnboarding: boolean;
 }
 
 export interface AuthContextType {

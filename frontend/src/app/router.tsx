@@ -14,6 +14,7 @@ import AdminDashboardPage from "../features/admin/pages/AdminDashboardPage";
 import UserManagementPage from "../features/admin/pages/UserManagementPage";
 import AdminRoute from "../routes/AdminRoute";
 import NotFoundPage from "../shared/pages/NotFoundPage";
+import OnboardingPage from "../features/onboarding/pages/OnboardingPage";
 import { AppRoute } from "../shared/constants/app-route.const";
 
 export default function AppRouter() {
@@ -48,6 +49,14 @@ export default function AppRouter() {
                 element={
                     <ProtectedRoute>
                         <HomePage />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path={AppRoute.ONBOARDING}
+                element={
+                    <ProtectedRoute>
+                        <OnboardingPage />
                     </ProtectedRoute>
                 }
             />

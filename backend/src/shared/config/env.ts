@@ -52,8 +52,8 @@ if (!parsed.success) {
     const logger = container.get<ILogger>(COMMON_TYPES.Logger);
     logger.error("Invalid environment variables", parsed.error.format());
   } catch {
-    console.error("Invalid environment variables");
-    console.error(parsed.error.format());
+    process.stderr.write("Invalid environment variables\n");
+    process.stderr.write(JSON.stringify(parsed.error.format(), null, 2) + "\n");
   }
   process.exit(1);
 }

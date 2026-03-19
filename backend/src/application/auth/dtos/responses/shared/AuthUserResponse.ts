@@ -5,4 +5,5 @@ export interface AuthUserResponse {
   username: string;
   email: string;
   globalRole: GlobalRole;
+  hasCompletedOnboarding: boolean;
 }
