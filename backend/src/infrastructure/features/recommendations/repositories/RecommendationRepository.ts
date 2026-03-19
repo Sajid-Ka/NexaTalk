@@ -1,4 +1,4 @@
-import { injectable } from "inversify";
+import { injectable, inject } from "inversify";
 import { Recommendation } from "../../../../domain/features/recommendations/entities/Recommendation";
 import { IRecommendationRepository } from "../../../../domain/features/recommendations/repositories/IRecommendationRepository";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
@@ -20,11 +20,11 @@ export class RecommendationRepository
 
   async upsert(userId: string, data: Partial<Recommendation>): Promise<Recommendation> {
     const existing = await this.findByUserId(userId);
-
+    
     if (existing) {
       const updated = await this.update(existing.id, {
         ...data,
-        updatedAt: new Date(),
+        updatedAt: new Date()
       });
       return updated!;
     }
@@ -44,9 +44,30 @@ export class RecommendationRepository
     staleDate.setMinutes(staleDate.getMinutes() - ttlMinutes);
 
     const result = await this.model.deleteMany({
-      lastRefreshedAt: { $lt: staleDate },
+      lastRefreshedAt: { $lt: staleDate }
     });
 
     return result.deletedCount;
+  }
+
+  async bulkUpsert(recommendations: Array<{ userId: string; data: Partial<Recommendation> }>): Promise<void> {
+    const operations = recommendations.map(({ userId, data }) => ({
+      updateOne: {
+        filter: { userId },
+        update: {
+          $set: {
+            recommendedUserIds: data.recommendedUserIds,
+            recommendedServerIds: data.recommendedServerIds,
+            lastRefreshedAt: data.lastRefreshedAt || new Date(),
+            updatedAt: new Date(),
+          },
+        },
+        upsert: true,
+      },
+    }));
+
+    if (operations.length > 0) {
+      await this.model.bulkWrite(operations);
+    }
   }
 }

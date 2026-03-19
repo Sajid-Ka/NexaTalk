@@ -1,37 +1,51 @@
-export interface RecommendationScore {
-  userId: string;
-  score: number;
-  matchedInterests: string[];
-}
-
-export interface ServerRecommendationScore {
-  serverId: string;
-  score: number;
-  matchedInterests: string[];
-}
+import {
+  UserInterestData,
+  UserSimilarityScore,
+  ServerSimilarityScore,
+  RecommendationResult,
+} from "../types/recommendation.types";
 
 export interface IRecommendationEngine {
-  // Calculate similarity scores between users based on interests
-  calculateUserSimilarity(
-    targetUserInterests: string[],
-    allUserInterests: Map<string, string[]>,
-  ): Promise<RecommendationScore[]>;
+  // convert interest to vector
+  buildVectorSpace(usersInterests: UserInterestData[]): Promise<{
+    userVectors: Map<string, Float32Array>;
+    interestToIndex: Map<string, number>;
+    totalInterests: number;
+  }>;
 
-  // Calculate relevance scores between users and servers
-  calculateServerRelevance(
-    userInterests: string[],
-    serverInterests: Map<string, string[]>,
-  ): Promise<ServerRecommendationScore[]>;
+  // check similarity between two vectors
+  calculateCosineSimilarity(vectorA: Float32Array, vectorB: Float32Array): number;
 
-  // Generate personalized recommendations using collaborative filtering
+  //Find users with similar interests
+  findSimilarUsers(
+    targetUserId: string,
+    targetInterestIds: string[],
+    allUsersInterests: UserInterestData[],
+    limit?: number,
+    excludeUserIds?: string[]
+  ): Promise<UserSimilarityScore[]>;
+
+  //Find servers matching user interests
+  findMatchingServers(
+    userInterestIds: string[],
+    serversInterests: Map<string, string[]>,
+    limit?: number,
+    excludeServerIds?: string[]
+  ): Promise<ServerSimilarityScore[]>;
+
+  //Generate full recommendations for a user
   generateRecommendations(
     userId: string,
-    userInterests: string[],
-    allUsersInterests: Map<string, string[]>,
-    allServersInterests: Map<string, string[]>,
-    limit?: number,
-  ): Promise<{
-    recommendedUsers: RecommendationScore[];
-    recommendedServers: ServerRecommendationScore[];
-  }>;
+    userInterestIds: string[],
+    allUsersInterests: UserInterestData[],
+    serversInterests: Map<string, string[]>,
+    limit?: number
+  ): Promise<RecommendationResult>;
+
+  //Find recommended users and servers for multiple users (run once for multiple users instead of one user (efficient))
+  batchGenerateRecommendations(
+    usersData: Array<{ userId: string; interestIds: string[] }>,
+    serversInterests: Map<string, string[]>,
+    batchSize?: number
+  ): Promise<Map<string, RecommendationResult>>;
 }
