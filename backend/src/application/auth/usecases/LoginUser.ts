@@ -1,23 +1,23 @@
-import { IUserRepository } from "../../../domain/auth/repositories/IUserRepository";
-import { IPasswordHasher } from "../../../domain/auth/services/IPasswordHasher";
-import { ITokenService } from "../../../domain/auth/services/ITokenService";
-import { IRefreshTokenRepository } from "../../../domain/auth/repositories/IRefreshTokenRepository";
-import { InvalidCredentialsError } from "../../../domain/auth/errors/InvalidCredentialsError";
+import { IUserRepository } from "../../../domain/features/auth/repositories/IUserRepository";
+import { IPasswordHasher } from "../../../domain/features/auth/services/IPasswordHasher";
+import { ITokenService } from "../../../domain/features/auth/services/ITokenService";
+import { IRefreshTokenRepository } from "../../../domain/features/auth/repositories/IRefreshTokenRepository";
+import { InvalidCredentialsError } from "../../../domain/features/auth/errors/InvalidCredentialsError";
 import { LoginUserMapper } from "../mappers/LoginUserMapper";
 import { LoginUserRequest } from "../dtos/requests/LoginUserRequest";
 import { LoginUserResponse } from "../dtos/responses/LoginUserResponse";
 import { ILoginUserUsecase } from "../interfaces/ILoginUserUsecase";
-import { ITokenGenerator } from "../../../domain/auth/services/ITokenGenerator";
-import { EmailNotVerifiedError } from "../../../domain/auth/errors/EmailNotVerifiedError";
-import { UserBlockedError } from "../../../domain/auth/errors/UserBlockedError";
+import { ITokenGenerator } from "../../../domain/features/auth/services/ITokenGenerator";
+import { EmailNotVerifiedError } from "../../../domain/features/auth/errors/EmailNotVerifiedError";
+import { UserBlockedError } from "../../../domain/features/auth/errors/UserBlockedError";
 import { UserAccountStatus } from "../../../shared/constants/authStatus.const";
 import { injectable, inject } from "inversify";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
-import { ICacheService } from "../../../domain/common/services/ICacheService";
+import { ICacheService } from "../../../domain/core/common/services/ICacheService";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 import { TimeUtil } from "../../../shared/utils/time/time.util";
 import { CACHE_KEYS } from "../../../shared/constants/cacheKeys";
-import { ILogger } from "../../../domain/common/services/ILogger";
+import { ILogger } from "../../../domain/core/common/services/ILogger";
 
 @injectable()
 export class LoginUser implements ILoginUserUsecase {

@@ -1,17 +1,17 @@
-import { IUserRepository } from "../../../domain/auth/repositories/IUserRepository";
-import { IPasswordHasher } from "../../../domain/auth/services/IPasswordHasher";
-import { User } from "../../../domain/auth/entities/User";
-import { ConflictError } from "../../../domain/auth/errors/ConflictError";
+import { IUserRepository } from "../../../domain/features/auth/repositories/IUserRepository";
+import { IPasswordHasher } from "../../../domain/features/auth/services/IPasswordHasher";
+import { User } from "../../../domain/features/auth/entities/User";
+import { ConflictError } from "../../../domain/features/auth/errors/ConflictError";
 import { RegisterUserMapper } from "../mappers/RegisterUserMapper";
 import { RegisterUserRequest } from "../dtos/requests/RegisterUserRequest";
 import { RegisterUserResponse } from "../dtos/responses/RegisterUserResponse";
 import { IRegisterUserUsecase } from "../interfaces/IRegisterUserUsecase";
 import { ISendVerificationEmailUsecase } from "../interfaces/ISendVerificationEmailUsecase";
-import { ITransactionManager } from "../../../domain/common/services/ITransactionManager";
+import { ITransactionManager } from "../../../domain/core/common/services/ITransactionManager";
 import { inject, injectable } from "inversify";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
-import { ILogger } from "../../../domain/common/services/ILogger";
+import { ILogger } from "../../../domain/core/common/services/ILogger";
 import { GlobalRole } from "../../../shared/constants/userRole.const";
 import { UserPresenceStatus } from "../../../shared/constants/userPresenceStatus.const";
 

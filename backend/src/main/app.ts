@@ -6,8 +6,8 @@ import cors from "cors";
 import { env } from "../shared/config/env";
 import { requestIdMiddleware } from "./middlewares/requestIdMiddleware";
 import cookieParser from "cookie-parser";
-import { requestLoggerInterceptor } from "../infrastructure/http/interceptors/request-logger.interceptor";
-import { errorInterceptor } from "../infrastructure/http/interceptors/error.interceptor";
+import { requestLoggerInterceptor } from "../infrastructure/core/http/interceptors/request-logger.interceptor";
+import { errorInterceptor } from "../infrastructure/core/http/interceptors/error.interceptor";
 
 const app = express();
 

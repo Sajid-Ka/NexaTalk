@@ -2,16 +2,16 @@ import { Router } from "express";
 import { validate } from "../../presentation/validators.ts/validate";
 import { registerSchema } from "../../presentation/auth/validators/registerValidator";
 import { loginSchema } from "../../presentation/auth/validators/loginValidator";
-import { rateLimit } from "../../infrastructure/http/middlewares/rateLimit.middleware";
+import { rateLimit } from "../../infrastructure/core/http/middlewares/rateLimit.middleware";
 import { verifyEmailSchema } from "../../presentation/auth/validators/verifyEmailValidator";
 import { container } from "../di/container";
 import { AUTH_TYPES } from "../di/modules/auth/auth.types";
 import { createAuthMiddleware } from "../middlewares/authMiddleware";
-import { ITokenService } from "../../domain/auth/services/ITokenService";
+import { ITokenService } from "../../domain/features/auth/services/ITokenService";
 import { AuthController } from "../../presentation/auth/controllers/AuthController";
 import { SessionController } from "../../presentation/auth/controllers/SessionController";
 import { env } from "../../shared/config/env";
-import { IUserStatusService } from "../../domain/auth/services/IUserStatusService";
+import { IUserStatusService } from "../../domain/features/auth/services/IUserStatusService";
 
 const router = Router();
 

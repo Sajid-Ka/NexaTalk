@@ -1,4 +1,4 @@
-import { ILogger } from "../../../domain/common/services/ILogger";
+import { ILogger } from "../../../domain/core/common/services/ILogger";
 
 export class AuditLogger {
   static userAction(logger: ILogger, action: string, userId: string, metadata?: unknown) {

@@ -1,5 +1,6 @@
 import { SettingsSidebar } from "../components";
-// import ProfileSettings from "../components";
+import RecommendationSettings from "../components/RecommendationSettings";
+import ProfileSettings from "../components/ProfileSettings";
 
 export default function SettingsPage() {
     return (
@@ -7,7 +8,11 @@ export default function SettingsPage() {
             <SettingsSidebar />
             <main className="flex-1 overflow-y-auto no-scrollbar">
                 <div className="max-w-5xl mx-auto py-12 px-8">
-                    {/* <ProfileSettings /> */}
+                    
+                    <>
+                        <ProfileSettings />
+                        <RecommendationSettings />
+                    </>
                 </div>
             </main>
         </div>

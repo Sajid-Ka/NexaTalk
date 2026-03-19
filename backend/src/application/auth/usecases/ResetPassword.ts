@@ -1,19 +1,19 @@
-import { IUserRepository } from "../../../domain/auth/repositories/IUserRepository";
-import { IPasswordHasher } from "../../../domain/auth/services/IPasswordHasher";
-import { ITokenGenerator } from "../../../domain/auth/services/ITokenGenerator";
-import { IResetPasswordTokenRepository } from "../../../domain/auth/repositories/IResetPasswordTokenRepository";
+import { IUserRepository } from "../../../domain/features/auth/repositories/IUserRepository";
+import { IPasswordHasher } from "../../../domain/features/auth/services/IPasswordHasher";
+import { ITokenGenerator } from "../../../domain/features/auth/services/ITokenGenerator";
+import { IResetPasswordTokenRepository } from "../../../domain/features/auth/repositories/IResetPasswordTokenRepository";
 import { IResetPasswordUsecase } from "../interfaces/IResetPasswordUsecase";
 import { inject, injectable } from "inversify";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
-import { ICacheService } from "../../../domain/common/services/ICacheService";
+import { ICacheService } from "../../../domain/core/common/services/ICacheService";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
-import { InvalidResetTokenError } from "../../../domain/auth/errors/InvalidResetTokenError";
-import { TokenAlreadyUsedError } from "../../../domain/auth/errors/TokenAlreadyUsedError";
-import { TokenExpiredError } from "../../../domain/auth/errors/TokenExpiredError";
-import { ITransactionManager } from "../../../domain/common/services/ITransactionManager";
+import { InvalidResetTokenError } from "../../../domain/features/auth/errors/InvalidResetTokenError";
+import { TokenAlreadyUsedError } from "../../../domain/features/auth/errors/TokenAlreadyUsedError";
+import { TokenExpiredError } from "../../../domain/features/auth/errors/TokenExpiredError";
+import { ITransactionManager } from "../../../domain/core/common/services/ITransactionManager";
 import { CACHE_KEYS } from "../../../shared/constants/cacheKeys";
-import { ILogger } from "../../../domain/common/services/ILogger";
-import { NotFoundError } from "../../../domain/errors/NotFoundError";
+import { ILogger } from "../../../domain/core/common/services/ILogger";
+import { NotFoundError } from "../../../domain/core/errors/NotFoundError";
 
 @injectable()
 export class ResetPassword implements IResetPasswordUsecase {

@@ -1,16 +1,16 @@
 import { inject, injectable } from "inversify";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
 import { INTERESTS_TYPES } from "../../../main/di/modules/interests/interests.types";
-import { IUserRepository } from "../../../domain/auth/repositories/IUserRepository";
-import { IUserInterestRepository } from "../../../domain/interests/repositories/IUserInterestRepository";
-import { IInterestRepository } from "../../../domain/interests/repositories/IInterestRepository";
+import { IUserRepository } from "../../../domain/features/auth/repositories/IUserRepository";
+import { IUserInterestRepository } from "../../../domain/features/interests/repositories/IUserInterestRepository";
+import { IInterestRepository } from "../../../domain/features/interests/repositories/IInterestRepository";
 import { ICompleteOnboardingUseCase } from "../interfaces/ICompleteOnboardingUsecase";
 import { CompleteOnboardingRequest } from "../dtos/requests/CompleteOnboardingRequest";
 import { OnboardingResponse } from "../dtos/responses/OnboardingResponse";
-import { ILogger } from "../../../domain/common/services/ILogger";
+import { ILogger } from "../../../domain/core/common/services/ILogger";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
-import { ITransactionManager } from "../../../domain/common/services/ITransactionManager";
-import { NotFoundError } from "../../../domain/errors/NotFoundError";
+import { ITransactionManager } from "../../../domain/core/common/services/ITransactionManager";
+import { NotFoundError } from "../../../domain/core/errors/NotFoundError";
 
 @injectable()
 export class CompleteOnboarding implements ICompleteOnboardingUseCase {

@@ -1,10 +1,10 @@
 import { inject, injectable } from "inversify";
 import { INTERESTS_TYPES } from "../../../main/di/modules/interests/interests.types";
-import { IInterestRepository } from "../../../domain/interests/repositories/IInterestRepository";
+import { IInterestRepository } from "../../../domain/features/interests/repositories/IInterestRepository";
 import { IGetPopularInterestsUseCase } from "../interfaces/IGetPopularInterestsUsecase";
 import { InterestResponse } from "../dtos/responses/InterestResponse";
 import { InterestApplicationMapper } from "../mappers/InterestMapper";
-import { ILogger } from "../../../domain/common/services/ILogger";
+import { ILogger } from "../../../domain/core/common/services/ILogger";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 
 @injectable()

@@ -1,11 +1,11 @@
 import { inject, injectable } from "inversify";
 import { INTERESTS_TYPES } from "../../../main/di/modules/interests/interests.types";
-import { IUserInterestRepository } from "../../../domain/interests/repositories/IUserInterestRepository";
+import { IUserInterestRepository } from "../../../domain/features/interests/repositories/IUserInterestRepository";
 import { IRemoveUserInterestsUseCase } from "../interfaces/IRemoveUserInterestsUsecase";
-import { ILogger } from "../../../domain/common/services/ILogger";
+import { ILogger } from "../../../domain/core/common/services/ILogger";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
-import { BadRequestError } from "../../../domain/errors/BadRequestError";
-import { NotFoundError } from "../../../domain/errors/NotFoundError";
+import { BadRequestError } from "../../../domain/core/errors/BadRequestError";
+import { NotFoundError } from "../../../domain/core/errors/NotFoundError";
 
 @injectable()
 export class RemoveUserInterests implements IRemoveUserInterestsUseCase {

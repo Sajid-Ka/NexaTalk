@@ -1,4 +1,4 @@
-import { User } from "../../../domain/auth/entities/User";
+import { User } from "../../../domain/features/auth/entities/User";
 import { RegisterUserResponse } from "../dtos/responses/RegisterUserResponse";
 
 export class RegisterUserMapper {

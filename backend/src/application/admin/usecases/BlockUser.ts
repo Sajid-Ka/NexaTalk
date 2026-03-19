@@ -1,14 +1,14 @@
 import { inject, injectable } from "inversify";
 import { ADMIN_TYPES } from "../../../main/di/modules/admin/admin.types";
-import { IAdminUserRepository } from "../../../domain/admin/repositories/IAdminUserRepository";
-import { NotFoundError } from "../../../domain/errors/NotFoundError";
+import { IAdminUserRepository } from "../../../domain/features/admin/repositories/IAdminUserRepository";
+import { NotFoundError } from "../../../domain/core/errors/NotFoundError";
 import { IBlockUserUsecase } from "../interface/IBlockUserUsecase";
-import { ILogger } from "../../../domain/common/services/ILogger";
+import { ILogger } from "../../../domain/core/common/services/ILogger";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 import { UserAccountStatus } from "../../../shared/constants/authStatus.const";
-import { ForbiddenError } from "../../../domain/errors/ForbiddenError";
+import { ForbiddenError } from "../../../domain/core/errors/ForbiddenError";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
-import { ITokenService } from "../../../domain/auth/services/ITokenService";
+import { ITokenService } from "../../../domain/features/auth/services/ITokenService";
 
 @injectable()
 export class BlockUser implements IBlockUserUsecase {

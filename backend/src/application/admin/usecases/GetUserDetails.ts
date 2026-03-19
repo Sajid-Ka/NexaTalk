@@ -1,10 +1,10 @@
 import { injectable, inject } from "inversify";
 import { ADMIN_TYPES } from "../../../main/di/modules/admin/admin.types";
-import { IAdminUserRepository } from "../../../domain/admin/repositories/IAdminUserRepository";
+import { IAdminUserRepository } from "../../../domain/features/admin/repositories/IAdminUserRepository";
 import { IGetUserDetailsUsecase } from "../interface/IGetUserDetailsUsecase";
-import { NotFoundError } from "../../../domain/errors/NotFoundError";
+import { NotFoundError } from "../../../domain/core/errors/NotFoundError";
 import { AdminUserResponse } from "../dtos/response/AdminUserResponse";
-import { ILogger } from "../../../domain/common/services/ILogger";
+import { ILogger } from "../../../domain/core/common/services/ILogger";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 
 @injectable()

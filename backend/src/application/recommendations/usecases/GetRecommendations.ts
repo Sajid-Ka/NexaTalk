@@ -2,17 +2,17 @@ import { inject, injectable } from "inversify";
 import { RECOMMENDATIONS_TYPES } from "../../../main/di/modules/recommendations/recommendations.types";
 import { INTERESTS_TYPES } from "../../../main/di/modules/interests/interests.types";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
-import { IRecommendationRepository } from "../../../domain/recommendations/repositories/IRecommendationRepository";
-import { IUserInterestRepository } from "../../../domain/interests/repositories/IUserInterestRepository";
-import { IInterestRepository } from "../../../domain/interests/repositories/IInterestRepository";
-import { IUserRepository } from "../../../domain/auth/repositories/IUserRepository";
+import { IRecommendationRepository } from "../../../domain/features/recommendations/repositories/IRecommendationRepository";
+import { IUserInterestRepository } from "../../../domain/features/interests/repositories/IUserInterestRepository";
+import { IInterestRepository } from "../../../domain/features/interests/repositories/IInterestRepository";
+import { IUserRepository } from "../../../domain/features/auth/repositories/IUserRepository";
 import { IGetRecommendationsUseCase } from "../interfaces/IGetRecommendationsUsecase";
 import { RecommendationRequest } from "../dtos/requests/RecommendationRequest";
 import { RecommendationResponse } from "../dtos/responses/RecommendationResponse";
 import { InterestApplicationMapper } from "../../interests/mappers/InterestMapper";
-import { ILogger } from "../../../domain/common/services/ILogger";
+import { ILogger } from "../../../domain/core/common/services/ILogger";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
-import { NotFoundError } from "../../../domain/errors/NotFoundError";
+import { NotFoundError } from "../../../domain/core/errors/NotFoundError";
 import { RecommendationType } from "../../../shared/constants/recommendation-type.const";
 import {
   UserWithInterestsResponse,

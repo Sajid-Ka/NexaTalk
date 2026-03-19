@@ -1,9 +1,9 @@
 import { Response } from "express";
 import { successResponse } from "../../../shared/response/responseFormatter";
-import { UnauthorizedError } from "../../../domain/errors/UnauthorizedError";
+import { UnauthorizedError } from "../../../domain/core/errors/UnauthorizedError";
 import { AuthenticatedRequest } from "../../../main/types/AuthenticatedRequest";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
-import { ILogger } from "../../../domain/common/services/ILogger";
+import { ILogger } from "../../../domain/core/common/services/ILogger";
 import { ILogoutUserUsecase } from "../../../application/auth/interfaces/ILogoutUserUsecase";
 import { ILogoutAllDeviceUsecase } from "../../../application/auth/interfaces/ILogoutAllDeviceUsecase";
 import { IListUserSessionsUsecase } from "../../../application/auth/interfaces/IListUserSessionsUsecase";

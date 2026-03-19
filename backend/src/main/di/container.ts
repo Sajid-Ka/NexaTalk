@@ -6,6 +6,7 @@ import { loadAdminModule } from "./modules/admin/admin.module";
 import { loadInterestsModule } from "./modules/interests/interests.module";
 import { loadRecommendationsModule } from "./modules/recommendations/recommendations.module";
 import { loadOnboardingModule } from "./modules/onboarding/onboarding.module";
+import { loadUserModule } from "./modules/user/user.module";
 
 const container = new Container();
 
@@ -16,5 +17,6 @@ loadHealthModule(container);
 loadInterestsModule(container);
 loadRecommendationsModule(container);
 loadOnboardingModule(container);
+loadUserModule(container);
 
 export { container };

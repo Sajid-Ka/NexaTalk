@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { ValidationError } from "../../domain/errors/ValidationError";
+import { ValidationError } from "../../domain/core/errors/ValidationError";
 import { ZodTypeAny } from "zod";
 import { ValidationSource } from "../../shared/constants/validation.const";
 

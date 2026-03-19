@@ -1,16 +1,16 @@
-import { IUserRepository } from "../../../domain/auth/repositories/IUserRepository";
-import { IEmailService } from "../../../domain/auth/services/IEmailService";
-import { ITokenGenerator } from "../../../domain/auth/services/ITokenGenerator";
-import { IResetPasswordTokenRepository } from "../../../domain/auth/repositories/IResetPasswordTokenRepository";
-import { ResetPasswordToken } from "../../../domain/auth/entities/ResetPasswordToken";
+import { IUserRepository } from "../../../domain/features/auth/repositories/IUserRepository";
+import { IEmailService } from "../../../domain/features/auth/services/IEmailService";
+import { ITokenGenerator } from "../../../domain/features/auth/services/ITokenGenerator";
+import { IResetPasswordTokenRepository } from "../../../domain/features/auth/repositories/IResetPasswordTokenRepository";
+import { ResetPasswordToken } from "../../../domain/features/auth/entities/ResetPasswordToken";
 import { IRequestPasswordResetUsecase } from "../interfaces/IRequestPasswordResetUsecase";
 import { injectable, inject } from "inversify";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
-import { ICacheService } from "../../../domain/common/services/ICacheService";
+import { ICacheService } from "../../../domain/core/common/services/ICacheService";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 import { TimeUtil } from "../../../shared/utils/time/time.util";
 import { CACHE_KEYS } from "../../../shared/constants/cacheKeys";
-import { ILogger } from "../../../domain/common/services/ILogger";
+import { ILogger } from "../../../domain/core/common/services/ILogger";
 
 @injectable()
 export class RequestPasswordReset implements IRequestPasswordResetUsecase {

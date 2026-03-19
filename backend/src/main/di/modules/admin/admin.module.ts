@@ -1,6 +1,6 @@
 import { Container } from "inversify";
 import { ADMIN_TYPES } from "./admin.types";
-import { AdminUserRepository } from "../../../../infrastructure/admin/repositories/AdminUserRepository";
+import { AdminUserRepository } from "../../../../infrastructure/features/admin/repositories/AdminUserRepository";
 
 import { ListUsers } from "../../../../application/admin/usecases/ListUsers";
 import { GetUserDetails } from "../../../../application/admin/usecases/GetUserDetails";
@@ -11,7 +11,7 @@ import { ForceLogoutUser } from "../../../../application/admin/usecases/ForceLog
 import { DeleteUser } from "../../../../application/admin/usecases/DeleteUser";
 
 import { AdminUserController } from "../../../../presentation/admin/controllers/AdminUserController";
-import { IAdminUserRepository } from "../../../../domain/admin/repositories/IAdminUserRepository";
+import { IAdminUserRepository } from "../../../../domain/features/admin/repositories/IAdminUserRepository";
 
 export function loadAdminModule(container: Container) {
   container

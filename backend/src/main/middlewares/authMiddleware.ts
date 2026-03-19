@@ -1,8 +1,8 @@
 import { Response, NextFunction } from "express";
-import { ITokenService } from "../../domain/auth/services/ITokenService";
-import { UnauthorizedError } from "../../domain/errors/UnauthorizedError";
+import { ITokenService } from "../../domain/features/auth/services/ITokenService";
+import { UnauthorizedError } from "../../domain/core/errors/UnauthorizedError";
 import { AuthenticatedRequest } from "../types/AuthenticatedRequest";
-import { IUserStatusService } from "../../domain/auth/services/IUserStatusService";
+import { IUserStatusService } from "../../domain/features/auth/services/IUserStatusService";
 
 export const createAuthMiddleware =
   (tokenService: ITokenService, userStatusService: IUserStatusService) =>

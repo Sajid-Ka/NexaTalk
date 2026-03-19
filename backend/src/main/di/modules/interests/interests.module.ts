@@ -1,9 +1,9 @@
 import { Container } from "inversify";
 import { INTERESTS_TYPES } from "./interests.types";
 
-import { InterestRepository } from "../../../../infrastructure/interests/repositories/InterestRepository";
-import { UserInterestRepository } from "../../../../infrastructure/interests/repositories/UserInterestRepository";
-import { ServerInterestRepository } from "../../../../infrastructure/interests/repositories/ServerInterestRepository";
+import { InterestRepository } from "../../../../infrastructure/features/interests/repositories/InterestRepository";
+import { UserInterestRepository } from "../../../../infrastructure/features/interests/repositories/UserInterestRepository";
+import { ServerInterestRepository } from "../../../../infrastructure/features/interests/repositories/ServerInterestRepository";
 
 import { AddUserInterests } from "../../../../application/interests/usecases/AddUserInterests";
 import { GetUserInterests } from "../../../../application/interests/usecases/GetUserInterests";

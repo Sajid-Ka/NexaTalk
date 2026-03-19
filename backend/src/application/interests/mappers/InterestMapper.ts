@@ -1,6 +1,6 @@
-import { Interest } from "../../../domain/interests/entities/Interest";
+import { Interest } from "../../../domain/features/interests/entities/Interest";
 import { InterestResponse } from "../dtos/responses/InterestResponse";
-import { User } from "../../../domain/auth/entities/User";
+import { User } from "../../../domain/features/auth/entities/User";
 import { UserWithInterestsResponse } from "../dtos/responses/InterestResponse";
 // import { Server } from "../../../domain/servers/entities/Server";
 // import { ServerWithInterestsResponse } from "../dtos/responses/InterestResponse";

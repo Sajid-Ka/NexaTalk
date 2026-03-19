@@ -1,11 +1,11 @@
 import { inject, injectable } from "inversify";
 import { IListUsersUsecase } from "../interface/IListUsersUsecase";
-import { IAdminUserRepository } from "../../../domain/admin/repositories/IAdminUserRepository";
+import { IAdminUserRepository } from "../../../domain/features/admin/repositories/IAdminUserRepository";
 import { ADMIN_TYPES } from "../../../main/di/modules/admin/admin.types";
 import { PaginatedUsersResponse } from "../dtos/response/PaginatedUsersResponse";
 import { ListUsersRequestQuery } from "../dtos/request/ListUsersRequestQuery";
 import { AdminUserMapper } from "../mappers/AdminUserMapper";
-import { ILogger } from "../../../domain/common/services/ILogger";
+import { ILogger } from "../../../domain/core/common/services/ILogger";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 
 @injectable()

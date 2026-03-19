@@ -3,14 +3,14 @@ import { successResponse, errorResponse } from "../../../shared/response/respons
 import { LoginUserRequest } from "../../../application/auth/dtos/requests/LoginUserRequest";
 import { AuthenticatedRequest } from "../../../main/types/AuthenticatedRequest";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
-import { ILogger } from "../../../domain/common/services/ILogger";
+import { ILogger } from "../../../domain/core/common/services/ILogger";
 import { ILoginUserUsecase } from "../../../application/auth/interfaces/ILoginUserUsecase";
 import { IRegisterUserUsecase } from "../../../application/auth/interfaces/IRegisterUserUsecase";
 import { IRefreshSessionUsecase } from "../../../application/auth/interfaces/IRefreshSessionUsecase";
 import { IRequestPasswordResetUsecase } from "../../../application/auth/interfaces/IRequestPasswordResetUsecase";
 import { IResetPasswordUsecase } from "../../../application/auth/interfaces/IResetPasswordUsecase";
 import { IVerifyEmailUsecase } from "../../../application/auth/interfaces/IVerifyEmailUsecase";
-import { UnauthorizedError } from "../../../domain/errors/UnauthorizedError";
+import { UnauthorizedError } from "../../../domain/core/errors/UnauthorizedError";
 import { inject, injectable } from "inversify";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
 import { CookieOptions } from "express";

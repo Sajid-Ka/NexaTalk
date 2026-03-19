@@ -1,16 +1,16 @@
 import { Container } from "inversify";
 import { AUTH_TYPES } from "./auth.types";
 
-import { UserRepository } from "../../../../infrastructure/auth/repositories/UserRepository";
-import { RefreshTokenRepository } from "../../../../infrastructure/auth/repositories/RefreshTokenRepository";
-import { EmailVerificationTokenRepository } from "../../../../infrastructure/auth/repositories/EmailVerificationTokenRepository";
-import { ResetPasswordTokenRepository } from "../../../../infrastructure/auth/repositories/ResetPasswordTokenRepository";
+import { UserRepository } from "../../../../infrastructure/features/auth/repositories/UserRepository";
+import { RefreshTokenRepository } from "../../../../infrastructure/features/auth/repositories/RefreshTokenRepository";
+import { EmailVerificationTokenRepository } from "../../../../infrastructure/features/auth/repositories/EmailVerificationTokenRepository";
+import { ResetPasswordTokenRepository } from "../../../../infrastructure/features/auth/repositories/ResetPasswordTokenRepository";
 
-import { Argon2PasswordHasher } from "../../../../infrastructure/auth/services/ArgonPasswordHasher";
-import { JwtTokenService } from "../../../../infrastructure/auth/services/JwtTokenService";
-import { SecureTokenGenerator } from "../../../../infrastructure/auth/services/SecureTokenGenerator";
-import { NodemailerEmailService } from "../../../../infrastructure/auth/services/NodemailerEmailService";
-import { UserStatusService } from "../../../../infrastructure/auth/services/UserStatusService";
+import { Argon2PasswordHasher } from "../../../../infrastructure/features/auth/services/ArgonPasswordHasher";
+import { JwtTokenService } from "../../../../infrastructure/features/auth/services/JwtTokenService";
+import { SecureTokenGenerator } from "../../../../infrastructure/features/auth/services/SecureTokenGenerator";
+import { NodemailerEmailService } from "../../../../infrastructure/features/auth/services/NodemailerEmailService";
+import { UserStatusService } from "../../../../infrastructure/features/auth/services/UserStatusService";
 
 import { RegisterUser } from "../../../../application/auth/usecases/RegisterUser";
 import { LoginUser } from "../../../../application/auth/usecases/LoginUser";

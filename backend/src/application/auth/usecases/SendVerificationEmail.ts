@@ -1,16 +1,16 @@
-import { IUserRepository } from "../../../domain/auth/repositories/IUserRepository";
-import { IEmailVerificationTokenRepository } from "../../../domain/auth/repositories/IEmailVerificationTokenRepository";
-import { IEmailService } from "../../../domain/auth/services/IEmailService";
-import { ITokenGenerator } from "../../../domain/auth/services/ITokenGenerator";
-import { EmailVerificationToken } from "../../../domain/auth/entities/EmailVerificationToken";
+import { IUserRepository } from "../../../domain/features/auth/repositories/IUserRepository";
+import { IEmailVerificationTokenRepository } from "../../../domain/features/auth/repositories/IEmailVerificationTokenRepository";
+import { IEmailService } from "../../../domain/features/auth/services/IEmailService";
+import { ITokenGenerator } from "../../../domain/features/auth/services/ITokenGenerator";
+import { EmailVerificationToken } from "../../../domain/features/auth/entities/EmailVerificationToken";
 import { ISendVerificationEmailUsecase } from "../interfaces/ISendVerificationEmailUsecase";
 import { inject, injectable } from "inversify";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
-import { ICacheService } from "../../../domain/common/services/ICacheService";
+import { ICacheService } from "../../../domain/core/common/services/ICacheService";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 import { TimeUtil } from "../../../shared/utils/time/time.util";
 import { CACHE_KEYS } from "../../../shared/constants/cacheKeys";
-import { ILogger } from "../../../domain/common/services/ILogger";
+import { ILogger } from "../../../domain/core/common/services/ILogger";
 
 @injectable()
 export class SendVerificationEmail implements ISendVerificationEmailUsecase {

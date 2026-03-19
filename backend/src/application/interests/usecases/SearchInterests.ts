@@ -1,13 +1,13 @@
 import { inject, injectable } from "inversify";
 import { INTERESTS_TYPES } from "../../../main/di/modules/interests/interests.types";
-import { IInterestRepository } from "../../../domain/interests/repositories/IInterestRepository";
+import { IInterestRepository } from "../../../domain/features/interests/repositories/IInterestRepository";
 import { ISearchInterestsUseCase } from "../interfaces/ISearchInterestsUsecase";
 import { SearchInterestsQuery } from "../dtos/requests/SearchInterestsQuery";
 import { InterestResponse } from "../dtos/responses/InterestResponse";
 import { InterestApplicationMapper } from "../mappers/InterestMapper";
-import { ILogger } from "../../../domain/common/services/ILogger";
+import { ILogger } from "../../../domain/core/common/services/ILogger";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
-import { BadRequestError } from "../../../domain/errors/BadRequestError";
+import { BadRequestError } from "../../../domain/core/errors/BadRequestError";
 
 @injectable()
 export class SearchInterests implements ISearchInterestsUseCase {

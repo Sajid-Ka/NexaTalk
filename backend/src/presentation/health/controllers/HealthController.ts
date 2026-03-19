@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
-import { redisClient } from "../../../infrastructure/common/cache/RedisClient";
+import { redisClient } from "../../../infrastructure/core/common/cache/RedisClient";
 import { injectable } from "inversify";
 import { successResponse } from "../../../shared/response/responseFormatter";
 import {

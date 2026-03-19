@@ -1,15 +1,15 @@
 import { inject, injectable } from "inversify";
 import { INTERESTS_TYPES } from "../../../main/di/modules/interests/interests.types";
-import { IUserInterestRepository } from "../../../domain/interests/repositories/IUserInterestRepository";
-import { IInterestRepository } from "../../../domain/interests/repositories/IInterestRepository";
+import { IUserInterestRepository } from "../../../domain/features/interests/repositories/IUserInterestRepository";
+import { IInterestRepository } from "../../../domain/features/interests/repositories/IInterestRepository";
 import { IAddUserInterestsUseCase } from "../interfaces/IAddUserInterestsUsecase";
 import { AddUserInterestsRequest } from "../dtos/requests/AddUserInterestsRequest";
 import { InterestResponse } from "../dtos/responses/InterestResponse";
 import { InterestApplicationMapper } from "../mappers/InterestMapper";
-import { ILogger } from "../../../domain/common/services/ILogger";
+import { ILogger } from "../../../domain/core/common/services/ILogger";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
-import { MaxInterestsReachedError } from "../../../domain/interests/errors/MaxInterestsReachedError";
-import { BadRequestError } from "../../../domain/errors/BadRequestError";
+import { MaxInterestsReachedError } from "../../../domain/features/interests/errors/MaxInterestsReachedError";
+import { BadRequestError } from "../../../domain/core/errors/BadRequestError";
 
 @injectable()
 export class AddUserInterests implements IAddUserInterestsUseCase {

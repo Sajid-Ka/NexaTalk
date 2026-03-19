@@ -1,7 +1,7 @@
 import { Container } from "inversify";
 import { RECOMMENDATIONS_TYPES } from "./recommendations.types";
 
-import { RecommendationRepository } from "../../../../infrastructure/recommendations/repositories/RecommendationRepository";
+import { RecommendationRepository } from "../../../../infrastructure/features/recommendations/repositories/RecommendationRepository";
 
 import { GetRecommendations } from "../../../../application/recommendations/usecases/GetRecommendations";
 

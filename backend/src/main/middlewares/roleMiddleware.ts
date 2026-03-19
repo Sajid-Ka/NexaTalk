@@ -1,5 +1,5 @@
 import { Response, NextFunction } from "express";
-import { ForbiddenError } from "../../domain/errors/ForbiddenError";
+import { ForbiddenError } from "../../domain/core/errors/ForbiddenError";
 import { AuthenticatedRequest } from "../types/AuthenticatedRequest";
 import { GlobalRole } from "../../shared/constants/userRole.const";
 import { ErrorMessage } from "../../shared/constants/messages.const";

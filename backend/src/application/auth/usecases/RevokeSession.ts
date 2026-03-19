@@ -1,8 +1,8 @@
 import { inject, injectable } from "inversify";
-import { IRefreshTokenRepository } from "../../../domain/auth/repositories/IRefreshTokenRepository";
+import { IRefreshTokenRepository } from "../../../domain/features/auth/repositories/IRefreshTokenRepository";
 import { IRevokeSessionUsecase } from "../interfaces/IRevokeSessionUsecase";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
-import { ILogger } from "../../../domain/common/services/ILogger";
+import { ILogger } from "../../../domain/core/common/services/ILogger";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 
 @injectable()
