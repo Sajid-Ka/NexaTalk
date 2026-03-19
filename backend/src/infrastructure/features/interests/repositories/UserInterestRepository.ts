@@ -117,4 +117,24 @@ export class UserInterestRepository
 
     return userInterests.map((ui) => ui.interestId);
   }
+
+  async findAllUsersWithInterests(): Promise<Array<{ userId: string; interestIds: string[] }>> {
+    const result = await this.model.aggregate([
+      {
+        $group: {
+          _id: "$userId",
+          interestIds: { $addToSet: "$interestId" },
+        },
+      },
+      {
+        $project: {
+          userId: "$_id",
+          interestIds: 1,
+          _id: 0,
+        },
+      },
+    ]);
+
+    return result;
+  }
 }

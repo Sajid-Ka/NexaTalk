@@ -15,4 +15,5 @@ export interface IUserInterestRepository extends IBaseRepository<UserInterest> {
   ): Promise<Array<{ userId: string; sharedInterests: string[]; matchCount: number }>>; // Get users who share at least one interest with the target user
   getUsersByInterest(interestId: string, limit?: number): Promise<string[]>; // Get users who have a specific interest
   getInterestIdsByUser(userId: string): Promise<string[]>; // Get all interest IDs for a user
+  findAllUsersWithInterests(): Promise<Array<{ userId: string; interestIds: string[] }>>;
 }

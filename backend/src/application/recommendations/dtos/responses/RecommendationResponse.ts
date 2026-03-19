@@ -8,4 +8,5 @@ export interface RecommendationResponse {
   servers: ServerWithInterestsResponse[];
   refreshedAt: Date;
   isStale: boolean;
+  disabled: boolean;
 }

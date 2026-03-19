@@ -22,7 +22,7 @@ export interface IRecommendationEngine {
     targetInterestIds: string[],
     allUsersInterests: UserInterestData[],
     limit?: number,
-    excludeUserIds?: string[]
+    excludeUserIds?: string[],
   ): Promise<UserSimilarityScore[]>;
 
   //Find servers matching user interests
@@ -30,7 +30,7 @@ export interface IRecommendationEngine {
     userInterestIds: string[],
     serversInterests: Map<string, string[]>,
     limit?: number,
-    excludeServerIds?: string[]
+    excludeServerIds?: string[],
   ): Promise<ServerSimilarityScore[]>;
 
   //Generate full recommendations for a user
@@ -39,13 +39,13 @@ export interface IRecommendationEngine {
     userInterestIds: string[],
     allUsersInterests: UserInterestData[],
     serversInterests: Map<string, string[]>,
-    limit?: number
+    limit?: number,
   ): Promise<RecommendationResult>;
 
   //Find recommended users and servers for multiple users (run once for multiple users instead of one user (efficient))
   batchGenerateRecommendations(
     usersData: Array<{ userId: string; interestIds: string[] }>,
     serversInterests: Map<string, string[]>,
-    batchSize?: number
+    batchSize?: number,
   ): Promise<Map<string, RecommendationResult>>;
 }
