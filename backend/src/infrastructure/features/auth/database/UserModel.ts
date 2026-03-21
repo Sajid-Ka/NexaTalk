@@ -8,6 +8,7 @@ export interface IUserPersistence {
   email: string;
   passwordHash: string;
   avatar?: string;
+  bio?: string;
   status: UserPresenceStatus;
   globalRole: GlobalRole;
   isProfilePublic: boolean;
@@ -28,6 +29,7 @@ const userSchema = new Schema<IUserPersistence>(
     email: { type: String, required: true, unique: true },
     passwordHash: { type: String, required: true },
     avatar: { type: String, default: "" },
+    bio: { type: String, default: "", maxlength: 500 },
     status: {
       type: String,
       enum: Object.values(UserPresenceStatus),

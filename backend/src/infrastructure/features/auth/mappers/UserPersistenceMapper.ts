@@ -12,6 +12,7 @@ export class UserPersistenceMapper implements IMapper<IUserPersistence, User> {
       email: doc.email,
       passwordHash: doc.passwordHash,
       avatar: doc.avatar,
+      bio: doc.bio,
       status: doc.status,
       globalRole: doc.globalRole,
       accountStatus: doc.isBlocked ? UserAccountStatus.BLOCKED : UserAccountStatus.ACTIVE,
@@ -33,6 +34,7 @@ export class UserPersistenceMapper implements IMapper<IUserPersistence, User> {
       email: user.email,
       passwordHash: user.passwordHash,
       avatar: user.avatar ?? "",
+      bio: user.bio ?? "",
       status: user.status,
       globalRole: user.globalRole,
       isProfilePublic: user.isProfilePublic,
@@ -52,6 +54,7 @@ export class UserPersistenceMapper implements IMapper<IUserPersistence, User> {
     if (data.email !== undefined) update.email = data.email;
     if (data.passwordHash !== undefined) update.passwordHash = data.passwordHash;
     if (data.avatar !== undefined) update.avatar = data.avatar;
+    if (data.bio !== undefined) update.bio = data.bio;
     if (data.status !== undefined) update.status = data.status;
     if (data.globalRole !== undefined) update.globalRole = data.globalRole;
     if (data.accountStatus !== undefined)

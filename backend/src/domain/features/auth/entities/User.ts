@@ -10,6 +10,7 @@ export interface UserProps {
   passwordHash: string;
 
   avatar?: string;
+  bio?: string;
   status?: UserPresenceStatus;
   globalRole?: GlobalRole;
 
@@ -34,6 +35,7 @@ export class User {
   public readonly passwordHash: string;
 
   public readonly avatar?: string;
+  public readonly bio?: string;
   public readonly status: UserPresenceStatus;
   public readonly globalRole: GlobalRole;
 
@@ -63,6 +65,7 @@ export class User {
     this.passwordHash = props.passwordHash;
 
     this.avatar = props.avatar ?? "";
+    this.bio = props.bio ?? "";
     this.status = props.status ?? UserPresenceStatus.OFFLINE;
     this.globalRole = props.globalRole ?? GlobalRole.USER;
 

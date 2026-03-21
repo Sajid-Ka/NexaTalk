@@ -45,7 +45,6 @@ export class TensorFlowRecommendationEngine implements IRecommendationEngine {
     usersInterests.forEach((user) => {
       const vector = new Float32Array(totalInterests);
 
-      // Set 1 for interests the user has
       user.interestIds.forEach((interestId) => {
         const index = interestToIndex.get(interestId);
         if (index !== undefined) {
@@ -78,24 +77,19 @@ export class TensorFlowRecommendationEngine implements IRecommendationEngine {
       const normA = tf.norm(tensorA);
       const normB = tf.norm(tensorB);
 
-      // Avoid division by zero
       const normProduct = tf.mul(normA, normB);
       const similarityTensor = tf.div(dotProduct, normProduct);
 
-      // Get the scalar value
       const similarity = similarityTensor.dataSync()[0];
 
-      // Clean up tensors to prevent memory leaks
       tf.dispose([tensorA, tensorB, dotProduct, normA, normB, normProduct, similarityTensor]);
 
-      // Handle edge cases
       if (isNaN(similarity) || !isFinite(similarity)) {
         return 0;
       }
 
       return similarity;
     } catch (error) {
-      // Clean up on error
       tf.dispose([tensorA, tensorB]);
       throw error;
     }
@@ -109,14 +103,12 @@ export class TensorFlowRecommendationEngine implements IRecommendationEngine {
     limit: number = this.DEFAULT_LIMIT,
     excludeUserIds: string[] = [],
   ): Promise<UserSimilarityScore[]> {
-    // Validate inputs
     const validLimit = Math.min(Math.max(1, limit), this.MAX_LIMIT);
     const excludeSet = new Set([...excludeUserIds, targetUserId]);
 
     // Build vector space
     const { userVectors } = await this.buildVectorSpace(allUsersInterests);
 
-    // Get target user vector
     const targetVector = userVectors.get(targetUserId);
     if (!targetVector) {
       return [];
@@ -133,7 +125,6 @@ export class TensorFlowRecommendationEngine implements IRecommendationEngine {
       const similarity = this.calculateCosineSimilarity(targetVector, vector);
 
       if (similarity > this.MIN_SIMILARITY_THRESHOLD) {
-        // Find shared interests
         const targetUser = allUsersInterests.find((u) => u.userId === targetUserId);
         const otherUser = allUsersInterests.find((u) => u.userId === userId);
 
@@ -168,13 +159,11 @@ export class TensorFlowRecommendationEngine implements IRecommendationEngine {
 
     const matches: ServerSimilarityScore[] = [];
 
-    // For each server, calculate interest overlap
     for (const [serverId, serverInterests] of serversInterests.entries()) {
       if (excludeSet.has(serverId)) {
         continue;
       }
 
-      // Find matching interests
       const matchedInterests = serverInterests.filter((id) => userInterestSet.has(id));
       const matchCount = matchedInterests.length;
 
@@ -248,17 +237,14 @@ export class TensorFlowRecommendationEngine implements IRecommendationEngine {
     const results = new Map<string, RecommendationResult>();
     const validBatchSize = Math.min(Math.max(1, batchSize), 100);
 
-    // Process in batches to avoid memory issues
     for (let i = 0; i < usersData.length; i += validBatchSize) {
       const batch = usersData.slice(i, i + validBatchSize);
 
-      // Prepare all users' interests for similarity calculation
       const allUsersInterests: UserInterestData[] = usersData.map((u) => ({
         userId: u.userId,
         interestIds: u.interestIds,
       }));
 
-      // Process batch in parallel
       const batchPromises = batch.map(async (userData) => {
         try {
           const recommendations = await this.generateRecommendations(
@@ -278,7 +264,6 @@ export class TensorFlowRecommendationEngine implements IRecommendationEngine {
 
       const batchResults = await Promise.all(batchPromises);
 
-      // Store successful results
       batchResults.forEach((result) => {
         if (result) {
           results.set(result.userId, result.recommendations);
