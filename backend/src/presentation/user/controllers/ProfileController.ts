@@ -6,12 +6,16 @@ import { successResponse } from "../../../shared/response/responseFormatter";
 import { IGetProfileUsecase } from "../../../application/user/interfaces/IGetProfileUsecase";
 import { IUpdateProfileUsecase } from "../../../application/user/interfaces/IUpdateProfileUsecase";
 import { UpdateProfileRequest } from "../../../application/user/dtos/requests/UpdateProfileRequest";
+import { IUploadAvatarUsecase } from "../../../application/user/interfaces/IUploadAvatar";
+import { IDeleteAvatarUsecase } from "../../../application/user/interfaces/IDeleteAvatarUsecase";
 
 @injectable()
 export class ProfileController {
   constructor(
     @inject(USER_TYPES.GetProfile) private readonly _getProfile: IGetProfileUsecase,
     @inject(USER_TYPES.UpdateProfile) private readonly _updateProfile: IUpdateProfileUsecase,
+    @inject(USER_TYPES.UploadAvatar) private readonly _uploadAvatar: IUploadAvatarUsecase,
+    @inject(USER_TYPES.DeleteAvatar) private readonly _deleteAvatar: IDeleteAvatarUsecase,
   ) {}
 
   getMyProfile = async (req: AuthenticatedRequest, res: Response) => {
@@ -33,5 +37,16 @@ export class ProfileController {
 
     const profile = await this._updateProfile.execute(req.user!.userId, request);
     res.json(successResponse(profile, "Profile updated successfully"));
+  };
+
+  uploadAvatar = async (req: AuthenticatedRequest, res: Response) => {
+    const result = await this._uploadAvatar.execute(req.user!.userId, req.file!);
+    console.log("Upload result:", result);
+    res.json(successResponse(result, "Avatar uploaded successfully"));
+  };
+
+  deleteAvatar = async (req: AuthenticatedRequest, res: Response) => {
+    await this._deleteAvatar.execute(req.user!.userId);
+    res.json(successResponse(null, "Avatar deleted successfully"));
   };
 }

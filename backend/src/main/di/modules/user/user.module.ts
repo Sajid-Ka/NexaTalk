@@ -13,6 +13,10 @@ import { GetProfile } from "../../../../application/user/usecases/GetProfile";
 import { UpdateProfile } from "../../../../application/user/usecases/UpdateProfile";
 import { ProfileController } from "../../../../presentation/user/controllers/ProfileController";
 
+//Avatar
+import { UploadAvatar } from "../../../../application/user/usecases/UploadAvatar";
+import { DeleteAvatar } from "../../../../application/user/usecases/DeleteAvatar";
+
 export function loadUserModule(container: Container) {
   //Settings
   container.bind(USER_TYPES.UserSettingsRepository).to(UserSettingsRepository).inSingletonScope();
@@ -24,4 +28,8 @@ export function loadUserModule(container: Container) {
   container.bind(USER_TYPES.GetProfile).to(GetProfile);
   container.bind(USER_TYPES.UpdateProfile).to(UpdateProfile);
   container.bind(USER_TYPES.ProfileController).to(ProfileController);
+
+  // Avatar
+  container.bind(USER_TYPES.UploadAvatar).to(UploadAvatar);
+  container.bind(USER_TYPES.DeleteAvatar).to(DeleteAvatar);
 }

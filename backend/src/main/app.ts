@@ -8,12 +8,15 @@ import { requestIdMiddleware } from "./middlewares/requestIdMiddleware";
 import cookieParser from "cookie-parser";
 import { requestLoggerInterceptor } from "../infrastructure/core/http/interceptors/request-logger.interceptor";
 import { errorInterceptor } from "../infrastructure/core/http/interceptors/error.interceptor";
+import path from "path";
 
 const app = express();
 
 app.disable("x-powered-by");
 app.use(express.json());
 app.use(cookieParser());
+
+app.use("/uploads", express.static(path.join(__dirname, "../../uploads")));
 
 app.use(requestIdMiddleware);
 

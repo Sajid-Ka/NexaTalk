@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Upload } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Upload, Trash2, Loader2 } from "lucide-react";
 import Input from "../../../shared/ui/Input";
 import TextArea from "../../../shared/ui/TextArea";
 import Switch from "../../../shared/ui/Switch";
@@ -7,8 +7,10 @@ import Button from "../../../shared/ui/Button";
 import Avatar from "../../../shared/ui/Avatar";
 import ProfileCardPreview from "./ProfileCardPreview";
 import { getMyProfileApi, updateProfileApi } from "../../profile/api/profileApi";
+import { uploadAvatarApi, deleteAvatarApi } from "../../profile/api/profileApi";
 import toast from "react-hot-toast";
 import { UserPresence } from "../../../shared/constants/user.const";
+import { AxiosError } from "axios";
 
 interface ProfileFormData {
   username: string;
@@ -17,6 +19,13 @@ interface ProfileFormData {
   showOnlineStatus: boolean;
   showActivity: boolean;
   avatar?: string;
+}
+
+interface ApiErrorResponse {
+  error?: {
+    message?: string;
+  };
+  message?: string;
 }
 
 export default function ProfileSettings() {
@@ -30,6 +39,8 @@ export default function ProfileSettings() {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchProfile();
@@ -43,8 +54,8 @@ export default function ProfileSettings() {
         username: profile.username,
         bio: profile.bio || "",
         publicProfile: profile.isProfilePublic,
-        showOnlineStatus: true, // Will be in settings later
-        showActivity: false, // Will be in settings later
+        showOnlineStatus: true,
+        showActivity: false,
         avatar: profile.avatar,
       });
     } catch {
@@ -56,6 +67,61 @@ export default function ProfileSettings() {
 
   const handleChange = <K extends keyof ProfileFormData>(field: K, value: ProfileFormData[K]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Only JPEG, PNG, GIF, and WebP images are allowed");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File size must be less than 5MB");
+      return;
+    }
+
+    setUploading(true);
+    try {
+      console.log("Uploading file:", file.name, file.size, file.type);
+      const avatarUrl = await uploadAvatarApi(file);
+      console.log("Upload success, avatar URL:", avatarUrl);
+      setFormData((prev) => ({ ...prev, avatar: avatarUrl }));
+      toast.success("Avatar uploaded successfully");
+    } catch (err) {
+      console.error("Upload error details:", err);
+      
+      let errorMessage = "Failed to upload avatar";
+      if (err instanceof AxiosError) {
+        const data = err.response?.data as ApiErrorResponse;
+        errorMessage = data?.error?.message || data?.message || "Failed to upload avatar";
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      
+      toast.error(errorMessage);
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const handleAvatarRemove = async () => {
+    if (!formData.avatar) return;
+    
+    setUploading(true);
+    try {
+      await deleteAvatarApi();
+      setFormData((prev) => ({ ...prev, avatar: "" }));
+      toast.success("Avatar removed successfully");
+    } catch {
+      toast.error("Failed to remove avatar");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSave = async () => {
@@ -94,28 +160,56 @@ export default function ProfileSettings() {
               PROFILE PICTURE
             </h3>
             <div className="flex items-center gap-8">
-              <div className="relative group">
+            <div className="relative">
+              <div className="relative w-40 h-40 rounded-full border-4 border-indigo-500/20 bg-white/[0.03] flex items-center justify-center overflow-hidden transition-all duration-300 hover:border-indigo-500/40">
                 <Avatar
-                  src={formData.avatar || "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex"}
-                  fallback={formData.username[0] || "U"}
-                  size="xl"
-                  className="w-32 h-32 rounded-[40px] border-4 border-indigo-500/20 group-hover:border-indigo-500/40 transition-colors"
+                  src={formData.avatar || undefined}
+                  fallback={formData.username[0]?.toUpperCase() || "U"}
+                  className="w-28 h-28 rounded-full object-cover"
                 />
-                <div className="absolute inset-0 bg-black/40 rounded-[40px] opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer">
-                  <Upload size={24} className="text-white" />
-                </div>
+
+                {uploading && (
+                  <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center backdrop-blur-sm">
+                    <Loader2 className="w-10 h-10 text-white animate-spin" />
+                  </div>
+                )}
               </div>
+            </div>
+
               <div className="flex flex-col gap-3">
                 <div className="flex gap-3">
-                  <Button variant="primary" className="bg-indigo-600 hover:bg-indigo-700 px-6 rounded-2xl">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleAvatarUpload}
+                    accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                    className="hidden"
+                  />
+                  <Button
+                    variant="primary"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="bg-indigo-600 hover:bg-indigo-700 px-6 rounded-2xl"
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
                     Upload New
                   </Button>
-                  <Button variant="secondary" className="px-6 rounded-2xl bg-white/5 hover:bg-white/10">
-                    Remove
-                  </Button>
+
+                  {formData.avatar && (
+                    <Button
+                      variant="secondary"
+                      onClick={handleAvatarRemove}
+                      disabled={uploading}
+                      className="px-6 rounded-2xl bg-red-500/10 hover:bg-red-500/20 text-red-400"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Remove
+                    </Button>
+                  )}
                 </div>
+
                 <p className="text-[10px] text-white/20 font-medium">
-                  JPG, PNG or GIF. Max size 2MB.
+                  JPG, PNG, GIF or WebP. Max size 5MB.
                 </p>
               </div>
             </div>

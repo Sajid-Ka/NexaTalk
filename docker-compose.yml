@@ -1,7 +1,4 @@
-version: "3.9"
-
 services:
-
   backend:
     build:
       context: ./backend
@@ -13,6 +10,9 @@ services:
     depends_on:
       - mongo
       - redis
+    volumes:
+      - uploads_data:/app/uploads
+    restart: always
 
   frontend:
     build:
@@ -24,6 +24,7 @@ services:
       - "5173:80"
     depends_on:
       - backend
+    restart: always
 
   mongo:
     image: mongo:7
@@ -44,3 +45,4 @@ services:
 
 volumes:
   mongo_data:
+  uploads_data:

@@ -8,6 +8,7 @@ import { ITokenService } from "../../domain/features/auth/services/ITokenService
 import { IUserStatusService } from "../../domain/features/auth/services/IUserStatusService";
 import { validate } from "../../presentation/validators.ts/validate";
 import { updateProfileSchema } from "../../presentation/user/validators/updateProfileValidator";
+import { upload } from "../../infrastructure/core/storage/multer.config";
 
 const router = Router();
 
@@ -19,8 +20,13 @@ const authMiddleware = createAuthMiddleware(tokenService, userStatusService);
 
 router.use(authMiddleware);
 
+//profile routes
 router.get("/me", controller.getMyProfile);
 router.patch("/me", validate(updateProfileSchema), controller.updateProfile);
 router.get("/:userId", controller.getProfileById);
+
+// avatar routes
+router.post("/me/avatar", upload.single("avatar"), controller.uploadAvatar);
+router.delete("/me/avatar", controller.deleteAvatar);
 
 export default router;

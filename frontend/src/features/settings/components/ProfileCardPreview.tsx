@@ -50,18 +50,17 @@ export default function ProfileCardPreview({
                 </div>
 
                 <div className="px-5 pb-6 -mt-10 relative">
-                    {/* Avatar */}
                     <div className="relative inline-block mb-4">
-                        <div className="p-1.5 bg-[#090B11] rounded-[28px]">
+                        <div className="p-1.5 bg-[#090B11] rounded-full">
                             <Avatar
                                 src={avatarUrl || "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex"}
                                 fallback={username[0] || "U"}
                                 size="xl"
-                                className="rounded-[22px] border-2 border-indigo-500/20"
+                                className="w-24 h-24 rounded-full border-2 border-indigo-500/20 ring-4 ring-black/10"
                             />
                         </div>
                         {showOnlineStatus && (
-                            <div className={`absolute bottom-2 right-2 w-5 h-5 ${statusColors[status]} rounded-full border-4 border-[#090B11]`} />
+                            <div className={`absolute bottom-1 right-1 w-6 h-6 ${statusColors[status]} rounded-full border-4 border-[#090B11] shadow-lg`} />
                         )}
                     </div>
 

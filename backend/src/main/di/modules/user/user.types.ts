@@ -9,4 +9,8 @@ export const USER_TYPES = {
   GetProfile: Symbol.for("GetProfile"),
   UpdateProfile: Symbol.for("UpdateProfile"),
   ProfileController: Symbol.for("ProfileController"),
+
+  // Avatar
+  UploadAvatar: Symbol.for("UploadAvatar"),
+  DeleteAvatar: Symbol.for("DeleteAvatar"),
 };
