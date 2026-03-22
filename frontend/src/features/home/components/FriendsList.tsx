@@ -1,115 +1,294 @@
-import { Users, Search, MessageSquare, Phone, MoreVertical } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { 
+  Users, Search, MessageSquare, Phone, UserPlus, 
+  Check, X, UserMinus 
+} from "lucide-react";
 import Avatar from "../../../shared/ui/Avatar";
 import Button from "../../../shared/ui/Button";
 import { cn } from "../../../shared/utils/cn";
-import type { FriendStatus } from "../types/friend.types";
+import { getFriendsApi, respondFriendRequestApi, removeFriendApi } from "../../friends/api/friendApi";
+import type { Friend } from "../../friends/api/friendApi";
+import { UserPresence } from "../../../shared/constants/user.const";
+import AddFriendModal from "./AddFriendModal";
+import toast from "react-hot-toast";
+import { getPendingRequestsApi } from "../../friends/api/friendApi";
+import { FriendTab } from "../../../shared/constants/friend.const";
+import { AxiosError } from "axios";
+
+// Define error response type
+interface ApiErrorResponse {
+  error?: {
+    message?: string;
+  };
+  message?: string;
+}
 
 export default function FriendsList() {
-    const tabs = ["Online", "All", "Pending", "Blocked"];
-    const currentTab = "Online";
+  const [activeTab, setActiveTab] = useState<FriendTab>(FriendTab.ONLINE);
+  const [friends, setFriends] = useState<Friend[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [processing, setProcessing] = useState<string | null>(null);
 
-    const friends = [
-        { name: "Luna_Cyber", status: "online", activity: "Playing Starfield", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Luna", streaming: true },
-        { name: "Dexter_01", status: "idle", activity: "Code, eat, sleep, repeat...", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Dexter" },
-        { name: "SarahVox", status: "online", activity: "Available for voice chat!", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" },
-    ];
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchQuery), 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
-    const offlineFriends = [
-        { name: "Ghost_Runner", status: "offline", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ghost" },
-        { name: "Void_Seeker", status: "offline", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Void" },
-    ];
+  const fetchFriends = useCallback(async () => {
+    setLoading(true);
+    try {
+      let friendsData;
+      
+      if (activeTab === FriendTab.PENDING) {
+        // Fetch pending requests (received)
+        const res = await getPendingRequestsApi("received");
+        friendsData = { friends: res.data.data, total: res.data.data.length, online: 0, offline: 0 };
+      } else if (activeTab === FriendTab.BLOCKED) {
+        const res = await getFriendsApi({ status: "blocked", search: debouncedSearch || undefined });
+        friendsData = res.data.data;
+      } else {
+        const status = activeTab === FriendTab.ONLINE ? "accepted" : undefined;
+        const res = await getFriendsApi({
+          status,
+          search: debouncedSearch || undefined,
+        });
+        friendsData = res.data.data;
+      }
+      
+      setFriends(friendsData.friends);
+    } catch {
+      toast.error("Failed to load friends");
+    } finally {
+      setLoading(false);
+    }
+  }, [activeTab, debouncedSearch]);
 
-    return (
-        <div className="flex-1 flex flex-col min-w-0">
-            {/* Top Header */}
-            <header className="h-12 px-4 flex items-center justify-between border-b border-white/5 bg-[#0F121D]/50 backdrop-blur-md sticky top-0 z-20">
-                <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2 text-white/50 border-r border-white/10 pr-4">
-                        <Users size={20} />
-                        <span className="font-bold text-sm text-white">Friends</span>
-                    </div>
+  useEffect(() => {
+    fetchFriends();
+  }, [fetchFriends]);
 
-                    <nav className="flex items-center gap-2">
-                        {tabs.map((tab) => (
-                            <button
-                                key={tab}
-                                className={cn(
-                                    "px-3 py-1 rounded-md text-sm font-medium transition-all",
-                                    tab === currentTab
-                                        ? "bg-white/10 text-white"
-                                        : "text-white/50 hover:bg-white/5 hover:text-white/80"
-                                )}
-                            >
-                                {tab}
-                            </button>
-                        ))}
-                    </nav>
-                </div>
+  const handleAcceptRequest = async (userId: string, requestId: string) => {
+    setProcessing(requestId);
+    try {
+      await respondFriendRequestApi(userId, { status: "accepted" });
+      toast.success("Friend request accepted");
+      fetchFriends();
+    } catch (err) {
+      let errorMessage = "Failed to accept request";
+      if (err instanceof AxiosError) {
+        const data = err.response?.data as ApiErrorResponse;
+        errorMessage = data?.error?.message || data?.message || "Failed to accept request";
+      }
+      toast.error(errorMessage);
+    } finally {
+      setProcessing(null);
+    }
+  };
 
-                <Button size="sm" className="bg-indigo-600 rounded-lg text-xs h-8 px-4 border-none font-bold">Add Friend</Button>
-            </header>
+  const handleRejectRequest = async (userId: string, requestId: string) => {
+    setProcessing(requestId);
+    try {
+      await respondFriendRequestApi(userId, { status: "blocked" });
+      toast.success("Friend request rejected");
+      fetchFriends();
+    } catch (err) {
+      let errorMessage = "Failed to reject request";
+      if (err instanceof AxiosError) {
+        const data = err.response?.data as ApiErrorResponse;
+        errorMessage = data?.error?.message || data?.message || "Failed to reject request";
+      }
+      toast.error(errorMessage);
+    } finally {
+      setProcessing(null);
+    }
+  };
 
-            {/* Search Bar */}
-            <div className="px-6 pt-6 pb-2">
-                <div className="relative group">
-                    <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-indigo-400 transition-colors" />
-                    <input
-                        type="text"
-                        placeholder="Find a friend..."
-                        className="w-full bg-[#0F121D] border border-white/5 rounded-xl h-10 pl-10 pr-4 text-sm focus:outline-none focus:border-indigo-500/50 transition-all placeholder:text-white/10"
-                    />
-                </div>
-            </div>
+  const handleRemoveFriend = async (friendId: string) => {
+    try {
+      await removeFriendApi(friendId);
+      toast.success("Friend removed");
+      fetchFriends();
+    } catch (err) {
+      let errorMessage = "Failed to remove friend";
+      if (err instanceof AxiosError) {
+        const data = err.response?.data as ApiErrorResponse;
+        errorMessage = data?.error?.message || data?.message || "Failed to remove friend";
+      }
+      toast.error(errorMessage);
+    }
+  };
 
-            {/* Friend List Content */}
-            <div className="flex-1 overflow-y-auto no-scrollbar px-2 py-4">
-                {/* Online Section */}
-                <div className="mb-8">
-                    <h3 className="px-4 text-[10px] font-bold text-white/30 uppercase tracking-widest mb-4">Online — {friends.length}</h3>
-                    <div className="space-y-1">
-                        {friends.map((friend) => (
-                            <div key={friend.name} className="group flex items-center justify-between px-4 py-3 rounded-xl hover:bg-white/5 transition-all cursor-pointer border border-transparent hover:border-white/5">
-                                <div className="flex items-center gap-4">
-                                    <Avatar src={friend.avatar} fallback={friend.name} status={friend.status as FriendStatus} size="md" />
-                                    <div className="min-w-0">
-                                        <div className="flex items-center gap-2">
-                                            <p className="font-bold text-sm text-white">{friend.name}</p>
-                                            {friend.streaming && (
-                                                <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-indigo-600/20 text-indigo-400 border border-indigo-500/10 uppercase tracking-tighter">Streaming</span>
-                                            )}
-                                        </div>
-                                        <p className="text-xs text-white/40 truncate italic">{friend.activity}</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button className="p-2.5 rounded-full bg-[#090B11] text-white/50 hover:text-indigo-400 transition-colors">
-                                        <MessageSquare size={18} />
-                                    </button>
-                                    <button className="p-2.5 rounded-full bg-[#090B11] text-white/50 hover:text-indigo-400 transition-colors">
-                                        <Phone size={18} />
-                                    </button>
-                                    <button className="p-2.5 rounded-full bg-[#090B11] text-white/50 hover:text-indigo-400 transition-colors">
-                                        <MoreVertical size={18} />
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+  const tabs = [
+    { id: FriendTab.ONLINE, label: "Online" },
+    { id: FriendTab.ALL, label: "All" },
+    { id: FriendTab.PENDING, label: "Pending" },
+    { id: FriendTab.BLOCKED, label: "Blocked" },
+  ] as const;
 
-                {/* Offline Section */}
-                <div>
-                    <h3 className="px-4 text-[10px] font-bold text-white/30 uppercase tracking-widest mb-4">Offline — 12</h3>
-                    <div className="space-y-1">
-                        {offlineFriends.map((friend) => (
-                            <div key={friend.name} className="group flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-white/5 transition-all cursor-pointer opacity-50 hover:opacity-100">
-                                <Avatar fallback={friend.name} size="md" src={friend.avatar} className="grayscale" />
-                                <p className="font-bold text-sm text-white/60 group-hover:text-white transition-colors">{friend.name}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
+  const filteredFriends = activeTab === FriendTab.ONLINE
+    ? friends.filter(f => f.friend.status === UserPresence.ONLINE)
+    : friends;
+
+  const onlineCount = friends.filter(f => f.friend.status === UserPresence.ONLINE).length;
+  const pendingCount = friends.filter(f => f.status === "pending").length;
+
+  // Helper function to get status text
+  const getStatusText = (status: UserPresence) => {
+    switch (status) {
+      case UserPresence.ONLINE: return "Online";
+      case UserPresence.IDLE: return "Idle";
+      case UserPresence.DND: return "Do Not Disturb";
+      default: return "Offline";
+    }
+  };
+
+  return (
+    <div className="flex-1 flex flex-col min-w-0">
+      {/* Top Header */}
+      <header className="h-12 px-4 flex items-center justify-between border-b border-white/5 bg-[#0F121D]/50 backdrop-blur-md sticky top-0 z-20">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 text-white/50 border-r border-white/10 pr-4">
+            <Users size={20} />
+            <span className="font-bold text-sm text-white">Friends</span>
+          </div>
+
+          <nav className="flex items-center gap-2">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  "px-3 py-1 rounded-md text-sm font-medium transition-all",
+                  activeTab === tab.id
+                    ? "bg-white/10 text-white"
+                    : "text-white/50 hover:bg-white/5 hover:text-white/80"
+                )}
+              >
+                {tab.label}
+                {tab.id === FriendTab.ONLINE && onlineCount > 0 && (
+                  <span className="ml-1 text-xs">({onlineCount})</span>
+                )}
+                {tab.id === FriendTab.PENDING && pendingCount > 0 && (
+                  <span className="ml-1 text-xs text-yellow-500">({pendingCount})</span>
+                )}
+              </button>
+            ))}
+          </nav>
         </div>
-    );
+
+        <Button 
+          size="sm" 
+          onClick={() => setShowAddModal(true)}
+          className="bg-indigo-600 rounded-lg text-xs h-8 px-4 border-none font-bold flex items-center gap-1"
+        >
+          <UserPlus size={14} />
+          Add Friend
+        </Button>
+      </header>
+
+      {/* Search Bar */}
+      <div className="px-6 pt-6 pb-2">
+        <div className="relative group">
+          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-indigo-400 transition-colors" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Find a friend..."
+            className="w-full bg-[#0F121D] border border-white/5 rounded-xl h-10 pl-10 pr-4 text-sm focus:outline-none focus:border-indigo-500/50 transition-all placeholder:text-white/10"
+          />
+        </div>
+      </div>
+
+      {/* Friend List Content */}
+      <div className="flex-1 overflow-y-auto no-scrollbar px-2 py-4">
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500" />
+          </div>
+        ) : filteredFriends.length === 0 ? (
+          <div className="text-center py-12 text-white/40">
+            {activeTab === FriendTab.PENDING ? "No pending requests" : "No friends found"}
+          </div>
+        ) : (
+          <div className="space-y-1">
+            {filteredFriends.map((friend) => (
+              <div key={friend.id} className="group flex items-center justify-between px-4 py-3 rounded-xl hover:bg-white/5 transition-all cursor-pointer border border-transparent hover:border-white/5">
+                <div className="flex items-center gap-4">
+                  <Avatar 
+                    src={friend.friend.avatar} 
+                    fallback={friend.friend.username} 
+                    status={friend.friend.status as "online" | "offline" | "idle" | "dnd"} 
+                    size="md" 
+                  />
+                  <div className="min-w-0">
+                    <p className="font-bold text-sm text-white">{friend.friend.username}</p>
+                    <p className="text-xs text-white/40 truncate">
+                      {friend.status === "pending" 
+                        ? "Friend request pending" 
+                        : getStatusText(friend.friend.status)}
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Actions based on status */}
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {friend.status === "pending" ? (
+                    // Show Accept/Reject buttons for pending requests
+                    <>
+                      <button
+                        onClick={() => handleAcceptRequest(friend.userId, friend.id)}
+                        disabled={processing === friend.id}
+                        className="p-2.5 rounded-full bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white transition-colors"
+                        title="Accept"
+                      >
+                        <Check size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleRejectRequest(friend.userId, friend.id)}
+                        disabled={processing === friend.id}
+                        className="p-2.5 rounded-full bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
+                        title="Reject"
+                      >
+                        <X size={18} />
+                      </button>
+                    </>
+                  ) : (
+                    // Show message/phone/remove for accepted friends
+                    <>
+                      <button className="p-2.5 rounded-full bg-[#090B11] text-white/50 hover:text-indigo-400 transition-colors">
+                        <MessageSquare size={18} />
+                      </button>
+                      <button className="p-2.5 rounded-full bg-[#090B11] text-white/50 hover:text-indigo-400 transition-colors">
+                        <Phone size={18} />
+                      </button>
+                      {activeTab !== FriendTab.BLOCKED && (
+                        <button
+                          onClick={() => handleRemoveFriend(friend.friendId)}
+                          className="p-2.5 rounded-full bg-[#090B11] text-white/50 hover:text-red-400 transition-colors"
+                          title="Remove Friend"
+                        >
+                          <UserMinus size={18} />
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Add Friend Modal */}
+      <AddFriendModal 
+        isOpen={showAddModal} 
+        onClose={() => setShowAddModal(false)} 
+        onSuccess={fetchFriends}
+      />
+    </div>
+  );
 }

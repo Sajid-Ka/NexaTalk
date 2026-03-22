@@ -20,6 +20,9 @@ const authMiddleware = createAuthMiddleware(tokenService, userStatusService);
 
 router.use(authMiddleware);
 
+// Search route
+router.get("/search", controller.searchUsers);
+
 //profile routes
 router.get("/me", controller.getMyProfile);
 router.patch("/me", validate(updateProfileSchema), controller.updateProfile);

@@ -8,6 +8,7 @@ import { IUpdateProfileUsecase } from "../../../application/user/interfaces/IUpd
 import { UpdateProfileRequest } from "../../../application/user/dtos/requests/UpdateProfileRequest";
 import { IUploadAvatarUsecase } from "../../../application/user/interfaces/IUploadAvatar";
 import { IDeleteAvatarUsecase } from "../../../application/user/interfaces/IDeleteAvatarUsecase";
+import { ISearchUsersUsecase } from "../../../application/user/interfaces/ISearchUsersUsecase";
 
 @injectable()
 export class ProfileController {
@@ -16,6 +17,7 @@ export class ProfileController {
     @inject(USER_TYPES.UpdateProfile) private readonly _updateProfile: IUpdateProfileUsecase,
     @inject(USER_TYPES.UploadAvatar) private readonly _uploadAvatar: IUploadAvatarUsecase,
     @inject(USER_TYPES.DeleteAvatar) private readonly _deleteAvatar: IDeleteAvatarUsecase,
+    @inject(USER_TYPES.SearchUsers) private readonly _searchUsers: ISearchUsersUsecase,
   ) {}
 
   getMyProfile = async (req: AuthenticatedRequest, res: Response) => {
@@ -41,12 +43,19 @@ export class ProfileController {
 
   uploadAvatar = async (req: AuthenticatedRequest, res: Response) => {
     const result = await this._uploadAvatar.execute(req.user!.userId, req.file!);
-    console.log("Upload result:", result);
     res.json(successResponse(result, "Avatar uploaded successfully"));
   };
 
   deleteAvatar = async (req: AuthenticatedRequest, res: Response) => {
     await this._deleteAvatar.execute(req.user!.userId);
     res.json(successResponse(null, "Avatar deleted successfully"));
+  };
+
+  searchUsers = async (req: AuthenticatedRequest, res: Response) => {
+    const query = req.query.q as string;
+    const limit = Number(req.query.limit) || 10;
+
+    const results = await this._searchUsers.execute(query, limit, req.user!.userId);
+    res.json(successResponse(results, "Users found"));
   };
 }

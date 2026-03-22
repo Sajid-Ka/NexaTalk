@@ -31,6 +31,20 @@ export class UserRepository
     return true;
   }
 
+  async search(query: string, limit: number = 10): Promise<User[]> {
+    const regex = new RegExp(query, "i");
+    const docs = await this.model
+      .find({
+        username: { $regex: regex },
+        deletedAt: null,
+        isBlocked: false,
+      })
+      .limit(limit)
+      .lean();
+
+    return docs.map((doc) => this.mapper.toDomain(doc));
+  }
+
   //Handle soft deleted users when they try to register again
   async create(entity: User, session?: ClientSession): Promise<User> {
     const existingDeletedUser = await this.model

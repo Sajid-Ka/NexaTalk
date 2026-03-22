@@ -13,4 +13,7 @@ export const USER_TYPES = {
   // Avatar
   UploadAvatar: Symbol.for("UploadAvatar"),
   DeleteAvatar: Symbol.for("DeleteAvatar"),
+
+  //search
+  SearchUsers: Symbol.for("SearchUsers"),
 };

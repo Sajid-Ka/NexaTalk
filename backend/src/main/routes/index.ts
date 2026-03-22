@@ -7,6 +7,7 @@ import onboardingRoutes from "./onboardingRoutes";
 import recommendationRoutes from "./recommendationRoutes";
 import userRoutes from "./userSettingsRoutes";
 import profileRoutes from "./profileRoutes";
+import friendRoutes from "./friendRoutes";
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use("/onboarding", onboardingRoutes);
 router.use("/recommendations", recommendationRoutes);
 router.use("/user", userRoutes);
 router.use("/profiles", profileRoutes);
+router.use("/friends", friendRoutes);
 
 export default router;

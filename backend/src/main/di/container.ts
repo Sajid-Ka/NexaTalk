@@ -7,6 +7,7 @@ import { loadInterestsModule } from "./modules/interests/interests.module";
 import { loadRecommendationsModule } from "./modules/recommendations/recommendations.module";
 import { loadOnboardingModule } from "./modules/onboarding/onboarding.module";
 import { loadUserModule } from "./modules/user/user.module";
+import { loadFriendsModule } from "./modules/friends/friends.module";
 
 const container = new Container();
 
@@ -18,5 +19,6 @@ loadInterestsModule(container);
 loadRecommendationsModule(container);
 loadOnboardingModule(container);
 loadUserModule(container);
+loadFriendsModule(container);
 
 export { container };

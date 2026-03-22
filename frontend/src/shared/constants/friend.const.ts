@@ -18,3 +18,12 @@ export const FriendTab = {
 
 export type FriendTab =
   (typeof FriendTab)[keyof typeof FriendTab];
+
+export const FriendshipStatus = {
+  PENDING: "pending",
+  ACCEPTED: "accepted",
+  BLOCKED: "blocked",
+} as const;
+
+export type FriendshipStatus =
+(typeof FriendshipStatus)[keyof typeof FriendshipStatus];

@@ -8,8 +8,8 @@ const uploadDir = path.join(process.cwd(), "uploads", "avatars");
 if (!fs.existsSync(uploadDir)) {
   try {
     fs.mkdirSync(uploadDir, { recursive: true });
-  } catch (error) {
-    console.error("Failed to create upload directory:", uploadDir, error);
+  } catch {
+    process.stderr.write(`Failed to create upload directory: ${uploadDir}\n`);
   }
 }
 

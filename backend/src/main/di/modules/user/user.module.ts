@@ -17,6 +17,9 @@ import { ProfileController } from "../../../../presentation/user/controllers/Pro
 import { UploadAvatar } from "../../../../application/user/usecases/UploadAvatar";
 import { DeleteAvatar } from "../../../../application/user/usecases/DeleteAvatar";
 
+//search
+import { SearchUsers } from "../../../../application/user/usecases/SearchUsers";
+
 export function loadUserModule(container: Container) {
   //Settings
   container.bind(USER_TYPES.UserSettingsRepository).to(UserSettingsRepository).inSingletonScope();
@@ -32,4 +35,7 @@ export function loadUserModule(container: Container) {
   // Avatar
   container.bind(USER_TYPES.UploadAvatar).to(UploadAvatar);
   container.bind(USER_TYPES.DeleteAvatar).to(DeleteAvatar);
+
+  //search
+  container.bind(USER_TYPES.SearchUsers).to(SearchUsers);
 }

@@ -46,6 +46,22 @@ export interface AvatarUploadResponse {
   avatarUrl: string;
 }
 
+export interface UserSearchResult {
+  id: string;
+  username: string;
+  avatar?: string;
+  status: UserPresence;
+  isFriend?: boolean;
+  friendRequestSent?: boolean;
+}
+
+export interface SearchUserResponse {
+  id: string;
+  username: string;
+  avatar?: string;
+  status: UserPresence;
+}
+
 // Profile endpoints
 export const getMyProfileApi = () => 
   api.get<{ data: ProfileResponse }>("/profiles/me");
@@ -87,3 +103,8 @@ export const uploadAvatarApi = async (file: File): Promise<string> => {
 
 export const deleteAvatarApi = () => 
   api.delete("/profiles/me/avatar");
+
+export const searchUsersApi = (query: string, limit: number = 10) => 
+  api.get<{ data: UserSearchResult[] }>("/profiles/search", { 
+    params: { q: query, limit } 
+  });
