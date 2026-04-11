@@ -119,8 +119,18 @@ const serverSlice = createSlice({
         state.userServers.push(action.payload);
       })
       // Fetch Server Details
+      .addCase(fetchServerDetails.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.currentServer = null;
+      })
       .addCase(fetchServerDetails.fulfilled, (state, action: PayloadAction<Server>) => {
+        state.loading = false;
         state.currentServer = action.payload;
+      })
+      .addCase(fetchServerDetails.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });

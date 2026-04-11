@@ -27,13 +27,13 @@ export default function SignupForm() {
 
             navigate("/check-email");
         } catch (error: unknown) {
-            const err = error as { response?: { data?: { message?: string; error?: string } } };
+            const err = error as { response?: { data?: { message?: string; error?: {code?: string; message?: string; } } } };
             console.log("Signup error:", err.response);
 
             const message =
+                err?.response?.data?.error?.message ||
                 err?.response?.data?.message ||
-                err?.response?.data?.error ||
-                "User already exists";
+                "Email Already registered";
 
             toast.error(message);
         }
