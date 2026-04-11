@@ -21,10 +21,13 @@ const serverInviteSchema = new Schema<IServerInvitePersistence>(
     expiresAt: { type: Date, default: null },
     uses: { type: Number, default: 0 },
   },
-  { timestamps: { createdAt: true, updatedAt: false } }
+  { timestamps: { createdAt: true, updatedAt: false } },
 );
 
 serverInviteSchema.index({ expiresAt: 1 });
 serverInviteSchema.index({ serverId: 1, createdAt: -1 });
 
-export const ServerInviteModel = model<IServerInvitePersistence>("ServerInvite", serverInviteSchema);
+export const ServerInviteModel = model<IServerInvitePersistence>(
+  "ServerInvite",
+  serverInviteSchema,
+);

@@ -5,6 +5,7 @@ import { BaseRepository } from "../../../core/common/database/BaseRepository";
 import { ServerModel, IServerPersistence } from "../database/ServerModel";
 import { ServerPersistenceMapper } from "../mappers/ServerMapper";
 import { ServerPrivacy } from "../../../../shared/constants/server.const";
+import { ServerMemberModel } from "../database/ServerMemberModel";
 
 @injectable()
 export class ServerRepository
@@ -16,19 +17,16 @@ export class ServerRepository
   }
 
   async findByOwner(ownerId: string): Promise<Server[]> {
-    const docs = await this.model
-      .find({ ownerId, deletedAt: null })
-      .sort({ createdAt: -1 })
-      .lean();
+    const docs = await this.model.find({ ownerId, deletedAt: null }).sort({ createdAt: -1 }).lean();
     return docs.map((doc) => this.mapper.toDomain(doc));
   }
 
   async findPublicServers(limit: number = 20, offset: number = 0): Promise<Server[]> {
     const docs = await this.model
-      .find({ 
-        privacy: ServerPrivacy.PUBLIC, 
+      .find({
+        privacy: ServerPrivacy.PUBLIC,
         deletedAt: null,
-        isDisabled: false 
+        isDisabled: false,
       })
       .sort({ memberCount: -1, createdAt: -1 })
       .skip(offset)
@@ -42,10 +40,7 @@ export class ServerRepository
 
     const docs = await this.model
       .find({
-        $or: [
-          { name: { $regex: query, $options: "i" } },
-          { $text: { $search: query } },
-        ],
+        $or: [{ name: { $regex: query, $options: "i" } }, { $text: { $search: query } }],
         deletedAt: null,
         isDisabled: false,
       })
@@ -55,46 +50,32 @@ export class ServerRepository
   }
 
   async incrementMemberCount(serverId: string): Promise<void> {
-    await this.model.updateOne(
-      { _id: serverId },
-      { $inc: { memberCount: 1 } }
-    );
+    await this.model.updateOne({ _id: serverId }, { $inc: { memberCount: 1 } });
   }
 
   async decrementMemberCount(serverId: string): Promise<void> {
-    await this.model.updateOne(
-      { _id: serverId },
-      { $inc: { memberCount: -1 } }
-    );
+    await this.model.updateOne({ _id: serverId }, { $inc: { memberCount: -1 } });
   }
 
   async findByUser(userId: string): Promise<Server[]> {
-    const members = await this.model.aggregate([
-      {
-        $lookup: {
-          from: "servermembers",
-          localField: "_id",
-          foreignField: "serverId",
-          as: "members",
-        },
-      },
-      {
-        $match: {
-          "members.userId": userId,
-          deletedAt: null,
-        },
-      },
-      {
-        $sort: { createdAt: -1 },
-      },
-    ]);
-    return members.map((doc) => this.mapper.toDomain(doc));
+    const membership = await ServerMemberModel.find({ userId }).lean();
+    const serverIds = membership.map((m) => m.serverId);
+
+    if (serverIds.length === 0) return [];
+
+    const docs = await this.model
+      .find({
+        _id: { $in: serverIds },
+        deletedAt: null,
+      })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return docs.map((doc) => this.mapper.toDomain(doc));
   }
 
   async findByIdWithMembers(serverId: string): Promise<Server | null> {
-    const doc = await this.model
-      .findOne({ _id: serverId, deletedAt: null })
-      .lean();
+    const doc = await this.model.findOne({ _id: serverId, deletedAt: null }).lean();
     return doc ? this.mapper.toDomain(doc) : null;
   }
 }

@@ -3,7 +3,10 @@ import { IServerMemberPersistence } from "../database/ServerMemberModel";
 import { IMapper } from "../../../core/common/mappers/IMapper";
 import { OmittedDatabaseFields } from "../../../../shared/constants/database-field.const";
 
-export class ServerMemberPersistenceMapper implements IMapper<IServerMemberPersistence, ServerMember> {
+export class ServerMemberPersistenceMapper implements IMapper<
+  IServerMemberPersistence,
+  ServerMember
+> {
   toDomain(doc: IServerMemberPersistence): ServerMember {
     return new ServerMember({
       id: doc._id.toString(),

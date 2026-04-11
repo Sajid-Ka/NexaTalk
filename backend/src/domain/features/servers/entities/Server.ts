@@ -1,4 +1,8 @@
-import { ServerPrivacy } from "../../../../shared/constants/server.const";
+import { ServerPrivacy, ServerValidation } from "../../../../shared/constants/server.const";
+import { ServerNameTooShortError } from "../errors/ServerNameTooShortError";
+import { ServerNameTooLongError } from "../errors/ServerNameTooLongError";
+import { ServerDescriptionTooLongError } from "../errors/ServerDescriptionTooLongError";
+import { ServerTagsLimitExceededError } from "../errors/ServerTagsLimitExceededError";
 
 export interface ServerProps {
   id?: string;
@@ -32,11 +36,17 @@ export class Server {
   public readonly deletedAt: Date | null;
 
   constructor(props: ServerProps) {
-    if (!props.name || props.name.trim().length < 2) {
-      throw new Error("Server name must be at least 2 characters");
+    if (!props.name || props.name.trim().length < ServerValidation.MIN_NAME_LENGTH) {
+      throw new ServerNameTooShortError();
     }
-    if (props.name.trim().length > 100) {
-      throw new Error("Server name must be at most 100 characters");
+    if (props.name.trim().length > ServerValidation.MAX_NAME_LENGTH) {
+      throw new ServerNameTooLongError();
+    }
+    if (props.description && props.description.length > ServerValidation.MAX_DESCRIPTION_LENGTH) {
+      throw new ServerDescriptionTooLongError();
+    }
+    if (props.tags && props.tags.length > ServerValidation.MAX_TAGS) {
+      throw new ServerTagsLimitExceededError();
     }
     if (!props.ownerId) {
       throw new Error("Owner ID is required");
@@ -67,9 +77,5 @@ export class Server {
 
   public isOwner(userId: string): boolean {
     return this.ownerId === userId;
-  }
-
-  public softDelete(): void {
-    // We'll handle through repository
   }
 }

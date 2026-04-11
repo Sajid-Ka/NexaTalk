@@ -14,6 +14,9 @@ export const AppRoute = {
   ADMIN_USERS: "/admin/users",
   
   ONBOARDING: "/onboarding",
+  
+  SERVERS: "/servers",
+  SERVER_DASHBOARD: "/servers/:serverId",
 
   NOT_FOUND: "*",
 } as const;

@@ -21,11 +21,14 @@ const serverMemberSchema = new Schema<IServerMemberPersistence>(
       default: ServerMemberRole.MEMBER,
     },
   },
-  { timestamps: { createdAt: "joinedAt", updatedAt: "updatedAt" } }
+  { timestamps: { createdAt: "joinedAt", updatedAt: "updatedAt" } },
 );
 
 serverMemberSchema.index({ serverId: 1, userId: 1 }, { unique: true });
 serverMemberSchema.index({ serverId: 1, role: 1 });
 serverMemberSchema.index({ userId: 1, joinedAt: -1 });
 
-export const ServerMemberModel = model<IServerMemberPersistence>("ServerMember", serverMemberSchema);
+export const ServerMemberModel = model<IServerMemberPersistence>(
+  "ServerMember",
+  serverMemberSchema,
+);

@@ -35,7 +35,7 @@ const serverSchema = new Schema<IServerPersistence>(
     tags: [{ type: String }],
     deletedAt: { type: Date, default: null },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 serverSchema.index({ name: "text" });

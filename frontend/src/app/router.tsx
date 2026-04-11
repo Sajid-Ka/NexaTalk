@@ -15,6 +15,8 @@ import UserManagementPage from "../features/admin/pages/UserManagementPage";
 import AdminRoute from "../routes/AdminRoute";
 import NotFoundPage from "../shared/pages/NotFoundPage";
 import OnboardingPage from "../features/onboarding/pages/OnboardingPage";
+import ServerLayout from "../features/servers/layouts/ServerLayout";
+import ServerDashboard from "../features/servers/pages/ServerDashboard";
 import { AppRoute } from "../shared/constants/app-route.const";
 
 export default function AppRouter() {
@@ -119,6 +121,19 @@ export default function AppRouter() {
                     </AdminRoute>
                 }
             />
+
+            {/* Server Routes */}
+            <Route
+                path={AppRoute.SERVERS}
+                element={
+                    <ProtectedRoute>
+                        <ServerLayout />
+                    </ProtectedRoute>
+                }
+            >
+                <Route path=":serverId" element={<ServerDashboard />} />
+            </Route>
+
             <Route path="*" element={<NotFoundPage />} />
         </Routes>
 

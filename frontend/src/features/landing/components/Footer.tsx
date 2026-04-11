@@ -1,4 +1,3 @@
-import { MessageSquare } from "lucide-react";
 import Button from "../../../shared/ui/Button";
 import Card from "../../../shared/ui/Card";
 
@@ -10,9 +9,7 @@ export default function Footer() {
 
         <div className="relative z-10">
           <div className="flex justify-center mb-6">
-            <div className="bg-gradient-to-tr from-indigo-600 to-purple-600 p-3 rounded-xl shadow-lg shadow-indigo-500/20">
-              <MessageSquare className="w-8 h-8 text-white" />
-            </div>
+            <img src="/ChatGPT Image Jan 31, 2026, 05_29_25 PM.png" alt="Logo" className="w-25 h-25 object-contain" />
           </div>
 
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">

@@ -39,12 +39,12 @@ export class ServerInvite {
     if (this.expiresAt && this.expiresAt.getTime() <= Date.now()) {
       return false;
     }
-    
+
     // Check max uses
     if (this.maxUses > 0 && this.uses >= this.maxUses) {
       return false;
     }
-    
+
     return true;
   }
 

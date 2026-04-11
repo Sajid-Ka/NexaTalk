@@ -5,7 +5,7 @@ import Card from "../../../shared/ui/Card";
 
 export default function HeroSection() {
   return (
-    <section className="relative pt-32 pb-20 px-6 overflow-hidden">
+    <section className="relative pt-40 pb-20 px-6 overflow-hidden">
       {/* Background Glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-indigo-600/20 rounded-full blur-[120px] -z-10" />
 

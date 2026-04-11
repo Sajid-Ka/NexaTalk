@@ -3,7 +3,10 @@ import { IServerInvitePersistence } from "../database/ServerInviteModel";
 import { IMapper } from "../../../core/common/mappers/IMapper";
 import { OmittedDatabaseFields } from "../../../../shared/constants/database-field.const";
 
-export class ServerInvitePersistenceMapper implements IMapper<IServerInvitePersistence, ServerInvite> {
+export class ServerInvitePersistenceMapper implements IMapper<
+  IServerInvitePersistence,
+  ServerInvite
+> {
   toDomain(doc: IServerInvitePersistence): ServerInvite {
     return new ServerInvite({
       id: doc._id.toString(),
