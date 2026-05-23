@@ -18,6 +18,14 @@ import OnboardingPage from "../features/onboarding/pages/OnboardingPage";
 import ServerLayout from "../features/servers/layouts/ServerLayout";
 import ServerDashboard from "../features/servers/pages/ServerDashboard";
 import { AppRoute } from "../shared/constants/app-route.const";
+import { Navigate } from "react-router-dom";
+import OverviewSettingsPage from "../features/servers/pages/settings/OverviewSettingsPage";
+import ServerSettingsLayout from "../features/servers/pages/settings/ServerSettingsLayout";
+import MembersSettingsPage from "../features/servers/pages/settings/MembersSettingsPage";
+import InvitesSettingsPage from "../features/servers/pages/settings/InvitesSettingsPage";
+import AuditLogsPage from "../features/servers/pages/settings/AuditLogsSettingsPage";
+import BansSettingsPage from "../features/servers/pages/settings/BansSettingsPage";
+import DangerZonePage from "../features/servers/pages/settings/DangerZonePage";
 
 export default function AppRouter() {
     return (
@@ -132,6 +140,19 @@ export default function AppRouter() {
                 }
             >
                 <Route path=":serverId" element={<ServerDashboard />} />
+
+                <Route
+                    path=":serverId/settings"
+                    element={<ServerSettingsLayout />}
+                >
+                    <Route index element={<Navigate to="overview" replace />} />
+                    <Route path="overview" element={<OverviewSettingsPage />} />
+                    <Route path="members" element={<MembersSettingsPage />} />
+                    <Route path="invites" element={<InvitesSettingsPage />} />
+                    <Route path="audit-logs" element={<AuditLogsPage />} />
+                    <Route path="bans" element={<BansSettingsPage />} />
+                    <Route path="danger" element={<DangerZonePage />} />
+                </Route>
             </Route>
 
             <Route path="*" element={<NotFoundPage />} />

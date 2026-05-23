@@ -3,6 +3,7 @@ import type { Server } from "../../types";
 import Button from "../../../../shared/ui/Button";
 import Badge from "../../../../shared/ui/Badge";
 import { useAuth } from "../../../auth/context/useAuth";
+import { useNavigate } from "react-router-dom";
 
 interface ServerDashboardHeroProps {
   server: Server;
@@ -27,6 +28,8 @@ export default function ServerDashboardHero({
     enrichedServer.onlineCount ??
     members.filter((member) => member.status !== "offline").length;
 
+  const navigate = useNavigate()
+
   const fallbackInitial = server.name.charAt(0).toUpperCase();
   const tags = server.tags ?? [];
 
@@ -47,6 +50,7 @@ export default function ServerDashboardHero({
         </Button>
         {isOwner && (
           <Button
+            onClick={() => navigate(`/servers/${server.id}/settings`)}
             type="button"
             size="sm"
             variant="outline"
