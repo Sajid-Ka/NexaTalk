@@ -8,6 +8,7 @@ import { ILogger } from "../../../domain/core/common/services/ILogger";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 import { ServerNotFoundError } from "../../../domain/features/servers/errors/ServerNotFoundError";
 import { InsufficientPermissionsError } from "../../../domain/features/servers/errors/InsufficientPermissionsError";
+import { ITransactionManager } from "../../../domain/core/common/services/ITransactionManager";
 
 @injectable()
 export class DeleteServer implements IDeleteServerUsecase {
@@ -17,6 +18,8 @@ export class DeleteServer implements IDeleteServerUsecase {
     private readonly _memberRepo: IServerMemberRepository,
     @inject(SERVERS_TYPES.ServerInviteRepository)
     private readonly _inviteRepo: IServerInviteRepository,
+    @inject(COMMON_TYPES.TransactionManager)
+    private readonly _transactionManager: ITransactionManager,
     @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
   ) {}
 
@@ -33,13 +36,13 @@ export class DeleteServer implements IDeleteServerUsecase {
       throw new InsufficientPermissionsError();
     }
 
-    // Soft delete the server
-    await this._serverRepo.update(serverId, { deletedAt: new Date() });
+    await this._transactionManager.run(async (session) => {
+      // Soft delete the server
+      await this._serverRepo.update(serverId, { deletedAt: new Date() }, session);
 
-    // Delete all invites
-    await this._inviteRepo.deleteByServer(serverId);
-
-    // Note: Members are not deleted, they will be filtered out when querying servers
+      // Delete all invites
+      await this._inviteRepo.deleteByServer(serverId, session);
+    });
 
     this._logger.info("Server deleted", { serverId, userId });
   }

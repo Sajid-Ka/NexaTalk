@@ -37,16 +37,8 @@ export class ServerMember {
     return this.role === ServerMemberRole.ADMIN || this.role === ServerMemberRole.OWNER;
   }
 
-  public isModerator(): boolean {
-    return this.role === ServerMemberRole.MODERATOR || this.isAdmin();
-  }
-
   public promoteToAdmin(): void {
     this.role = ServerMemberRole.ADMIN;
-  }
-
-  public promoteToModerator(): void {
-    this.role = ServerMemberRole.MODERATOR;
   }
 
   public demoteToMember(): void {

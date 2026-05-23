@@ -14,6 +14,8 @@ import { NotFoundError } from "../../../domain/core/errors/NotFoundError";
 import { ServerMemberRole } from "../../../shared/constants/server.const";
 import { ServerNotFoundError } from "../../../domain/features/servers/errors/ServerNotFoundError";
 import { AlreadyMemberError } from "../../../domain/features/servers/errors/AlreadyMemberError";
+import { InsufficientPermissionsError } from "../../../domain/features/servers/errors/InsufficientPermissionsError";
+import { ITransactionManager } from "../../../domain/core/common/services/ITransactionManager";
 
 @injectable()
 export class JoinServer implements IJoinServerUsecase {
@@ -22,6 +24,8 @@ export class JoinServer implements IJoinServerUsecase {
     @inject(SERVERS_TYPES.ServerMemberRepository)
     private readonly _memberRepo: IServerMemberRepository,
     @inject(AUTH_TYPES.UserRepository) private readonly _userRepo: IUserRepository,
+    @inject(COMMON_TYPES.TransactionManager)
+    private readonly _transactionManager: ITransactionManager,
     @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
   ) {}
 
@@ -38,8 +42,8 @@ export class JoinServer implements IJoinServerUsecase {
       throw new ServerNotFoundError();
     }
 
-    if (server.isDisabled) {
-      throw new ServerNotFoundError();
+    if (server.isPrivate()) {
+      throw new InsufficientPermissionsError("Private servers require invite access");
     }
 
     const existingMember = await this._memberRepo.findByServerAndUser(serverId, userId);
@@ -54,8 +58,10 @@ export class JoinServer implements IJoinServerUsecase {
       role: ServerMemberRole.MEMBER,
     });
 
-    await this._memberRepo.create(member);
-    await this._serverRepo.incrementMemberCount(serverId);
+    await this._transactionManager.run(async (session) => {
+      await this._memberRepo.create(member, session);
+      await this._serverRepo.incrementMemberCount(serverId, session);
+    });
 
     // Get updated server
     const updatedServer = await this._serverRepo.findById(serverId);

@@ -8,7 +8,6 @@ export type ServerPrivacy = (typeof ServerPrivacy)[keyof typeof ServerPrivacy];
 export const ServerMemberRole = {
   OWNER: "owner",
   ADMIN: "admin",
-  MODERATOR: "moderator",
   MEMBER: "member",
 } as const;
 

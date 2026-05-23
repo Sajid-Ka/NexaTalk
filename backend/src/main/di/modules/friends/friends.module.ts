@@ -4,7 +4,7 @@ import { FRIENDS_TYPES } from "./friends.types";
 import { FriendRepository } from "../../../../infrastructure/features/friends/repositories/FriendRepository";
 
 import { SendFriendRequest } from "../../../../application/friends/usecases/SendFriendRequest";
-import { RespondFriendRequest } from "../../../../application/friends/usecases/RespondFrinedRequest";
+import { RespondFriendRequest } from "../../../../application/friends/usecases/RespondFriendRequest";
 import { GetFriends } from "../../../../application/friends/usecases/GetFriends";
 import { GetPendingRequests } from "../../../../application/friends/usecases/GetPendingRequests";
 import { RemoveFriend } from "../../../../application/friends/usecases/RemoveFriend";

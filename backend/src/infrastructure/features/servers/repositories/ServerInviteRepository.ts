@@ -4,6 +4,7 @@ import { IServerInviteRepository } from "../../../../domain/features/servers/rep
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
 import { ServerInviteModel, IServerInvitePersistence } from "../database/ServerInviteModel";
 import { ServerInvitePersistenceMapper } from "../mappers/ServerInviteMapper";
+import { ClientSession } from "mongoose";
 
 @injectable()
 export class ServerInviteRepository
@@ -35,8 +36,9 @@ export class ServerInviteRepository
     await this.model.updateOne({ code }, { $inc: { uses: 1 } });
   }
 
-  async deleteByServer(serverId: string): Promise<number> {
-    const result = await this.model.deleteMany({ serverId });
+  async deleteByServer(serverId: string, session?: ClientSession): Promise<number> {
+    const result = await this.model.deleteMany({ serverId }).session(session ?? null);
+
     return result.deletedCount;
   }
 }

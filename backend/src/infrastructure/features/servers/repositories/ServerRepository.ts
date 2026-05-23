@@ -6,6 +6,7 @@ import { ServerModel, IServerPersistence } from "../database/ServerModel";
 import { ServerPersistenceMapper } from "../mappers/ServerMapper";
 import { ServerPrivacy } from "../../../../shared/constants/server.const";
 import { ServerMemberModel } from "../database/ServerMemberModel";
+import { ClientSession } from "mongoose";
 
 @injectable()
 export class ServerRepository
@@ -49,12 +50,26 @@ export class ServerRepository
     return docs.map((doc) => this.mapper.toDomain(doc));
   }
 
-  async incrementMemberCount(serverId: string): Promise<void> {
-    await this.model.updateOne({ _id: serverId }, { $inc: { memberCount: 1 } });
+  async incrementMemberCount(serverId: string, session?: ClientSession): Promise<void> {
+    await this.model
+      .updateOne({ _id: serverId }, { $inc: { memberCount: 1 } })
+      .session(session ?? null);
   }
 
-  async decrementMemberCount(serverId: string): Promise<void> {
-    await this.model.updateOne({ _id: serverId }, { $inc: { memberCount: -1 } });
+  async decrementMemberCount(serverId: string, session?: ClientSession): Promise<void> {
+    await this.model
+      .updateOne({ _id: serverId }, { $inc: { memberCount: -1 } })
+      .session(session ?? null);
+  }
+
+  async findById(id: string): Promise<Server | null> {
+    const doc = await this.findByIdRaw(id);
+
+    if (!doc || doc.deletedAt || doc.isDisabled) {
+      return null;
+    }
+
+    return this.mapper.toDomain(doc);
   }
 
   async findByUser(userId: string): Promise<Server[]> {
@@ -67,6 +82,7 @@ export class ServerRepository
       .find({
         _id: { $in: serverIds },
         deletedAt: null,
+        isDisabled: false,
       })
       .sort({ createdAt: -1 })
       .lean();
@@ -75,7 +91,17 @@ export class ServerRepository
   }
 
   async findByIdWithMembers(serverId: string): Promise<Server | null> {
-    const doc = await this.model.findOne({ _id: serverId, deletedAt: null }).lean();
+    const doc = await this.model
+      .findOne({
+        _id: serverId,
+        deletedAt: null,
+        isDisabled: false,
+      })
+      .lean();
     return doc ? this.mapper.toDomain(doc) : null;
+  }
+
+  async updateOwner(serverId: string, ownerId: string, session?: ClientSession): Promise<void> {
+    await this.model.updateOne({ _id: serverId }, { $set: { ownerId } }).session(session ?? null);
   }
 }
