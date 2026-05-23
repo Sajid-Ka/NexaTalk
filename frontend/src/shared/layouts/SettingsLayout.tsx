@@ -14,7 +14,7 @@ export default function SettingsLayout({
   backTo,
 }: SettingsLayoutProps) {
   return (
-    <div className="min-h-screen bg-[#070A12] text-white">
+    <div className="h-screen overflow-hidden bg-[#070A12] text-white">
       <div className="mx-auto flex min-h-screen max-w-[1800px]">
         <SettingsSidebar
           title={title}
@@ -22,7 +22,7 @@ export default function SettingsLayout({
           backTo={backTo}
         />
 
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto h-screen">
           <Outlet />
         </main>
       </div>
