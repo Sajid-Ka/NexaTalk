@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { cn } from "../../../shared/utils/cn";
+import { cn } from "../../../../shared/utils/cn";
 
 interface CommissionCardProps {
     title: string;

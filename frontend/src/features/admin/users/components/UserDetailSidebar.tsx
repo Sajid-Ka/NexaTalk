@@ -1,5 +1,5 @@
 import type { User } from "./UserTable";
-import Avatar from "../../../shared/ui/Avatar";
+import Avatar from "../../../../shared/ui/Avatar";
 
 
 interface UserDetailSidebarProps {
@@ -40,9 +40,8 @@ export default function UserDetailSidebar({ user }: UserDetailSidebarProps) {
                 </div>
                 <div className="flex justify-between items-center pb-2 border-b border-white/5">
                     <span className="text-xs text-gray-500 font-medium">Status</span>
-                    <span className={`text-sm font-medium ${
-                        user.status === "Online" ? "text-green-500" : "text-gray-500"
-                    }`}>
+                    <span className={`text-sm font-medium ${user.status === "Online" ? "text-green-500" : "text-gray-500"
+                        }`}>
                         {user.status}
                     </span>
                 </div>

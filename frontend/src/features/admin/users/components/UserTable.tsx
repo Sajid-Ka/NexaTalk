@@ -1,11 +1,11 @@
 import { Eye, Ban, Unlock, Trash2, LogOut } from "lucide-react";
 import { useState } from "react";
-import Avatar from "../../../shared/ui/Avatar";
-import Badge from "../../../shared/ui/Badge";
-import { Table } from "../../../shared/ui/Table/Table";
-import type { Column } from "../../../shared/ui/Table/Table";
-import ConfirmModal from "../../../shared/ui/ConfirmModal";
-import { useAuth } from "../../auth/context/useAuth";
+import Avatar from "../../../../shared/ui/Avatar";
+import Badge from "../../../../shared/ui/Badge";
+import { Table } from "../../../../shared/ui/Table/Table";
+import type { Column } from "../../../../shared/ui/Table/Table";
+import ConfirmModal from "../../../../shared/ui/ConfirmModal";
+import { useAuth } from "../../../auth/context/useAuth";
 
 export interface User {
     id: string;
@@ -30,9 +30,9 @@ interface UserTableProps {
     onSort?: (key: string) => void;
 }
 
-export default function UserTable({ 
-    users, 
-    selectedUserId, 
+export default function UserTable({
+    users,
+    selectedUserId,
     onSelectUser,
     onBlockUser,
     onUnblockUser,
@@ -93,9 +93,8 @@ export default function UserTable({
             sortable: true,
             render: (status) => (
                 <div className="flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full ${
-                        status === "Online" ? "bg-green-500" : "bg-gray-500"
-                    }`} />
+                    <span className={`w-2 h-2 rounded-full ${status === "Online" ? "bg-green-500" : "bg-gray-500"
+                        }`} />
                     <span className="text-xs text-gray-300">{status as string}</span>
                 </div>
             )

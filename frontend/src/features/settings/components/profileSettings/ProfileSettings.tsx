@@ -1,15 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import { Upload, Trash2, Loader2 } from "lucide-react";
-import Input from "../../../shared/ui/Input";
-import TextArea from "../../../shared/ui/TextArea";
-import Switch from "../../../shared/ui/Switch";
-import Button from "../../../shared/ui/Button";
-import Avatar from "../../../shared/ui/Avatar";
+import Input from "../../../../shared/ui/Input";
+import TextArea from "../../../../shared/ui/TextArea";
+import Switch from "../../../../shared/ui/Switch";
+import Button from "../../../../shared/ui/Button";
+import Avatar from "../../../../shared/ui/Avatar";
 import ProfileCardPreview from "./ProfileCardPreview";
-import { getMyProfileApi, updateProfileApi } from "../../profile/api/profileApi";
-import { uploadAvatarApi, deleteAvatarApi } from "../../profile/api/profileApi";
+import { getMyProfileApi, updateProfileApi } from "../../../profile/api/profileApi";
+import { uploadAvatarApi, deleteAvatarApi } from "../../../profile/api/profileApi";
 import toast from "react-hot-toast";
-import { UserPresence } from "../../../shared/constants/user.const";
+import { UserPresence } from "../../../../shared/constants/user.const";
 import { AxiosError } from "axios";
 
 interface ProfileFormData {

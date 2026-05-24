@@ -10,8 +10,8 @@ import VerifyEmailPage from "../features/auth/pages/VerifyEmailPage";
 import CheckEmailPage from "../features/auth/pages/CheckEmailPage";
 import ForgotPasswordPage from "../features/auth/pages/ForgotPasswordPage";
 import ResetPasswordPage from "../features/auth/pages/ResetPasswordPage";
-import AdminDashboardPage from "../features/admin/pages/AdminDashboardPage";
-import UserManagementPage from "../features/admin/pages/UserManagementPage";
+import AdminDashboardPage from "../features/admin/dashboard/pages/AdminDashboardPage";
+import UserManagementPage from "../features/admin/users/pages/UserManagementPage";
 import AdminRoute from "../routes/AdminRoute";
 import NotFoundPage from "../shared/pages/NotFoundPage";
 import OnboardingPage from "../features/onboarding/pages/OnboardingPage";
@@ -158,6 +158,6 @@ export default function AppRouter() {
             <Route path="*" element={<NotFoundPage />} />
         </Routes>
 
-        
+
     )
 }

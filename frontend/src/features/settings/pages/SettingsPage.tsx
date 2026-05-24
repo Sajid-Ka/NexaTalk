@@ -1,6 +1,6 @@
-import { SettingsSidebar } from "../components";
-import RecommendationSettings from "../components/RecommendationSettings";
-import ProfileSettings from "../components/ProfileSettings";
+import { SettingsSidebar } from "../components/profileSettings";
+import RecommendationSettings from "../components/profileSettings/RecommendationSettings";
+import ProfileSettings from "../components/profileSettings/ProfileSettings";
 
 export default function SettingsPage() {
     return (

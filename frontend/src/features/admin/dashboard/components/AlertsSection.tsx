@@ -1,6 +1,6 @@
 import { type ElementType } from "react";
 import { AlertTriangle, Cpu, Hammer } from "lucide-react";
-import { cn } from "../../../shared/utils/cn";
+import { cn } from "../../../../shared/utils/cn";
 
 interface AlertItemProps {
     icon: ElementType;

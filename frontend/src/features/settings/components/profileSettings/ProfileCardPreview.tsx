@@ -1,8 +1,8 @@
 import { Verified } from "lucide-react";
-import Avatar from "../../../shared/ui/Avatar";
-import Badge from "../../../shared/ui/Badge";
-import { BadgeVariant } from "../../../shared/constants/ui.const";
-import { UserPresence } from "../../../shared/constants/user.const"; // Add this
+import Avatar from "../../../../shared/ui/Avatar";
+import Badge from "../../../../shared/ui/Badge";
+import { BadgeVariant } from "../../../../shared/constants/ui.const";
+import { UserPresence } from "../../../../shared/constants/user.const"; // Add this
 
 interface ProfileCardPreviewProps {
     username: string;

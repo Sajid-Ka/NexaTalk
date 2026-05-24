@@ -1,4 +1,4 @@
-import AdminSidebar from "../components/AdminSidebar";
+import AdminSidebar from "../../shared/components/AdminSidebar";
 
 
 export default function AdminDashboardPage() {

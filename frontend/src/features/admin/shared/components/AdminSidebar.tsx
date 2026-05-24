@@ -10,9 +10,9 @@ import {
     Activity,
     LogOut
 } from "lucide-react";
-import { cn } from "../../../shared/utils/cn";
-import { useNavigate,useLocation } from "react-router-dom";
-import { useAuth } from "../../auth/context/useAuth";
+import { cn } from "../../../../shared/utils/cn";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../../auth/context/useAuth";
 import toast from "react-hot-toast";
 
 interface NavItemProps {
@@ -45,16 +45,16 @@ const NavItem = ({ icon: Icon, label, active, badge, onClick }: NavItemProps) =>
 export default function AdminSidebar() {
     const navigate = useNavigate();
     const location = useLocation();
-    const {logout} = useAuth();
+    const { logout } = useAuth();
 
     const handleLogout = async () => {
         try {
             await logout();
             toast.success("Logged out successfully");
-            navigate("/login",{replace: true});
+            navigate("/login", { replace: true });
         } catch (error) {
-            console.error("Logout failed: ",error);
-            toast.error("Failed to loggout");           
+            console.error("Logout failed: ", error);
+            toast.error("Failed to loggout");
         }
     }
 
@@ -92,7 +92,7 @@ export default function AdminSidebar() {
             </nav>
 
             <div className="px-4 mt-auto">
-                <div 
+                <div
                     onClick={handleLogout}
                     className="flex items-center gap-3 px-4 py-3 text-red-500 cursor-pointer hover:bg-red-500/10 rounded-xl transition-colors"
                 >
