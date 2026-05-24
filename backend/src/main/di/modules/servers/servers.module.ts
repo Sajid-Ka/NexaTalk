@@ -7,19 +7,21 @@ import { ServerMemberRepository } from "../../../../infrastructure/features/serv
 import { ServerInviteRepository } from "../../../../infrastructure/features/servers/repositories/ServerInviteRepository";
 
 // Use Cases
-import { CreateServer } from "../../../../application/servers/usecases/CreateServer";
-import { GetServer } from "../../../../application/servers/usecases/GetServer";
-import { UpdateServer } from "../../../../application/servers/usecases/UpdateServer";
-import { DeleteServer } from "../../../../application/servers/usecases/DeleteServer";
-import { JoinServer } from "../../../../application/servers/usecases/JoinServer";
-import { LeaveServer } from "../../../../application/servers/usecases/LeaveServer";
-import { GetUserServers } from "../../../../application/servers/usecases/GetUserServers";
-import { GetPublicServers } from "../../../../application/servers/usecases/GetPublicServers";
-import { CreateServerInvite } from "../../../../application/servers/usecases/CreateServerInvite";
-import { JoinServerByInvite } from "../../../../application/servers/usecases/JoinServerByInvite";
+import { CreateServer } from "../../../../application/servers/core/usecases/CreateServer";
+import { GetServer } from "../../../../application/servers/core/usecases/GetServer";
+import { UpdateServer } from "../../../../application/servers/core/usecases/UpdateServer";
+import { DeleteServer } from "../../../../application/servers/core/usecases/DeleteServer";
+import { JoinServer } from "../../../../application/servers/members/usecases/JoinServer";
+import { LeaveServer } from "../../../../application/servers/members/usecases/LeaveServer";
+import { GetUserServers } from "../../../../application/servers/core/usecases/GetUserServers";
+import { GetPublicServers } from "../../../../application/servers/core/usecases/GetPublicServers";
+import { CreateServerInvite } from "../../../../application/servers/invites/usecases/CreateServerInvite";
+import { JoinServerByInvite } from "../../../../application/servers/invites/usecases/JoinServerByInvite";
 
 // Controllers
-import { ServerController } from "../../../../presentation/servers/controllers/ServerController";
+import { ServerCoreController } from "../../../../presentation/servers/controllers/ServerCoreController";
+import { ServerMemberController } from "../../../../presentation/servers/controllers/ServerMemberController";
+import { ServerInviteController } from "../../../../presentation/servers/controllers/ServerInviteController";
 
 export function loadServersModule(container: Container) {
   // Repositories
@@ -46,5 +48,11 @@ export function loadServersModule(container: Container) {
   container.bind(SERVERS_TYPES.JoinServerByInvite).to(JoinServerByInvite);
 
   // Controllers
-  container.bind(SERVERS_TYPES.ServerController).to(ServerController);
+  container.bind<ServerCoreController>(SERVERS_TYPES.ServerCoreController).to(ServerCoreController);
+  container
+    .bind<ServerMemberController>(SERVERS_TYPES.ServerMemberController)
+    .to(ServerMemberController);
+  container
+    .bind<ServerInviteController>(SERVERS_TYPES.ServerInviteController)
+    .to(ServerInviteController);
 }

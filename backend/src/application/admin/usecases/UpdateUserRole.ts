@@ -2,7 +2,7 @@ import { inject, injectable } from "inversify";
 import { ADMIN_TYPES } from "../../../main/di/modules/admin/admin.types";
 import { IAdminUserRepository } from "../../../domain/features/admin/repositories/IAdminUserRepository";
 import { NotFoundError } from "../../../domain/core/errors/NotFoundError";
-import { IUpdateUserRoleUsecase } from "../interface/IUpdateUserRoleUsecase";
+import { IUpdateUserRoleUsecase } from "../interfaces/IUpdateUserRoleUsecase";
 import { GlobalRole } from "../../../shared/constants/userRole.const";
 import { ILogger } from "../../../domain/core/common/services/ILogger";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";

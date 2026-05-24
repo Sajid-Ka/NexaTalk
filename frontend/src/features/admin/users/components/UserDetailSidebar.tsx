@@ -1,4 +1,4 @@
-import type { User } from "./UserTable";
+import type { User } from "../type/userManagement.types";
 import Avatar from "../../../../shared/ui/Avatar";
 
 

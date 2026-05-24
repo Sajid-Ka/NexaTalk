@@ -8,7 +8,7 @@ import recommendationRoutes from "./recommendationRoutes";
 import userRoutes from "./userSettingsRoutes";
 import profileRoutes from "./profileRoutes";
 import friendRoutes from "./friendRoutes";
-import serverRoutes from "./serverRoutes";
+import serverRoutes from "./servers";
 
 const router = Router();
 

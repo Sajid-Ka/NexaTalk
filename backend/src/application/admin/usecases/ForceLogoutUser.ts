@@ -8,7 +8,7 @@ import { NotFoundError } from "../../../domain/core/errors/NotFoundError";
 import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
 import { ITokenService } from "../../../domain/features/auth/services/ITokenService";
 import { IRefreshTokenRepository } from "../../../domain/features/auth/repositories/IRefreshTokenRepository";
-import { IForceLogoutUserUsecase } from "../interface/IForceLogoutUserUsecase";
+import { IForceLogoutUserUsecase } from "../interfaces/IForceLogoutUserUsecase";
 
 @injectable()
 export class ForceLogoutUser implements IForceLogoutUserUsecase {

@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
 import { injectable, inject } from "inversify";
-import { IListUsersUsecase } from "../../../application/admin/interface/IListUsersUsecase";
-import { IBlockUserUsecase } from "../../../application/admin/interface/IBlockUserUsecase";
-import { IUnblockUserUsecase } from "../../../application/admin/interface/IUnblockUserUsecase";
-import { IUpdateUserRoleUsecase } from "../../../application/admin/interface/IUpdateUserRoleUsecase";
-import { IDeleteUserUsecase } from "../../../application/admin/interface/IDeleteUserUsecase";
+import { IListUsersUsecase } from "../../../application/admin/interfaces/IListUsersUsecase";
+import { IBlockUserUsecase } from "../../../application/admin/interfaces/IBlockUserUsecase";
+import { IUnblockUserUsecase } from "../../../application/admin/interfaces/IUnblockUserUsecase";
+import { IUpdateUserRoleUsecase } from "../../../application/admin/interfaces/IUpdateUserRoleUsecase";
+import { IDeleteUserUsecase } from "../../../application/admin/interfaces/IDeleteUserUsecase";
 import { ADMIN_TYPES } from "../../../main/di/modules/admin/admin.types";
-import { IGetUserDetailsUsecase } from "../../../application/admin/interface/IGetUserDetailsUsecase";
+import { IGetUserDetailsUsecase } from "../../../application/admin/interfaces/IGetUserDetailsUsecase";
 import { successResponse } from "../../../shared/response/responseFormatter";
 import { AuthenticatedRequest } from "../../../main/types/AuthenticatedRequest";
-import { IForceLogoutUserUsecase } from "../../../application/admin/interface/IForceLogoutUserUsecase";
+import { IForceLogoutUserUsecase } from "../../../application/admin/interfaces/IForceLogoutUserUsecase";
 
 @injectable()
 export class AdminUserController {

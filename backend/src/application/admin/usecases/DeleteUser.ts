@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import { ADMIN_TYPES } from "../../../main/di/modules/admin/admin.types";
 import { IAdminUserRepository } from "../../../domain/features/admin/repositories/IAdminUserRepository";
-import { IDeleteUserUsecase } from "../interface/IDeleteUserUsecase";
+import { IDeleteUserUsecase } from "../interfaces/IDeleteUserUsecase";
 import { ILogger } from "../../../domain/core/common/services/ILogger";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 import { ForbiddenError } from "../../../domain/core/errors/ForbiddenError";

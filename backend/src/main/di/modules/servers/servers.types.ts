@@ -17,5 +17,7 @@ export const SERVERS_TYPES = {
   JoinServerByInvite: Symbol.for("JoinServerByInvite"),
 
   // Controllers
-  ServerController: Symbol.for("ServerController"),
+  ServerCoreController: Symbol.for("ServerController"),
+  ServerMemberController: Symbol.for("ServerMemberController"),
+  ServerInviteController: Symbol.for("ServerInviteController"),
 };

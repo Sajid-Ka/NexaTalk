@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import { IListUsersUsecase } from "../interface/IListUsersUsecase";
+import { IListUsersUsecase } from "../interfaces/IListUsersUsecase";
 import { IAdminUserRepository } from "../../../domain/features/admin/repositories/IAdminUserRepository";
 import { ADMIN_TYPES } from "../../../main/di/modules/admin/admin.types";
 import { PaginatedUsersResponse } from "../dtos/response/PaginatedUsersResponse";

@@ -6,16 +6,7 @@ import { Table } from "../../../../shared/ui/Table/Table";
 import type { Column } from "../../../../shared/ui/Table/Table";
 import ConfirmModal from "../../../../shared/ui/ConfirmModal";
 import { useAuth } from "../../../auth/context/useAuth";
-
-export interface User {
-    id: string;
-    username: string;
-    email: string;
-    role: "Admin" | "User";
-    status: "Online" | "Offline";
-    joinedDate: string;
-    initials: string;
-}
+import type { User } from "../type/userManagement.types";
 
 interface UserTableProps {
     users: User[];

@@ -5,8 +5,7 @@ import AdminSidebar from "../../shared/components/AdminSidebar";
 
 import UserTable from "../components/UserTable";
 import UserDetailSidebar from "../components/UserDetailSidebar";
-
-import type { User } from "../components/UserTable";
+import type { User } from "../type/userManagement.types";
 
 import {
   getUsersApi,
