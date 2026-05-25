@@ -22,6 +22,8 @@ import { JoinServerByInvite } from "../../../../application/servers/invites/usec
 import { ServerCoreController } from "../../../../presentation/servers/controllers/ServerCoreController";
 import { ServerMemberController } from "../../../../presentation/servers/controllers/ServerMemberController";
 import { ServerInviteController } from "../../../../presentation/servers/controllers/ServerInviteController";
+import { IGetServerMembersUsecase } from "../../../../application/servers/members/interfaces/IGetServerMembersUsecase";
+import { GetServerMembers } from "../../../../application/servers/members/usecases/GetServerMembers";
 
 export function loadServersModule(container: Container) {
   // Repositories
@@ -55,4 +57,5 @@ export function loadServersModule(container: Container) {
   container
     .bind<ServerInviteController>(SERVERS_TYPES.ServerInviteController)
     .to(ServerInviteController);
+  container.bind<IGetServerMembersUsecase>(SERVERS_TYPES.GetServerMembers).to(GetServerMembers);
 }

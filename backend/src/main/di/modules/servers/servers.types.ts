@@ -20,4 +20,5 @@ export const SERVERS_TYPES = {
   ServerCoreController: Symbol.for("ServerController"),
   ServerMemberController: Symbol.for("ServerMemberController"),
   ServerInviteController: Symbol.for("ServerInviteController"),
+  GetServerMembers: Symbol.for("GetServerMembers"),
 };

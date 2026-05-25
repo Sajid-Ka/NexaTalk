@@ -19,8 +19,8 @@ const authMiddleware = createAuthMiddleware(tokenService, userStatusService);
 
 router.use(authMiddleware);
 
+router.get("/:serverId/members", controller.getMembers);
 router.post("/:serverId/join", controller.joinServer);
-
 router.post("/:serverId/leave", controller.leaveServer);
 
 export default router;
