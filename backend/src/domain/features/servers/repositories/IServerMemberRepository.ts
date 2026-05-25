@@ -12,4 +12,5 @@ export interface IServerMemberRepository extends IBaseRepository<ServerMember> {
   getMembersWithRole(serverId: string, role: ServerMemberRole): Promise<ServerMember[]>;
   getAdmins(serverId: string): Promise<ServerMember[]>;
   transferOwnership(serverId: string, currentOwnerId: string, newOwnerId: string): Promise<void>;
+  removeMember(serverId: string, userId: string): Promise<boolean>;
 }

@@ -24,18 +24,16 @@ import { ServerMemberController } from "../../../../presentation/servers/control
 import { ServerInviteController } from "../../../../presentation/servers/controllers/ServerInviteController";
 import { IGetServerMembersUsecase } from "../../../../application/servers/members/interfaces/IGetServerMembersUsecase";
 import { GetServerMembers } from "../../../../application/servers/members/usecases/GetServerMembers";
+import { IUpdateMemberRoleUsecase } from "../../../../application/servers/members/interfaces/IUpdateMemberRoleUsecase";
+import { UpdateMemberRole } from "../../../../application/servers/members/usecases/UpdateMemberRole";
+import { IKickMemberUsecase } from "../../../../application/servers/members/interfaces/IKickMemberUsecase";
+import { KickMember } from "../../../../application/servers/members/usecases/KickMember";
 
 export function loadServersModule(container: Container) {
   // Repositories
   container.bind(SERVERS_TYPES.ServerRepository).to(ServerRepository).inSingletonScope();
-  container
-    .bind(SERVERS_TYPES.ServerMemberRepository)
-    .to(ServerMemberRepository)
-    .inSingletonScope();
-  container
-    .bind(SERVERS_TYPES.ServerInviteRepository)
-    .to(ServerInviteRepository)
-    .inSingletonScope();
+  container.bind(SERVERS_TYPES.ServerMemberRepository).to(ServerMemberRepository).inSingletonScope();
+  container.bind(SERVERS_TYPES.ServerInviteRepository).to(ServerInviteRepository).inSingletonScope();
 
   // Use Cases
   container.bind(SERVERS_TYPES.CreateServer).to(CreateServer);
@@ -51,11 +49,9 @@ export function loadServersModule(container: Container) {
 
   // Controllers
   container.bind<ServerCoreController>(SERVERS_TYPES.ServerCoreController).to(ServerCoreController);
-  container
-    .bind<ServerMemberController>(SERVERS_TYPES.ServerMemberController)
-    .to(ServerMemberController);
-  container
-    .bind<ServerInviteController>(SERVERS_TYPES.ServerInviteController)
-    .to(ServerInviteController);
+  container.bind<ServerMemberController>(SERVERS_TYPES.ServerMemberController).to(ServerMemberController);
+  container.bind<ServerInviteController>(SERVERS_TYPES.ServerInviteController).to(ServerInviteController);
   container.bind<IGetServerMembersUsecase>(SERVERS_TYPES.GetServerMembers).to(GetServerMembers);
+  container.bind<IUpdateMemberRoleUsecase>(SERVERS_TYPES.UpdateMemberRole).to(UpdateMemberRole);
+  container.bind<IKickMemberUsecase>(SERVERS_TYPES.KickMember).to(KickMember);
 }
