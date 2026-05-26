@@ -94,6 +94,15 @@ const serverSlice = createSlice({
     clearServerError: (state) => {
       state.error = null;
     },
+    removeServerFromState: (state, action: PayloadAction<string>) => {
+      state.userServers = state.userServers.filter(
+        (server) => server.id !== action.payload,
+      );
+
+      if (state.currentServer?.id === action.payload) {
+        state.currentServer = null;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -135,5 +144,9 @@ const serverSlice = createSlice({
   },
 });
 
-export const { setCurrentServer, clearServerError } = serverSlice.actions;
+export const { 
+  setCurrentServer, 
+  clearServerError,
+  removeServerFromState
+} = serverSlice.actions;
 export default serverSlice.reducer;
