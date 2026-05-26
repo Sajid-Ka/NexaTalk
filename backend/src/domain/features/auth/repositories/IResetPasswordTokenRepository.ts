@@ -1,9 +1,9 @@
-import { ClientSession } from "mongoose";
+import { TransactionContext } from "../../../core/common/services/TransactionContext";
 import { ResetPasswordToken } from "../entities/ResetPasswordToken";
 
 export interface IResetPasswordTokenRepository {
-  save(token: ResetPasswordToken, session?: ClientSession): Promise<void>;
+  save(token: ResetPasswordToken, transaction?: TransactionContext): Promise<void>;
   findByTokenHash(tokenHash: string): Promise<ResetPasswordToken | null>;
-  markAsUsed(id: string, session?: ClientSession): Promise<void>;
-  deleteByUserId(userId: string, session?: ClientSession): Promise<void>;
+  markAsUsed(id: string, transaction?: TransactionContext): Promise<void>;
+  deleteByUserId(userId: string, transaction?: TransactionContext): Promise<void>;
 }

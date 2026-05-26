@@ -1,12 +1,13 @@
 import { injectable } from "inversify";
 import { Server } from "../../../../domain/features/servers/entities/Server";
 import { IServerRepository } from "../../../../domain/features/servers/repositories/IServerRepository";
+import { TransactionContext } from "../../../../domain/core/common/services/TransactionContext";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
+import { toMongoSession } from "../../../core/common/database/toMongoSession";
 import { ServerModel, IServerPersistence } from "../database/ServerModel";
 import { ServerPersistenceMapper } from "../mappers/ServerMapper";
 import { ServerPrivacy } from "../../../../shared/constants/server.const";
 import { ServerMemberModel } from "../database/ServerMemberModel";
-import { ClientSession } from "mongoose";
 
 @injectable()
 export class ServerRepository
@@ -50,16 +51,16 @@ export class ServerRepository
     return docs.map((doc) => this.mapper.toDomain(doc));
   }
 
-  async incrementMemberCount(serverId: string, session?: ClientSession): Promise<void> {
+  async incrementMemberCount(serverId: string, transaction?: TransactionContext): Promise<void> {
     await this.model
       .updateOne({ _id: serverId }, { $inc: { memberCount: 1 } })
-      .session(session ?? null);
+      .session(toMongoSession(transaction) ?? null);
   }
 
-  async decrementMemberCount(serverId: string, session?: ClientSession): Promise<void> {
+  async decrementMemberCount(serverId: string, transaction?: TransactionContext): Promise<void> {
     await this.model
       .updateOne({ _id: serverId }, { $inc: { memberCount: -1 } })
-      .session(session ?? null);
+      .session(toMongoSession(transaction) ?? null);
   }
 
   async findById(id: string): Promise<Server | null> {
@@ -101,7 +102,13 @@ export class ServerRepository
     return doc ? this.mapper.toDomain(doc) : null;
   }
 
-  async updateOwner(serverId: string, ownerId: string, session?: ClientSession): Promise<void> {
-    await this.model.updateOne({ _id: serverId }, { $set: { ownerId } }).session(session ?? null);
+  async updateOwner(
+    serverId: string,
+    ownerId: string,
+    transaction?: TransactionContext,
+  ): Promise<void> {
+    await this.model
+      .updateOne({ _id: serverId }, { $set: { ownerId } })
+      .session(toMongoSession(transaction) ?? null);
   }
 }

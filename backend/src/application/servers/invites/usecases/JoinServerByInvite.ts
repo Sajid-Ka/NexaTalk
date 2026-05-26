@@ -18,6 +18,8 @@ import { InviteInvalidError } from "../../../../domain/features/servers/errors/I
 import { InviteExpiredError } from "../../../../domain/features/servers/errors/InviteExpiredError";
 import { InviteMaxUsesReachedError } from "../../../../domain/features/servers/errors/InviteMaxUsesReachedError";
 import { ServerMemberRole } from "../../../../shared/constants/server.const";
+import { IServerBanRepository } from "../../../../domain/features/servers/repositories/IServerBanRepository";
+import { ForbiddenError } from "../../../../domain/core/errors/ForbiddenError";
 
 @injectable()
 export class JoinServerByInvite implements IJoinServerByInviteUsecase {
@@ -28,6 +30,7 @@ export class JoinServerByInvite implements IJoinServerByInviteUsecase {
     @inject(SERVERS_TYPES.ServerInviteRepository)
     private readonly _inviteRepo: IServerInviteRepository,
     @inject(AUTH_TYPES.UserRepository) private readonly _userRepo: IUserRepository,
+    @inject(SERVERS_TYPES.ServerBanRepository) private readonly _banRepo: IServerBanRepository,
     @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
   ) {}
 
@@ -62,6 +65,14 @@ export class JoinServerByInvite implements IJoinServerByInviteUsecase {
 
     if (server.isDisabled) {
       throw new ServerNotFoundError();
+    }
+
+    //check a user try to joined again and he already banned from this server
+    //prevent rejoin banned users.
+    const existingBan = await this._banRepo.findByServerAndUser(server.id, userId);
+
+    if (existingBan) {
+      throw new ForbiddenError("You are banned from this server");
     }
 
     const existingMember = await this._memberRepo.findByServerAndUser(server.id, userId);

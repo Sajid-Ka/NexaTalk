@@ -5,6 +5,7 @@ import { SERVERS_TYPES } from "./servers.types";
 import { ServerRepository } from "../../../../infrastructure/features/servers/repositories/ServerRepository";
 import { ServerMemberRepository } from "../../../../infrastructure/features/servers/repositories/ServerMemberRepository";
 import { ServerInviteRepository } from "../../../../infrastructure/features/servers/repositories/ServerInviteRepository";
+import { ServerBanRepository } from "../../../../infrastructure/features/servers/repositories/ServerBanRepository";
 
 // Use Cases
 import { CreateServer } from "../../../../application/servers/core/usecases/CreateServer";
@@ -27,11 +28,20 @@ import { GetServerInvites } from "../../../../application/servers/invites/usecas
 import { RevokeServerInvite } from "../../../../application/servers/invites/usecases/RevokeServerInvite";
 import { IGetServerInvitesUsecase } from "../../../../application/servers/invites/interfaces/IGetServerInvitesUsecase";
 import { IRevokeServerInviteUsecase } from "../../../../application/servers/invites/interfaces/IRevokeServerInviteUsecase";
+import { GetServerBans } from "../../../../application/servers/bans/usecases/GetServerBans";
+import { BanServerMember } from "../../../../application/servers/bans/usecases/BanServerMember";
+import { UnbanServerMember } from "../../../../application/servers/bans/usecases/UnbanServerMember";
+import { IGetServerBansUsecase } from "../../../../application/servers/bans/interfaces/IGetServerBansUsecase";
+import { IBanServerMemberUsecase } from "../../../../application/servers/bans/interfaces/IBanServerMemberUsecase";
+import { IUnbanServerMemberUsecase } from "../../../../application/servers/bans/interfaces/IUnbanServerMemberUsecase";
+import { SearchServerBanCandidates } from "../../../../application/servers/bans/usecases/SearchServerBanCandidates";
+import { ISearchServerBanCandidatesUsecase } from "../../../../application/servers/bans/interfaces/ISearchServerBanCandidatesUsecase";
 
 // Controllers
 import { ServerCoreController } from "../../../../presentation/servers/controllers/ServerCoreController";
 import { ServerMemberController } from "../../../../presentation/servers/controllers/ServerMemberController";
 import { ServerInviteController } from "../../../../presentation/servers/controllers/ServerInviteController";
+import { ServerBanController } from "../../../../presentation/servers/controllers/ServerBanController";
 
 export function loadServersModule(container: Container) {
   // Repositories
@@ -44,6 +54,7 @@ export function loadServersModule(container: Container) {
     .bind(SERVERS_TYPES.ServerInviteRepository)
     .to(ServerInviteRepository)
     .inSingletonScope();
+  container.bind(SERVERS_TYPES.ServerBanRepository).to(ServerBanRepository).inSingletonScope();
 
   // Use Cases
   container.bind(SERVERS_TYPES.CreateServer).to(CreateServer);
@@ -63,6 +74,12 @@ export function loadServersModule(container: Container) {
   container.bind<IGetServerMembersUsecase>(SERVERS_TYPES.GetServerMembers).to(GetServerMembers);
   container.bind<IUpdateMemberRoleUsecase>(SERVERS_TYPES.UpdateMemberRole).to(UpdateMemberRole);
   container.bind<IKickMemberUsecase>(SERVERS_TYPES.KickMember).to(KickMember);
+  container.bind<IGetServerBansUsecase>(SERVERS_TYPES.GetServerBans).to(GetServerBans);
+  container.bind<IBanServerMemberUsecase>(SERVERS_TYPES.BanServerMember).to(BanServerMember);
+  container.bind<IUnbanServerMemberUsecase>(SERVERS_TYPES.UnbanServerMember).to(UnbanServerMember);
+  container
+    .bind<ISearchServerBanCandidatesUsecase>(SERVERS_TYPES.SearchServerBanCandidates)
+    .to(SearchServerBanCandidates);
 
   // Controllers
   container.bind<ServerCoreController>(SERVERS_TYPES.ServerCoreController).to(ServerCoreController);
@@ -72,4 +89,5 @@ export function loadServersModule(container: Container) {
   container
     .bind<ServerInviteController>(SERVERS_TYPES.ServerInviteController)
     .to(ServerInviteController);
+  container.bind<ServerBanController>(SERVERS_TYPES.ServerBanController).to(ServerBanController);
 }

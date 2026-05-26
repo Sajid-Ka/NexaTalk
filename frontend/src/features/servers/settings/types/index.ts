@@ -9,3 +9,22 @@ export interface ServerSettingsMember {
   role: ServerMemberRole;
   joinedAt: string;
 }
+
+export interface ServerBan {
+  id: string;
+  serverId: string;
+  userId: string;
+  username: string;
+  avatar?: string;
+  bannedBy: string;
+  reason: string;
+  createdAt: string;
+}
+
+export interface ServerBanCandidate {
+  id: string;
+  username: string;
+  email: string;
+  avatar?: string;
+  serverRole: ServerMemberRole | null;
+}

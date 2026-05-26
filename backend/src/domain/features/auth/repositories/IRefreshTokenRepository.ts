@@ -1,4 +1,4 @@
-import { ClientSession } from "mongoose";
+import { TransactionContext } from "../../../core/common/services/TransactionContext";
 
 export interface RefreshTokenData {
   id?: string;
@@ -12,15 +12,15 @@ export interface RefreshTokenData {
 }
 
 export interface IRefreshTokenRepository {
-  save(token: RefreshTokenData, session?: ClientSession): Promise<void>;
+  save(token: RefreshTokenData, transaction?: TransactionContext): Promise<void>;
   findByHash(tokenHash: string): Promise<RefreshTokenData | null>;
-  revokeByHash(tokenHash: string, session?: ClientSession): Promise<void>;
-  deleteAllByUser(userId: string, session?: ClientSession): Promise<void>;
+  revokeByHash(tokenHash: string, transaction?: TransactionContext): Promise<void>;
+  deleteAllByUser(userId: string, transaction?: TransactionContext): Promise<void>;
   findActiveByUser(userId: string): Promise<RefreshTokenData[]>;
-  revokeById(sessionId: string, userId: string, session?: ClientSession): Promise<void>;
+  revokeById(sessionId: string, userId: string, transaction?: TransactionContext): Promise<void>;
   update(
     id: string,
     data: Partial<RefreshTokenData>,
-    session?: ClientSession,
+    transaction?: TransactionContext,
   ): Promise<RefreshTokenData | null>;
 }

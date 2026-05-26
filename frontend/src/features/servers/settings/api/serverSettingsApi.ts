@@ -24,3 +24,15 @@ export const revokeInviteApi = (serverId: string, inviteId: string) =>
 
 export const deleteServerApi = (serverId: string) =>
   api.delete(`/servers/${serverId}`);
+
+export const getServerBansApi = (serverId: string) =>
+  api.get(`/servers/${serverId}/bans`);
+
+export const banServerMemberApi = (serverId: string, data: { userId: string; reason?: string }) => api.post(`/servers/${serverId}/bans`, data);
+
+export const unbanServerMemberApi = (serverId: string, userId: string) =>
+  api.delete(`/servers/${serverId}/bans/${userId}`);
+
+export const searchServerBanCandidatesApi = (serverId: string, query: string) => api.get(`/servers/${serverId}/ban-candidates`, {
+  params: { q: query },
+});

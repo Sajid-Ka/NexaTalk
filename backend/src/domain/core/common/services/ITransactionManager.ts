@@ -1,5 +1,5 @@
-import { ClientSession } from "mongoose";
+import { TransactionContext } from "./TransactionContext";
 
 export interface ITransactionManager {
-  run<T>(operation: (session: ClientSession) => Promise<T>): Promise<T>;
+  run<T>(operation: (transaction: TransactionContext) => Promise<T>): Promise<T>;
 }

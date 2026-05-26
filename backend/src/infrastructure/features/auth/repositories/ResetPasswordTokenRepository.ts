@@ -6,7 +6,8 @@ import {
 } from "../database/ResetPasswordTokenModel";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
 import { injectable } from "inversify";
-import { ClientSession } from "mongoose";
+import { TransactionContext } from "../../../../domain/core/common/services/TransactionContext";
+import { toMongoSession } from "../../../core/common/database/toMongoSession";
 import { ResetPasswordTokenMapper } from "../mappers/ResetPasswordTokenMapper";
 
 @injectable()
@@ -18,22 +19,22 @@ export class ResetPasswordTokenRepository
     super(ResetPasswordTokenModel, new ResetPasswordTokenMapper());
   }
 
-  async save(token: ResetPasswordToken, session?: ClientSession): Promise<void> {
-    await this.create(token, session);
+  async save(token: ResetPasswordToken, transaction?: TransactionContext): Promise<void> {
+    await this.create(token, transaction);
   }
 
   async findByTokenHash(tokenHash: string): Promise<ResetPasswordToken | null> {
     return this.findOne({ tokenHash } as Partial<ResetPasswordToken>);
   }
 
-  async markAsUsed(id: string, session?: ClientSession): Promise<void> {
-    await this.update(id, { used: true } as Partial<ResetPasswordToken>, session);
+  async markAsUsed(id: string, transaction?: TransactionContext): Promise<void> {
+    await this.update(id, { used: true } as Partial<ResetPasswordToken>, transaction);
   }
 
-  async deleteByUserId(userId: string, session?: ClientSession): Promise<void> {
+  async deleteByUserId(userId: string, transaction?: TransactionContext): Promise<void> {
     await this.model
       .deleteMany({ userId })
-      .session(session ?? null)
+      .session(toMongoSession(transaction) ?? null)
       .exec();
   }
 }

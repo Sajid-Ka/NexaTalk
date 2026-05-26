@@ -16,6 +16,8 @@ import { ServerNotFoundError } from "../../../../domain/features/servers/errors/
 import { AlreadyMemberError } from "../../../../domain/features/servers/errors/AlreadyMemberError";
 import { InsufficientPermissionsError } from "../../../../domain/features/servers/errors/InsufficientPermissionsError";
 import { ITransactionManager } from "../../../../domain/core/common/services/ITransactionManager";
+import { IServerBanRepository } from "../../../../domain/features/servers/repositories/IServerBanRepository";
+import { ForbiddenError } from "../../../../domain/core/errors/ForbiddenError";
 
 @injectable()
 export class JoinServer implements IJoinServerUsecase {
@@ -26,6 +28,7 @@ export class JoinServer implements IJoinServerUsecase {
     @inject(AUTH_TYPES.UserRepository) private readonly _userRepo: IUserRepository,
     @inject(COMMON_TYPES.TransactionManager)
     private readonly _transactionManager: ITransactionManager,
+    @inject(SERVERS_TYPES.ServerBanRepository) private readonly _banRepo: IServerBanRepository,
     @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
   ) {}
 
@@ -44,6 +47,14 @@ export class JoinServer implements IJoinServerUsecase {
 
     if (server.isPrivate()) {
       throw new InsufficientPermissionsError("Private servers require invite access");
+    }
+
+    //prevent (stop or check a user try to join he is banned from this server and not unban yet)
+    //stop rejoin a banned user.
+    const existingBan = await this._banRepo.findByServerAndUser(serverId, userId);
+
+    if (existingBan) {
+      throw new ForbiddenError("You are banned from this server");
     }
 
     const existingMember = await this._memberRepo.findByServerAndUser(serverId, userId);

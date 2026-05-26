@@ -1,4 +1,4 @@
-import { ClientSession } from "mongoose";
+import { TransactionContext } from "../../../core/common/services/TransactionContext";
 import { IBaseRepository } from "../../../core/common/repositories/IBaseRepository";
 import { ServerInvite } from "../entities/ServerInvite";
 
@@ -7,5 +7,5 @@ export interface IServerInviteRepository extends IBaseRepository<ServerInvite> {
   findByServer(serverId: string): Promise<ServerInvite[]>;
   deleteExpired(): Promise<number>;
   incrementUses(code: string): Promise<void>;
-  deleteByServer(serverId: string, session?: ClientSession): Promise<number>;
+  deleteByServer(serverId: string, transaction?: TransactionContext): Promise<number>;
 }

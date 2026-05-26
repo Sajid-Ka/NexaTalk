@@ -1,4 +1,5 @@
-import { ClientSession } from "mongoose";
+import { TransactionContext } from "../../../../domain/core/common/services/TransactionContext";
+import { toMongoSession } from "../../../core/common/database/toMongoSession";
 import {
   IRefreshTokenRepository,
   RefreshTokenData,
@@ -17,25 +18,25 @@ export class RefreshTokenRepository
     super(RefreshTokenModel, new RefreshTokenMapper());
   }
 
-  async save(token: RefreshTokenData, session?: ClientSession): Promise<void> {
-    await this.create(token, session);
+  async save(token: RefreshTokenData, transaction?: TransactionContext): Promise<void> {
+    await this.create(token, transaction);
   }
 
   async findByHash(tokenHash: string): Promise<RefreshTokenData | null> {
     return this.findOne({ tokenHash } as Partial<RefreshTokenData>);
   }
 
-  async revokeByHash(tokenHash: string, session?: ClientSession): Promise<void> {
+  async revokeByHash(tokenHash: string, transaction?: TransactionContext): Promise<void> {
     await this.model
       .updateOne({ tokenHash }, { $set: { revoked: true } })
-      .session(session ?? null)
+      .session(toMongoSession(transaction) ?? null)
       .exec();
   }
 
-  async deleteAllByUser(userId: string, session?: ClientSession): Promise<void> {
+  async deleteAllByUser(userId: string, transaction?: TransactionContext): Promise<void> {
     await this.model
       .deleteMany({ userId })
-      .session(session ?? null)
+      .session(toMongoSession(transaction) ?? null)
       .exec();
   }
 
@@ -51,30 +52,34 @@ export class RefreshTokenRepository
     return docs.map((doc) => this.mapper.toDomain(doc));
   }
 
-  async revokeById(sessionId: string, userId: string, session?: ClientSession): Promise<void> {
+  async revokeById(
+    sessionId: string,
+    userId: string,
+    transaction?: TransactionContext,
+  ): Promise<void> {
     await this.model
       .updateOne({ _id: sessionId, userId }, { revoked: true })
-      .session(session ?? null)
+      .session(toMongoSession(transaction) ?? null)
       .exec();
   }
 
   async update(
     id: string,
     data: Partial<RefreshTokenData>,
-    session?: ClientSession,
+    transaction?: TransactionContext,
   ): Promise<RefreshTokenData | null> {
     // If revoking, use the dedicated method
     if (data.revoked) {
       const token = await this.findById(id);
       if (token?.userId) {
-        await this.revokeById(id, token.userId, session);
+        await this.revokeById(id, token.userId, transaction);
         return this.findById(id);
       }
     }
 
     // Otherwise do normal update
     const updateData = this.mapper.toPersistenceUpdate(data);
-    const updated = await this.updateRaw(id, { $set: updateData }, session);
+    const updated = await this.updateRaw(id, { $set: updateData }, transaction);
     return updated ? this.mapper.toDomain(updated) : null;
   }
 }

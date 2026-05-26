@@ -4,7 +4,8 @@ import { UserModel, IUserPersistence } from "../database/UserModel";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
 import { UserPersistenceMapper } from "../mappers/UserPersistenceMapper";
 import { injectable } from "inversify";
-import { ClientSession } from "mongoose";
+import { TransactionContext } from "../../../../domain/core/common/services/TransactionContext";
+import { toMongoSession } from "../../../core/common/database/toMongoSession";
 import { ConflictError } from "../../../../domain/features/auth/errors/ConflictError";
 
 @injectable()
@@ -26,16 +27,17 @@ export class UserRepository
     return this.findOne({ email, deletedAt: null } as Partial<User>);
   }
 
-  async delete(id: string, session?: ClientSession): Promise<boolean> {
-    await this.updateRaw(id, { $set: { deletedAt: new Date() } }, session);
+  async delete(id: string, transaction?: TransactionContext): Promise<boolean> {
+    await this.updateRaw(id, { $set: { deletedAt: new Date() } }, transaction);
     return true;
   }
 
   async search(query: string, limit: number = 10): Promise<User[]> {
     const regex = new RegExp(query, "i");
+
     const docs = await this.model
       .find({
-        username: { $regex: regex },
+        $or: [{ username: { $regex: regex } }, { email: { $regex: regex } }],
         deletedAt: null,
         isBlocked: false,
       })
@@ -46,20 +48,20 @@ export class UserRepository
   }
 
   //Handle soft deleted users when they try to register again
-  async create(entity: User, session?: ClientSession): Promise<User> {
+  async create(entity: User, transaction?: TransactionContext): Promise<User> {
     const existingDeletedUser = await this.model
       .findOne({
         email: entity.email,
         deletedAt: { $ne: null },
       })
-      .session(session || null);
+      .session(toMongoSession(transaction) ?? null);
 
     //Give them a fresh start
     if (existingDeletedUser) {
       // Log for audit (optional) usig logger
 
       const persistence = this.mapper.toPersistence(entity);
-      const created = await this.createRaw(persistence, session);
+      const created = await this.createRaw(persistence, transaction);
       return this.mapper.toDomain(created);
     }
 
@@ -69,7 +71,7 @@ export class UserRepository
         email: entity.email,
         deletedAt: null,
       })
-      .session(session || null);
+      .session(toMongoSession(transaction) ?? null);
 
     if (existingActiveUser) {
       throw new ConflictError();
@@ -77,13 +79,13 @@ export class UserRepository
 
     // No existing user found, create new one
     const persistence = this.mapper.toPersistence(entity);
-    const created = await this.createRaw(persistence, session);
+    const created = await this.createRaw(persistence, transaction);
     return this.mapper.toDomain(created);
   }
 
   //This is Hard deleted method created for future use (may be not use)
-  async permanentDelete(id: string, session?: ClientSession): Promise<boolean> {
-    await this.deleteRaw(id, session);
+  async permanentDelete(id: string, transaction?: TransactionContext): Promise<boolean> {
+    await this.deleteRaw(id, transaction);
     return true;
   }
 }

@@ -1,10 +1,11 @@
 import { injectable } from "inversify";
 import { ServerInvite } from "../../../../domain/features/servers/entities/ServerInvite";
 import { IServerInviteRepository } from "../../../../domain/features/servers/repositories/IServerInviteRepository";
+import { TransactionContext } from "../../../../domain/core/common/services/TransactionContext";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
+import { toMongoSession } from "../../../core/common/database/toMongoSession";
 import { ServerInviteModel, IServerInvitePersistence } from "../database/ServerInviteModel";
 import { ServerInvitePersistenceMapper } from "../mappers/ServerInviteMapper";
-import { ClientSession } from "mongoose";
 
 @injectable()
 export class ServerInviteRepository
@@ -36,8 +37,10 @@ export class ServerInviteRepository
     await this.model.updateOne({ code }, { $inc: { uses: 1 } });
   }
 
-  async deleteByServer(serverId: string, session?: ClientSession): Promise<number> {
-    const result = await this.model.deleteMany({ serverId }).session(session ?? null);
+  async deleteByServer(serverId: string, transaction?: TransactionContext): Promise<number> {
+    const result = await this.model
+      .deleteMany({ serverId })
+      .session(toMongoSession(transaction) ?? null);
 
     return result.deletedCount;
   }

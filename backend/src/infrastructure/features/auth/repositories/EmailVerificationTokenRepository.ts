@@ -6,7 +6,8 @@ import {
 } from "../database/EmailVerificationTokenModel";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
 import { injectable } from "inversify";
-import { ClientSession } from "mongoose";
+import { TransactionContext } from "../../../../domain/core/common/services/TransactionContext";
+import { toMongoSession } from "../../../core/common/database/toMongoSession";
 import { EmailVerificationTokenMapper } from "../mappers/EmailVerificationTokenMapper";
 
 @injectable()
@@ -18,22 +19,22 @@ export class EmailVerificationTokenRepository
     super(EmailVerificationTokenModel, new EmailVerificationTokenMapper());
   }
 
-  async save(token: EmailVerificationToken, session?: ClientSession): Promise<void> {
-    await this.create(token, session);
+  async save(token: EmailVerificationToken, transaction?: TransactionContext): Promise<void> {
+    await this.create(token, transaction);
   }
 
   async findByHash(tokenHash: string): Promise<EmailVerificationToken | null> {
     return this.findOne({ tokenHash } as Partial<EmailVerificationToken>);
   }
 
-  async markAsUsed(id: string, session?: ClientSession): Promise<void> {
-    await this.update(id, { used: true } as Partial<EmailVerificationToken>, session);
+  async markAsUsed(id: string, transaction?: TransactionContext): Promise<void> {
+    await this.update(id, { used: true } as Partial<EmailVerificationToken>, transaction);
   }
 
-  async deleteAllByUser(userId: string, session?: ClientSession): Promise<void> {
+  async deleteAllByUser(userId: string, transaction?: TransactionContext): Promise<void> {
     await this.model
       .deleteMany({ userId })
-      .session(session ?? null)
+      .session(toMongoSession(transaction) ?? null)
       .exec();
   }
 }
