@@ -1,6 +1,6 @@
-import { ServerPrivacy } from "../../../shared/constants/server.const";
-import { ServerMemberRole } from "../../../shared/constants/server.const";
-import { UserPresence } from "../../../shared/constants/user.const";
+import { ServerPrivacy } from "../../../../shared/constants/server.const";
+import { ServerMemberRole } from "../../../../shared/constants/server.const";
+import { UserPresence } from "../../../../shared/constants/user.const";
 
 export interface ServerMember {
   id: string;

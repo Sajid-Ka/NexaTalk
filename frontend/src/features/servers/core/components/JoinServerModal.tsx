@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Compass, Loader2 } from "lucide-react";
-import Modal from "../../../shared/ui/Modal";
-import Button from "../../../shared/ui/Button";
-import Input from "../../../shared/ui/Input";
-import { useAppDispatch } from "../../../app/store";
+import Modal from "../../../../shared/ui/Modal";
+import Button from "../../../../shared/ui/Button";
+import Input from "../../../../shared/ui/Input";
+import { useAppDispatch } from "../../../../app/store";
 import { joinServerByInvite } from "../store/serverSlice";
 
 interface JoinServerModalProps {

@@ -4,10 +4,10 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { cn } from "../../../shared/utils/cn";
 import ServerIcon from "../../../shared/ui/ServerIcon";
 import { useAppDispatch, useAppSelector } from "../../../app/store";
-import { fetchUserServers, setCurrentServer } from "../../servers/store/serverSlice";
-import CreateServerModal from "../../servers/components/CreateServerModal";
-import JoinServerModal from "../../servers/components/JoinServerModal";
-import type { Server } from "../../servers/types";
+import { fetchUserServers, setCurrentServer } from "../../servers/core/store/serverSlice";
+import CreateServerModal from "../../servers/core/components/CreateServerModal";
+import JoinServerModal from "../../servers/core/components/JoinServerModal";
+import type { Server } from "../../servers/core/types";
 
 
 
@@ -34,7 +34,7 @@ export default function ServerSidebar() {
     const isCreateActive = isCreateModalOpen;
     const isJoinActive = isJoinModalOpen;
 
-    
+
 
     return (
         <aside className="w-[72px] flex flex-col items-center py-3 bg-[#090B11] border-r border-white/5 shrink-0 h-full">
@@ -60,7 +60,7 @@ export default function ServerSidebar() {
             <div className="w-8 h-[2px] bg-white/10 rounded-full mb-6" />
 
             {/* Server List */}
-           <div className="flex-1 w-full flex flex-col items-center gap-4 py-2 overflow-y-auto overflow-x-hidden no-scrollbar min-h-0">
+            <div className="flex-1 w-full flex flex-col items-center gap-4 py-2 overflow-y-auto overflow-x-hidden no-scrollbar min-h-0">
                 {userServers.map((server) => (
                     <ServerIcon
                         key={server.id}
@@ -125,7 +125,7 @@ export default function ServerSidebar() {
 
             </div>
 
-          
+
 
             <CreateServerModal
                 isOpen={isCreateModalOpen}

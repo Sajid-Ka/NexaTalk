@@ -1,11 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { Server, CreateServerRequest } from "../types";
-import { 
-  getUserServersApi, 
-  createServerApi, 
-  joinByInviteApi, 
-  getServerApi 
+import {
+  getUserServersApi,
+  createServerApi,
+  joinByInviteApi,
+  getServerApi
 } from "../api/serverApi";
 
 // Define error response type

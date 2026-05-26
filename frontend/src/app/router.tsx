@@ -15,17 +15,17 @@ import UserManagementPage from "../features/admin/users/pages/UserManagementPage
 import AdminRoute from "../routes/AdminRoute";
 import NotFoundPage from "../shared/pages/NotFoundPage";
 import OnboardingPage from "../features/onboarding/pages/OnboardingPage";
-import ServerLayout from "../features/servers/layouts/ServerLayout";
-import ServerDashboard from "../features/servers/pages/ServerDashboard";
+import ServerLayout from "../features/servers/core/layouts/ServerLayout";
+import ServerDashboard from "../features/servers/core/pages/ServerDashboard";
 import { AppRoute } from "../shared/constants/app-route.const";
 import { Navigate } from "react-router-dom";
-import OverviewSettingsPage from "../features/servers/pages/settings/OverviewSettingsPage";
-import ServerSettingsLayout from "../features/servers/pages/settings/ServerSettingsLayout";
-import MembersSettingsPage from "../features/servers/pages/settings/MembersSettingsPage";
-import InvitesSettingsPage from "../features/servers/pages/settings/InvitesSettingsPage";
-import AuditLogsPage from "../features/servers/pages/settings/AuditLogsSettingsPage";
-import BansSettingsPage from "../features/servers/pages/settings/BansSettingsPage";
-import DangerZonePage from "../features/servers/pages/settings/DangerZonePage";
+import OverviewSettingsPage from "../features/servers/settings/pages/OverviewSettingsPage";
+import ServerSettingsLayout from "../features/servers/settings/layouts/ServerSettingsLayout";
+import MembersSettingsPage from "../features/servers/settings/pages/MembersSettingsPage";
+import InvitesSettingsPage from "../features/servers/settings/pages/InvitesSettingsPage";
+import AuditLogsPage from "../features/servers/settings/pages/AuditLogsSettingsPage";
+import BansSettingsPage from "../features/servers/settings/pages/BansSettingsPage";
+import DangerZonePage from "../features/servers/settings/pages/DangerZonePage";
 
 export default function AppRouter() {
     return (

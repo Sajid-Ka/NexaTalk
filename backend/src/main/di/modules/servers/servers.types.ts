@@ -15,12 +15,12 @@ export const SERVERS_TYPES = {
   GetPublicServers: Symbol.for("GetPublicServers"),
   CreateServerInvite: Symbol.for("CreateServerInvite"),
   JoinServerByInvite: Symbol.for("JoinServerByInvite"),
+  GetServerMembers: Symbol.for("GetServerMembers"),
+  UpdateMemberRole: Symbol.for("UpdateMemberRole"),
+  KickMember: Symbol.for("KickMember"),
 
   // Controllers
   ServerCoreController: Symbol.for("ServerController"),
   ServerMemberController: Symbol.for("ServerMemberController"),
   ServerInviteController: Symbol.for("ServerInviteController"),
-  GetServerMembers: Symbol.for("GetServerMembers"),
-  UpdateMemberRole: Symbol.for("UpdateMemberRole"),
-  KickMember: Symbol.for("KickMember"),
 };

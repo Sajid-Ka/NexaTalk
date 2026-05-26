@@ -1,8 +1,8 @@
 import { Lock, Settings, Share2, Sparkles, Users, Wifi } from "lucide-react";
 import type { Server } from "../../types";
-import Button from "../../../../shared/ui/Button";
-import Badge from "../../../../shared/ui/Badge";
-import { useAuth } from "../../../auth/context/useAuth";
+import Button from "../../../../../shared/ui/Button";
+import Badge from "../../../../../shared/ui/Badge";
+import { useAuth } from "../../../../auth/context/useAuth";
 import { useNavigate } from "react-router-dom";
 
 interface ServerDashboardHeroProps {

@@ -17,17 +17,17 @@ import { GetUserServers } from "../../../../application/servers/core/usecases/Ge
 import { GetPublicServers } from "../../../../application/servers/core/usecases/GetPublicServers";
 import { CreateServerInvite } from "../../../../application/servers/invites/usecases/CreateServerInvite";
 import { JoinServerByInvite } from "../../../../application/servers/invites/usecases/JoinServerByInvite";
-
-// Controllers
-import { ServerCoreController } from "../../../../presentation/servers/controllers/ServerCoreController";
-import { ServerMemberController } from "../../../../presentation/servers/controllers/ServerMemberController";
-import { ServerInviteController } from "../../../../presentation/servers/controllers/ServerInviteController";
 import { IGetServerMembersUsecase } from "../../../../application/servers/members/interfaces/IGetServerMembersUsecase";
 import { GetServerMembers } from "../../../../application/servers/members/usecases/GetServerMembers";
 import { IUpdateMemberRoleUsecase } from "../../../../application/servers/members/interfaces/IUpdateMemberRoleUsecase";
 import { UpdateMemberRole } from "../../../../application/servers/members/usecases/UpdateMemberRole";
 import { IKickMemberUsecase } from "../../../../application/servers/members/interfaces/IKickMemberUsecase";
 import { KickMember } from "../../../../application/servers/members/usecases/KickMember";
+
+// Controllers
+import { ServerCoreController } from "../../../../presentation/servers/controllers/ServerCoreController";
+import { ServerMemberController } from "../../../../presentation/servers/controllers/ServerMemberController";
+import { ServerInviteController } from "../../../../presentation/servers/controllers/ServerInviteController";
 
 export function loadServersModule(container: Container) {
   // Repositories
@@ -46,12 +46,12 @@ export function loadServersModule(container: Container) {
   container.bind(SERVERS_TYPES.GetPublicServers).to(GetPublicServers);
   container.bind(SERVERS_TYPES.CreateServerInvite).to(CreateServerInvite);
   container.bind(SERVERS_TYPES.JoinServerByInvite).to(JoinServerByInvite);
+  container.bind<IGetServerMembersUsecase>(SERVERS_TYPES.GetServerMembers).to(GetServerMembers);
+  container.bind<IUpdateMemberRoleUsecase>(SERVERS_TYPES.UpdateMemberRole).to(UpdateMemberRole);
+  container.bind<IKickMemberUsecase>(SERVERS_TYPES.KickMember).to(KickMember);
 
   // Controllers
   container.bind<ServerCoreController>(SERVERS_TYPES.ServerCoreController).to(ServerCoreController);
   container.bind<ServerMemberController>(SERVERS_TYPES.ServerMemberController).to(ServerMemberController);
   container.bind<ServerInviteController>(SERVERS_TYPES.ServerInviteController).to(ServerInviteController);
-  container.bind<IGetServerMembersUsecase>(SERVERS_TYPES.GetServerMembers).to(GetServerMembers);
-  container.bind<IUpdateMemberRoleUsecase>(SERVERS_TYPES.UpdateMemberRole).to(UpdateMemberRole);
-  container.bind<IKickMemberUsecase>(SERVERS_TYPES.KickMember).to(KickMember);
 }

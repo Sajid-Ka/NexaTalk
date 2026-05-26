@@ -8,7 +8,7 @@ import {
   Volume2,
 } from "lucide-react";
 import type { Server } from "../../types";
-import Button from "../../../../shared/ui/Button";
+import Button from "../../../../../shared/ui/Button";
 
 interface ServerDashboardOverviewProps {
   server: Server;

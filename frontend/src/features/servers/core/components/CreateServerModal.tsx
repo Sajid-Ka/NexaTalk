@@ -3,14 +3,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Upload, Shield, Globe, Loader2 } from "lucide-react";
-import Modal from "../../../shared/ui/Modal";
-import Button from "../../../shared/ui/Button";
-import Input from "../../../shared/ui/Input";
-import TextArea from "../../../shared/ui/TextArea";
-import { useAppDispatch } from "../../../app/store";
+import Modal from "../../../../shared/ui/Modal";
+import Button from "../../../../shared/ui/Button";
+import Input from "../../../../shared/ui/Input";
+import TextArea from "../../../../shared/ui/TextArea";
+import { useAppDispatch } from "../../../../app/store";
 import { createServer } from "../store/serverSlice";
-import { cn } from "../../../shared/utils/cn";
-import { ServerPrivacy } from "../../../shared/constants/server.const";
+import { cn } from "../../../../shared/utils/cn";
+import { ServerPrivacy } from "../../../../shared/constants/server.const";
 
 const createServerSchema = z.object({
   name: z.string().min(3, "Server name must be at least 3 characters").max(50),

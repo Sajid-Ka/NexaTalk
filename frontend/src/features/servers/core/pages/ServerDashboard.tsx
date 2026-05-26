@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../../app/store";
+import { useAppDispatch, useAppSelector } from "../../../../app/store";
 import { fetchServerDetails } from "../store/serverSlice";
 import ServerDashboardContent from "../components/dashboard/ServerDashboardContent";
 import ServerDashboardErrorState from "../components/dashboard/ServerDashboardErrorState";
