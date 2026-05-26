@@ -12,6 +12,8 @@ import { COMMON_TYPES } from "../../../../main/di/modules/common/common.types";
 import { NotFoundError } from "../../../../domain/core/errors/NotFoundError";
 import { ForbiddenError } from "../../../../domain/core/errors/ForbiddenError";
 import { env } from "../../../../shared/config/env";
+import { IServerAuditLogRepository } from "../../../../domain/features/servers/repositories/IServerAuditLogRepository";
+import { ServerAuditLog } from "../../../../domain/features/servers/entities/ServerAuditLog";
 
 @injectable()
 export class CreateServerInvite implements ICreateServerInviteUsecase {
@@ -21,6 +23,8 @@ export class CreateServerInvite implements ICreateServerInviteUsecase {
     private readonly _memberRepo: IServerMemberRepository,
     @inject(SERVERS_TYPES.ServerInviteRepository)
     private readonly _inviteRepo: IServerInviteRepository,
+    @inject(SERVERS_TYPES.ServerAuditLogRepository)
+    private readonly _auditLogRepo: IServerAuditLogRepository,
     @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
   ) {}
 
@@ -59,6 +63,20 @@ export class CreateServerInvite implements ICreateServerInviteUsecase {
     const inviteUrl = ServerInviteUtil.generateInviteUrl(code, env.CLIENT_ORIGIN);
 
     this._logger.info("Server invite created", { serverId, code });
+
+    await this._auditLogRepo.create(
+      new ServerAuditLog({
+        serverId,
+        actorId: userId,
+        action: "INVITE_CREATED",
+        targetId: createdInvite.id,
+        metadata: {
+          code: createdInvite.code,
+          maxUses: createdInvite.maxUses,
+          expiresAt: createdInvite.expiresAt,
+        },
+      }),
+    );
 
     return {
       id: createdInvite.id,

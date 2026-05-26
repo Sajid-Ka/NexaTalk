@@ -6,6 +6,7 @@ import { ServerRepository } from "../../../../infrastructure/features/servers/re
 import { ServerMemberRepository } from "../../../../infrastructure/features/servers/repositories/ServerMemberRepository";
 import { ServerInviteRepository } from "../../../../infrastructure/features/servers/repositories/ServerInviteRepository";
 import { ServerBanRepository } from "../../../../infrastructure/features/servers/repositories/ServerBanRepository";
+import { ServerAuditLogRepository } from "../../../../infrastructure/features/servers/repositories/ServerAuditLogRepository";
 
 // Use Cases
 import { CreateServer } from "../../../../application/servers/core/usecases/CreateServer";
@@ -36,12 +37,15 @@ import { IBanServerMemberUsecase } from "../../../../application/servers/bans/in
 import { IUnbanServerMemberUsecase } from "../../../../application/servers/bans/interfaces/IUnbanServerMemberUsecase";
 import { SearchServerBanCandidates } from "../../../../application/servers/bans/usecases/SearchServerBanCandidates";
 import { ISearchServerBanCandidatesUsecase } from "../../../../application/servers/bans/interfaces/ISearchServerBanCandidatesUsecase";
+import { GetServerAuditLogs } from "../../../../application/servers/auditLogs/usecases/GetServerAuditLogs";
+import { IGetServerAuditLogsUsecase } from "../../../../application/servers/auditLogs/interfaces/IGetServerAuditLogsUsecase";
 
 // Controllers
 import { ServerCoreController } from "../../../../presentation/servers/controllers/ServerCoreController";
 import { ServerMemberController } from "../../../../presentation/servers/controllers/ServerMemberController";
 import { ServerInviteController } from "../../../../presentation/servers/controllers/ServerInviteController";
 import { ServerBanController } from "../../../../presentation/servers/controllers/ServerBanController";
+import { ServerAuditLogController } from "../../../../presentation/servers/controllers/ServerAuditLogController";
 
 export function loadServersModule(container: Container) {
   // Repositories
@@ -55,6 +59,10 @@ export function loadServersModule(container: Container) {
     .to(ServerInviteRepository)
     .inSingletonScope();
   container.bind(SERVERS_TYPES.ServerBanRepository).to(ServerBanRepository).inSingletonScope();
+  container
+    .bind(SERVERS_TYPES.ServerAuditLogRepository)
+    .to(ServerAuditLogRepository)
+    .inSingletonScope();
 
   // Use Cases
   container.bind(SERVERS_TYPES.CreateServer).to(CreateServer);
@@ -80,6 +88,9 @@ export function loadServersModule(container: Container) {
   container
     .bind<ISearchServerBanCandidatesUsecase>(SERVERS_TYPES.SearchServerBanCandidates)
     .to(SearchServerBanCandidates);
+  container
+    .bind<IGetServerAuditLogsUsecase>(SERVERS_TYPES.GetServerAuditLogs)
+    .to(GetServerAuditLogs);
 
   // Controllers
   container.bind<ServerCoreController>(SERVERS_TYPES.ServerCoreController).to(ServerCoreController);
@@ -90,4 +101,7 @@ export function loadServersModule(container: Container) {
     .bind<ServerInviteController>(SERVERS_TYPES.ServerInviteController)
     .to(ServerInviteController);
   container.bind<ServerBanController>(SERVERS_TYPES.ServerBanController).to(ServerBanController);
+  container
+    .bind<ServerAuditLogController>(SERVERS_TYPES.ServerAuditLogController)
+    .to(ServerAuditLogController);
 }

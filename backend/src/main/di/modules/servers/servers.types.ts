@@ -4,6 +4,7 @@ export const SERVERS_TYPES = {
   ServerMemberRepository: Symbol.for("ServerMemberRepository"),
   ServerInviteRepository: Symbol.for("ServerInviteRepository"),
   ServerBanRepository: Symbol.for("ServerBanRepository"),
+  ServerAuditLogRepository: Symbol.for("ServerAuditLogRepository"),
 
   // Use Cases
   CreateServer: Symbol.for("CreateServer"),
@@ -25,10 +26,12 @@ export const SERVERS_TYPES = {
   BanServerMember: Symbol.for("BanServerMember"),
   UnbanServerMember: Symbol.for("UnbanServerMember"),
   SearchServerBanCandidates: Symbol.for("SearchServerBanCandidates"),
+  GetServerAuditLogs: Symbol.for("GetServerAuditLogs"),
 
   // Controllers
   ServerCoreController: Symbol.for("ServerController"),
   ServerMemberController: Symbol.for("ServerMemberController"),
   ServerInviteController: Symbol.for("ServerInviteController"),
   ServerBanController: Symbol.for("ServerBanController"),
+  ServerAuditLogController: Symbol.for("ServerAuditLogController"),
 };

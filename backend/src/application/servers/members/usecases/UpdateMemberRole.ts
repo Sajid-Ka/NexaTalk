@@ -9,6 +9,8 @@ import { InsufficientPermissionsError } from "../../../../domain/features/server
 import { ServerMemberRole } from "../../../../shared/constants/server.const";
 import { IUpdateMemberRoleUsecase } from "../interfaces/IUpdateMemberRoleUsecase";
 import { UpdateMemberRoleRequest } from "../dtos/requests/UpdateMemberRoleRequest";
+import { IServerAuditLogRepository } from "../../../../domain/features/servers/repositories/IServerAuditLogRepository";
+import { ServerAuditLog } from "../../../../domain/features/servers/entities/ServerAuditLog";
 
 @injectable()
 export class UpdateMemberRole implements IUpdateMemberRoleUsecase {
@@ -16,6 +18,8 @@ export class UpdateMemberRole implements IUpdateMemberRoleUsecase {
     @inject(SERVERS_TYPES.ServerRepository) private readonly _serverRepo: IServerRepository,
     @inject(SERVERS_TYPES.ServerMemberRepository)
     private readonly _memberRepo: IServerMemberRepository,
+    @inject(SERVERS_TYPES.ServerAuditLogRepository)
+    private readonly _auditLogRepo: IServerAuditLogRepository,
   ) {}
 
   async execute(
@@ -51,5 +55,17 @@ export class UpdateMemberRole implements IUpdateMemberRoleUsecase {
     }
 
     await this._memberRepo.updateRole(serverId, targetUserId, request.role);
+
+    await this._auditLogRepo.create(
+      new ServerAuditLog({
+        serverId,
+        actorId: currentUserId,
+        action: "MEMBER_ROLE_UPDATED",
+        targetId: targetUserId,
+        metadata: {
+          role: request.role,
+        },
+      }),
+    );
   }
 }

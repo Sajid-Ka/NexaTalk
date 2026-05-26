@@ -28,3 +28,14 @@ export interface ServerBanCandidate {
   avatar?: string;
   serverRole: ServerMemberRole | null;
 }
+
+export interface ServerAuditLog {
+  id: string;
+  serverId: string;
+  actorId: string;
+  actorUsername: string;
+  action: string;
+  targetId: string | null;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+}

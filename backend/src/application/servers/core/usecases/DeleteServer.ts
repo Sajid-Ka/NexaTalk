@@ -9,6 +9,8 @@ import { COMMON_TYPES } from "../../../../main/di/modules/common/common.types";
 import { ServerNotFoundError } from "../../../../domain/features/servers/errors/ServerNotFoundError";
 import { InsufficientPermissionsError } from "../../../../domain/features/servers/errors/InsufficientPermissionsError";
 import { ITransactionManager } from "../../../../domain/core/common/services/ITransactionManager";
+import { IServerAuditLogRepository } from "../../../../domain/features/servers/repositories/IServerAuditLogRepository";
+import { ServerAuditLog } from "../../../../domain/features/servers/entities/ServerAuditLog";
 
 @injectable()
 export class DeleteServer implements IDeleteServerUsecase {
@@ -20,6 +22,8 @@ export class DeleteServer implements IDeleteServerUsecase {
     private readonly _inviteRepo: IServerInviteRepository,
     @inject(COMMON_TYPES.TransactionManager)
     private readonly _transactionManager: ITransactionManager,
+    @inject(SERVERS_TYPES.ServerAuditLogRepository)
+    private readonly _auditLogRepo: IServerAuditLogRepository,
     @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
   ) {}
 
@@ -42,6 +46,15 @@ export class DeleteServer implements IDeleteServerUsecase {
 
       // Delete all invites
       await this._inviteRepo.deleteByServer(serverId, session);
+
+      await this._auditLogRepo.create(
+        new ServerAuditLog({
+          serverId,
+          actorId: userId,
+          action: "SERVER_DELETED",
+          targetId: serverId,
+        }),
+      );
     });
 
     this._logger.info("Server deleted", { serverId, userId });

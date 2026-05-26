@@ -8,6 +8,8 @@ import { CannotRemoveOwnerError } from "../../../../domain/features/servers/erro
 import { InsufficientPermissionsError } from "../../../../domain/features/servers/errors/InsufficientPermissionsError";
 import { ServerMemberRole } from "../../../../shared/constants/server.const";
 import { IKickMemberUsecase } from "../interfaces/IKickMemberUsecase";
+import { IServerAuditLogRepository } from "../../../../domain/features/servers/repositories/IServerAuditLogRepository";
+import { ServerAuditLog } from "../../../../domain/features/servers/entities/ServerAuditLog";
 
 @injectable()
 export class KickMember implements IKickMemberUsecase {
@@ -15,6 +17,8 @@ export class KickMember implements IKickMemberUsecase {
     @inject(SERVERS_TYPES.ServerRepository) private readonly _serverRepo: IServerRepository,
     @inject(SERVERS_TYPES.ServerMemberRepository)
     private readonly _memberRepo: IServerMemberRepository,
+    @inject(SERVERS_TYPES.ServerAuditLogRepository)
+    private readonly _auditLogRepo: IServerAuditLogRepository,
   ) {}
 
   async execute(serverId: string, currentUserId: string, targetUserId: string): Promise<void> {
@@ -55,5 +59,15 @@ export class KickMember implements IKickMemberUsecase {
     await this._memberRepo.removeMember(serverId, targetUserId);
 
     await this._serverRepo.decrementMemberCount(serverId);
+
+    await this._auditLogRepo.create(
+      new ServerAuditLog({
+        serverId,
+        actorId: currentUserId,
+        action: "ACTION_NAME",
+        targetId: targetUserId,
+        metadata: {},
+      }),
+    );
   }
 }

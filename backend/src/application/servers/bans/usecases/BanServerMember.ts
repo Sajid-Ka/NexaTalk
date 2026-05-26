@@ -15,6 +15,8 @@ import { InsufficientPermissionsError } from "../../../../domain/features/server
 import { CannotRemoveOwnerError } from "../../../../domain/features/servers/errors/CannotRemoveOwnerError";
 import { IBanServerMemberUsecase } from "../interfaces/IBanServerMemberUsecase";
 import { ServerBanResponse } from "../dtos/responses/ServerBanResponse";
+import { IServerAuditLogRepository } from "../../../../domain/features/servers/repositories/IServerAuditLogRepository";
+import { ServerAuditLog } from "../../../../domain/features/servers/entities/ServerAuditLog";
 
 @injectable()
 export class BanServerMember implements IBanServerMemberUsecase {
@@ -24,6 +26,8 @@ export class BanServerMember implements IBanServerMemberUsecase {
     private readonly _memberRepo: IServerMemberRepository,
     @inject(SERVERS_TYPES.ServerBanRepository) private readonly _banRepo: IServerBanRepository,
     @inject(AUTH_TYPES.UserRepository) private readonly _userRepo: IUserRepository,
+    @inject(SERVERS_TYPES.ServerAuditLogRepository)
+    private readonly _auditLogRepo: IServerAuditLogRepository,
   ) {}
 
   async execute(
@@ -96,6 +100,18 @@ export class BanServerMember implements IBanServerMemberUsecase {
       await this._memberRepo.removeMember(serverId, targetUserId);
       await this._serverRepo.decrementMemberCount(serverId);
     }
+
+    await this._auditLogRepo.create(
+      new ServerAuditLog({
+        serverId,
+        actorId: currentUserId,
+        action: "MEMBER_BANNED",
+        targetId: targetUserId,
+        metadata: {
+          reason,
+        },
+      }),
+    );
 
     return {
       id: createdBan.id,

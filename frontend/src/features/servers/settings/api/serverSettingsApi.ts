@@ -36,3 +36,8 @@ export const unbanServerMemberApi = (serverId: string, userId: string) =>
 export const searchServerBanCandidatesApi = (serverId: string, query: string) => api.get(`/servers/${serverId}/ban-candidates`, {
   params: { q: query },
 });
+
+export const getServerAuditLogsApi = (
+  serverId: string,
+  params?: { limit?: number; offset?: number },
+) => api.get(`/servers/${serverId}/audit-logs`, { params });

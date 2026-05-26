@@ -9,6 +9,8 @@ import { NotMemberError } from "../../../../domain/features/servers/errors/NotMe
 import { InsufficientPermissionsError } from "../../../../domain/features/servers/errors/InsufficientPermissionsError";
 import { NotFoundError } from "../../../../domain/core/errors/NotFoundError";
 import { IRevokeServerInviteUsecase } from "../interfaces/IRevokeServerInviteUsecase";
+import { IServerAuditLogRepository } from "../../../../domain/features/servers/repositories/IServerAuditLogRepository";
+import { ServerAuditLog } from "../../../../domain/features/servers/entities/ServerAuditLog";
 
 @injectable()
 export class RevokeServerInvite implements IRevokeServerInviteUsecase {
@@ -18,6 +20,8 @@ export class RevokeServerInvite implements IRevokeServerInviteUsecase {
     private readonly _memberRepo: IServerMemberRepository,
     @inject(SERVERS_TYPES.ServerInviteRepository)
     private readonly _inviteRepo: IServerInviteRepository,
+    @inject(SERVERS_TYPES.ServerAuditLogRepository)
+    private readonly _auditLogRepo: IServerAuditLogRepository,
   ) {}
 
   async execute(serverId: string, userId: string, inviteId: string): Promise<void> {
@@ -47,5 +51,14 @@ export class RevokeServerInvite implements IRevokeServerInviteUsecase {
     }
 
     await this._inviteRepo.delete(inviteId);
+
+    await this._auditLogRepo.create(
+      new ServerAuditLog({
+        serverId,
+        actorId: userId,
+        action: "INVITE_REVOKED",
+        targetId: inviteId,
+      }),
+    );
   }
 }
