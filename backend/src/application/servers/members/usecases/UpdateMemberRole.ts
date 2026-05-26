@@ -10,11 +10,12 @@ import { ServerMemberRole } from "../../../../shared/constants/server.const";
 import { IUpdateMemberRoleUsecase } from "../interfaces/IUpdateMemberRoleUsecase";
 import { UpdateMemberRoleRequest } from "../dtos/requests/UpdateMemberRoleRequest";
 
-@injectable() 
+@injectable()
 export class UpdateMemberRole implements IUpdateMemberRoleUsecase {
   constructor(
     @inject(SERVERS_TYPES.ServerRepository) private readonly _serverRepo: IServerRepository,
-    @inject(SERVERS_TYPES.ServerMemberRepository) private readonly _memberRepo: IServerMemberRepository,
+    @inject(SERVERS_TYPES.ServerMemberRepository)
+    private readonly _memberRepo: IServerMemberRepository,
   ) {}
 
   async execute(
@@ -29,42 +30,26 @@ export class UpdateMemberRole implements IUpdateMemberRoleUsecase {
       throw new ServerNotFoundError();
     }
 
-    const currentMember =
-      await this._memberRepo.findByServerAndUser(
-        serverId,
-        currentUserId,
-      );
+    const currentMember = await this._memberRepo.findByServerAndUser(serverId, currentUserId);
 
     if (!currentMember) {
       throw new NotMemberError();
     }
 
-    if (
-      currentMember.role !== ServerMemberRole.OWNER
-    ) {
+    if (currentMember.role !== ServerMemberRole.OWNER) {
       throw new InsufficientPermissionsError();
     }
 
-    const targetMember =
-      await this._memberRepo.findByServerAndUser(
-        serverId,
-        targetUserId,
-      );
+    const targetMember = await this._memberRepo.findByServerAndUser(serverId, targetUserId);
 
     if (!targetMember) {
       throw new NotMemberError();
     }
 
-    if (
-      targetMember.role === ServerMemberRole.OWNER
-    ) {
+    if (targetMember.role === ServerMemberRole.OWNER) {
       throw new CannotRemoveOwnerError();
     }
 
-    await this._memberRepo.updateRole(
-      serverId,
-      targetUserId,
-      request.role,
-    );
+    await this._memberRepo.updateRole(serverId, targetUserId, request.role);
   }
 }

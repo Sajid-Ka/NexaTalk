@@ -1,12 +1,8 @@
 import { Response } from "express";
 import { injectable, inject } from "inversify";
-
 import { SERVERS_TYPES } from "../../../main/di/modules/servers/servers.types";
-
 import { AuthenticatedRequest } from "../../../main/types/AuthenticatedRequest";
-
 import { successResponse } from "../../../shared/response/responseFormatter";
-
 import { ICreateServerUsecase } from "../../../application/servers/core/interfaces/ICreateServerUsecase";
 import { IGetServerUsecase } from "../../../application/servers/core/interfaces/IGetServerUsecase";
 import { IUpdateServerUsecase } from "../../../application/servers/core/interfaces/IUpdateServerUsecase";
@@ -20,21 +16,11 @@ import { UpdateServerRequest } from "../../../application/servers/core/dtos/requ
 @injectable()
 export class ServerCoreController {
   constructor(
-    @inject(SERVERS_TYPES.CreateServer)
-    private readonly _createServer: ICreateServerUsecase,
-
-    @inject(SERVERS_TYPES.GetServer)
-    private readonly _getServer: IGetServerUsecase,
-
-    @inject(SERVERS_TYPES.UpdateServer)
-    private readonly _updateServer: IUpdateServerUsecase,
-
-    @inject(SERVERS_TYPES.DeleteServer)
-    private readonly _deleteServer: IDeleteServerUsecase,
-
-    @inject(SERVERS_TYPES.GetUserServers)
-    private readonly _getUserServers: IGetUserServersUsecase,
-
+    @inject(SERVERS_TYPES.CreateServer) private readonly _createServer: ICreateServerUsecase,
+    @inject(SERVERS_TYPES.GetServer) private readonly _getServer: IGetServerUsecase,
+    @inject(SERVERS_TYPES.UpdateServer) private readonly _updateServer: IUpdateServerUsecase,
+    @inject(SERVERS_TYPES.DeleteServer) private readonly _deleteServer: IDeleteServerUsecase,
+    @inject(SERVERS_TYPES.GetUserServers) private readonly _getUserServers: IGetUserServersUsecase,
     @inject(SERVERS_TYPES.GetPublicServers)
     private readonly _getPublicServers: IGetPublicServersUsecase,
   ) {}

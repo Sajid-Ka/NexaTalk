@@ -24,7 +24,11 @@ router.use(authMiddleware);
 router.get("/:serverId/members", controller.getMembers);
 router.post("/:serverId/join", controller.joinServer);
 router.post("/:serverId/leave", controller.leaveServer);
-router.patch("/:serverId/members/:memberId/role", validate(updateMemberRoleSchema), controller.updateMemberRole);
+router.patch(
+  "/:serverId/members/:memberId/role",
+  validate(updateMemberRoleSchema),
+  controller.updateMemberRole,
+);
 router.delete("/:serverId/members/:memberId", controller.kickMember);
 
 export default router;

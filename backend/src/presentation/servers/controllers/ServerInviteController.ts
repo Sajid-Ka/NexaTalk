@@ -1,12 +1,8 @@
 import { Response } from "express";
 import { injectable, inject } from "inversify";
-
 import { SERVERS_TYPES } from "../../../main/di/modules/servers/servers.types";
-
 import { AuthenticatedRequest } from "../../../main/types/AuthenticatedRequest";
-
 import { successResponse } from "../../../shared/response/responseFormatter";
-
 import { ICreateServerInviteUsecase } from "../../../application/servers/invites/interfaces/ICreateServerInviteUsecase";
 import { IJoinServerByInviteUsecase } from "../../../application/servers/invites/interfaces/IJoinServerByInviteUsecase";
 
@@ -15,7 +11,6 @@ export class ServerInviteController {
   constructor(
     @inject(SERVERS_TYPES.CreateServerInvite)
     private readonly _createServerInvite: ICreateServerInviteUsecase,
-
     @inject(SERVERS_TYPES.JoinServerByInvite)
     private readonly _joinServerByInvite: IJoinServerByInviteUsecase,
   ) {}

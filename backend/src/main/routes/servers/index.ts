@@ -1,5 +1,4 @@
 import { Router } from "express";
-
 import coreRoutes from "./serverCore.routes";
 import memberRoutes from "./serverMember.routes";
 import inviteRoutes from "./serverInvite.routes";

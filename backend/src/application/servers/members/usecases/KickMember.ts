@@ -9,47 +9,34 @@ import { InsufficientPermissionsError } from "../../../../domain/features/server
 import { ServerMemberRole } from "../../../../shared/constants/server.const";
 import { IKickMemberUsecase } from "../interfaces/IKickMemberUsecase";
 
-@injectable() 
+@injectable()
 export class KickMember implements IKickMemberUsecase {
   constructor(
     @inject(SERVERS_TYPES.ServerRepository) private readonly _serverRepo: IServerRepository,
-    @inject(SERVERS_TYPES.ServerMemberRepository) private readonly _memberRepo: IServerMemberRepository,
+    @inject(SERVERS_TYPES.ServerMemberRepository)
+    private readonly _memberRepo: IServerMemberRepository,
   ) {}
 
-  async execute(
-    serverId: string,
-    currentUserId: string,
-    targetUserId: string,
-  ): Promise<void> {
+  async execute(serverId: string, currentUserId: string, targetUserId: string): Promise<void> {
     const server = await this._serverRepo.findById(serverId);
 
     if (!server) {
       throw new ServerNotFoundError();
     }
 
-    const currentMember =
-      await this._memberRepo.findByServerAndUser(
-        serverId,
-        currentUserId,
-      );
+    const currentMember = await this._memberRepo.findByServerAndUser(serverId, currentUserId);
 
     if (!currentMember) {
       throw new NotMemberError();
     }
 
-    const targetMember =
-      await this._memberRepo.findByServerAndUser(
-        serverId,
-        targetUserId,
-      );
+    const targetMember = await this._memberRepo.findByServerAndUser(serverId, targetUserId);
 
     if (!targetMember) {
       throw new NotMemberError();
     }
 
-    if (
-      targetMember.role === ServerMemberRole.OWNER
-    ) {
+    if (targetMember.role === ServerMemberRole.OWNER) {
       throw new CannotRemoveOwnerError();
     }
 
@@ -65,13 +52,8 @@ export class KickMember implements IKickMemberUsecase {
       throw new InsufficientPermissionsError();
     }
 
-    await this._memberRepo.removeMember(
-      serverId,
-      targetUserId,
-    );
+    await this._memberRepo.removeMember(serverId, targetUserId);
 
-    await this._serverRepo.decrementMemberCount(
-      serverId,
-    );
+    await this._serverRepo.decrementMemberCount(serverId);
   }
 }

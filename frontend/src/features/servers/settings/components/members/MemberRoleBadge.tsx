@@ -1,34 +1,32 @@
 import { Crown, Shield } from "lucide-react";
 import { ServerMemberRole } from "../../../../../shared/constants/server.const";
 
-interface Props {
+interface MembersRoleBadgeProps {
   role: ServerMemberRole;
 }
 
-export default function MemberRoleBadge({
-  role,
-}: Props) {
+export default function MembersRoleBadge({ role }: MembersRoleBadgeProps) {
   if (role === ServerMemberRole.OWNER) {
     return (
-      <div className="inline-flex items-center gap-1 rounded-full bg-amber-400/10 px-2 py-1 text-xs font-semibold text-amber-300">
+      <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-400">
         <Crown size={12} />
         Owner
-      </div>
+      </span>
     );
   }
 
   if (role === ServerMemberRole.ADMIN) {
     return (
-      <div className="inline-flex items-center gap-1 rounded-full bg-indigo-400/10 px-2 py-1 text-xs font-semibold text-indigo-300">
+      <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500/10 px-2.5 py-1 text-xs font-medium text-indigo-400">
         <Shield size={12} />
         Admin
-      </div>
+      </span>
     );
   }
 
   return (
-    <div className="inline-flex items-center rounded-full bg-white/5 px-2 py-1 text-xs font-medium text-slate-300">
+    <span className="inline-flex rounded-full bg-white/5 px-2.5 py-1 text-xs font-medium text-slate-400">
       Member
-    </div>
+    </span>
   );
 }

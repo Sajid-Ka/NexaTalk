@@ -103,15 +103,11 @@ export class ServerMemberRepository
   }
 
   //kick a member in the server
-  async removeMember(
-    serverId: string,
-    userId: string,
-  ): Promise<boolean> {
-    const result =
-      await this.model.deleteOne({
-        serverId,
-        userId,
-      });
+  async removeMember(serverId: string, userId: string): Promise<boolean> {
+    const result = await this.model.deleteOne({
+      serverId,
+      userId,
+    });
 
     return result.deletedCount > 0;
   }

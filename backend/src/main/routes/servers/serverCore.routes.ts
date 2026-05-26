@@ -23,15 +23,10 @@ const authMiddleware = createAuthMiddleware(tokenService, userStatusService);
 router.use(authMiddleware);
 
 router.post("/", validate(createServerSchema), controller.createServer);
-
 router.get("/user", controller.getUserServers);
-
 router.get("/public", controller.getPublicServers);
-
 router.get("/:serverId", controller.getServer);
-
 router.patch("/:serverId", validate(updateServerSchema), controller.updateServer);
-
 router.delete("/:serverId", controller.deleteServer);
 
 export default router;

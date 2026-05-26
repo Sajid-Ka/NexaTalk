@@ -32,8 +32,14 @@ import { ServerInviteController } from "../../../../presentation/servers/control
 export function loadServersModule(container: Container) {
   // Repositories
   container.bind(SERVERS_TYPES.ServerRepository).to(ServerRepository).inSingletonScope();
-  container.bind(SERVERS_TYPES.ServerMemberRepository).to(ServerMemberRepository).inSingletonScope();
-  container.bind(SERVERS_TYPES.ServerInviteRepository).to(ServerInviteRepository).inSingletonScope();
+  container
+    .bind(SERVERS_TYPES.ServerMemberRepository)
+    .to(ServerMemberRepository)
+    .inSingletonScope();
+  container
+    .bind(SERVERS_TYPES.ServerInviteRepository)
+    .to(ServerInviteRepository)
+    .inSingletonScope();
 
   // Use Cases
   container.bind(SERVERS_TYPES.CreateServer).to(CreateServer);
@@ -52,6 +58,10 @@ export function loadServersModule(container: Container) {
 
   // Controllers
   container.bind<ServerCoreController>(SERVERS_TYPES.ServerCoreController).to(ServerCoreController);
-  container.bind<ServerMemberController>(SERVERS_TYPES.ServerMemberController).to(ServerMemberController);
-  container.bind<ServerInviteController>(SERVERS_TYPES.ServerInviteController).to(ServerInviteController);
+  container
+    .bind<ServerMemberController>(SERVERS_TYPES.ServerMemberController)
+    .to(ServerMemberController);
+  container
+    .bind<ServerInviteController>(SERVERS_TYPES.ServerInviteController)
+    .to(ServerInviteController);
 }

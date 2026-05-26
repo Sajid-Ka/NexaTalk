@@ -15,9 +15,11 @@ export class ServerMemberController {
   constructor(
     @inject(SERVERS_TYPES.JoinServer) private readonly _joinServer: IJoinServerUsecase,
     @inject(SERVERS_TYPES.LeaveServer) private readonly _leaveServer: ILeaveServerUsecase,
-    @inject(SERVERS_TYPES.GetServerMembers) private readonly _getServerMembers: IGetServerMembersUsecase,
-    @inject(SERVERS_TYPES.UpdateMemberRole) private readonly _updateMemberRole: IUpdateMemberRoleUsecase,
-    @inject(SERVERS_TYPES.KickMember) private readonly _kickMember: IKickMemberUsecase 
+    @inject(SERVERS_TYPES.GetServerMembers)
+    private readonly _getServerMembers: IGetServerMembersUsecase,
+    @inject(SERVERS_TYPES.UpdateMemberRole)
+    private readonly _updateMemberRole: IUpdateMemberRoleUsecase,
+    @inject(SERVERS_TYPES.KickMember) private readonly _kickMember: IKickMemberUsecase,
   ) {}
 
   joinServer = async (req: AuthenticatedRequest, res: Response) => {
@@ -54,11 +56,7 @@ export class ServerMemberController {
   };
 
   kickMember = async (req: AuthenticatedRequest, res: Response) => {
-    await this._kickMember.execute(
-      req.params.serverId,
-      req.user!.userId,
-      req.params.memberId,
-    );
+    await this._kickMember.execute(req.params.serverId, req.user!.userId, req.params.memberId);
 
     res.json(successResponse(null, "Member kicked successfully"));
   };
