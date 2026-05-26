@@ -6,7 +6,8 @@ import { getMemberColumns } from "./MembersTableColumns";
 interface ServerMembersTableProps {
   members: ServerSettingsMember[];
   currentUserRole: ServerMemberRole;
-  loading?: boolean;
+  tableLoading?: boolean;
+  actionLoading?: boolean;
   onPromote: (member: ServerSettingsMember) => void;
   onDemote: (member: ServerSettingsMember) => void;
   onKick: (member: ServerSettingsMember) => void;
@@ -15,24 +16,25 @@ interface ServerMembersTableProps {
 export default function ServerMembersTable({
   members,
   currentUserRole,
-  loading = false,
+  tableLoading = false,
+  actionLoading = false,
   onPromote,
   onDemote,
   onKick,
 }: ServerMembersTableProps) {
   const columns = getMemberColumns(
     currentUserRole,
-    loading,
+    actionLoading,
     onPromote,
     onDemote,
-    onKick
+    onKick,
   );
 
   return (
     <Table
       columns={columns}
       data={members}
-      loading={loading}
+      loading={tableLoading}
       emptyMessage="No members found"
     />
   );

@@ -15,6 +15,8 @@ export const SERVERS_TYPES = {
   GetPublicServers: Symbol.for("GetPublicServers"),
   CreateServerInvite: Symbol.for("CreateServerInvite"),
   JoinServerByInvite: Symbol.for("JoinServerByInvite"),
+  GetServerInvites: Symbol.for("GetServerInvites"),
+  RevokeServerInvite: Symbol.for("RevokeServerInvite"),
   GetServerMembers: Symbol.for("GetServerMembers"),
   UpdateMemberRole: Symbol.for("UpdateMemberRole"),
   KickMember: Symbol.for("KickMember"),

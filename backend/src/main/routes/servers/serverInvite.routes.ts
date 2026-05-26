@@ -21,7 +21,9 @@ const authMiddleware = createAuthMiddleware(tokenService, userStatusService);
 
 router.use(authMiddleware);
 
+router.get("/:serverId/invites", controller.getInvites);
 router.post("/:serverId/invites", validate(createInviteSchema), controller.createInvite);
+router.delete("/:serverId/invites/:inviteId", controller.revokeInvite);
 router.post("/invite/:code", controller.joinByInvite);
 
 export default router;

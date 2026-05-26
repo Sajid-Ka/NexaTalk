@@ -169,7 +169,8 @@ export default function MembersSettingsPage() {
           <ServerMembersTable
             members={members}
             currentUserRole={currentUserRole}
-            loading={actionLoading !== null}
+            tableLoading={loading}
+            actionLoading={actionLoading !== null}
             onPromote={handlePromoteToAdmin}
             onDemote={handleDemoteToMember}
             onKick={(member) => setKickModal({ isOpen: true, member })}

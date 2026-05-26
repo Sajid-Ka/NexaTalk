@@ -23,6 +23,10 @@ import { IUpdateMemberRoleUsecase } from "../../../../application/servers/member
 import { UpdateMemberRole } from "../../../../application/servers/members/usecases/UpdateMemberRole";
 import { IKickMemberUsecase } from "../../../../application/servers/members/interfaces/IKickMemberUsecase";
 import { KickMember } from "../../../../application/servers/members/usecases/KickMember";
+import { GetServerInvites } from "../../../../application/servers/invites/usecases/GetServerInvites";
+import { RevokeServerInvite } from "../../../../application/servers/invites/usecases/RevokeServerInvite";
+import { IGetServerInvitesUsecase } from "../../../../application/servers/invites/interfaces/IGetServerInvitesUsecase";
+import { IRevokeServerInviteUsecase } from "../../../../application/servers/invites/interfaces/IRevokeServerInviteUsecase";
 
 // Controllers
 import { ServerCoreController } from "../../../../presentation/servers/controllers/ServerCoreController";
@@ -52,6 +56,10 @@ export function loadServersModule(container: Container) {
   container.bind(SERVERS_TYPES.GetPublicServers).to(GetPublicServers);
   container.bind(SERVERS_TYPES.CreateServerInvite).to(CreateServerInvite);
   container.bind(SERVERS_TYPES.JoinServerByInvite).to(JoinServerByInvite);
+  container.bind<IGetServerInvitesUsecase>(SERVERS_TYPES.GetServerInvites).to(GetServerInvites);
+  container
+    .bind<IRevokeServerInviteUsecase>(SERVERS_TYPES.RevokeServerInvite)
+    .to(RevokeServerInvite);
   container.bind<IGetServerMembersUsecase>(SERVERS_TYPES.GetServerMembers).to(GetServerMembers);
   container.bind<IUpdateMemberRoleUsecase>(SERVERS_TYPES.UpdateMemberRole).to(UpdateMemberRole);
   container.bind<IKickMemberUsecase>(SERVERS_TYPES.KickMember).to(KickMember);
