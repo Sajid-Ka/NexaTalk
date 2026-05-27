@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { UserAccountStatus } from "../../../shared/constants/authStatus.const";
+import { UserAccountStatus } from "../../../../shared/constants/authStatus.const";
 
 export const listUsersQuerySchema = z.object({
   page: z.coerce.number().min(1).optional(),

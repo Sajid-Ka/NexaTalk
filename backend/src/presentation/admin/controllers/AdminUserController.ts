@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
 import { injectable, inject } from "inversify";
-import { IListUsersUsecase } from "../../../application/admin/interfaces/IListUsersUsecase";
-import { IBlockUserUsecase } from "../../../application/admin/interfaces/IBlockUserUsecase";
-import { IUnblockUserUsecase } from "../../../application/admin/interfaces/IUnblockUserUsecase";
-import { IUpdateUserRoleUsecase } from "../../../application/admin/interfaces/IUpdateUserRoleUsecase";
-import { IDeleteUserUsecase } from "../../../application/admin/interfaces/IDeleteUserUsecase";
+import { IListUsersUsecase } from "../../../application/admin/users/interfaces/IListUsersUsecase";
+import { IBlockUserUsecase } from "../../../application/admin/users/interfaces/IBlockUserUsecase";
+import { IUnblockUserUsecase } from "../../../application/admin/users/interfaces/IUnblockUserUsecase";
+import { IUpdateUserRoleUsecase } from "../../../application/admin/users/interfaces/IUpdateUserRoleUsecase";
+import { IDeleteUserUsecase } from "../../../application/admin/users/interfaces/IDeleteUserUsecase";
 import { ADMIN_TYPES } from "../../../main/di/modules/admin/admin.types";
-import { IGetUserDetailsUsecase } from "../../../application/admin/interfaces/IGetUserDetailsUsecase";
+import { IGetUserDetailsUsecase } from "../../../application/admin/users/interfaces/IGetUserDetailsUsecase";
 import { successResponse } from "../../../shared/response/responseFormatter";
 import { AuthenticatedRequest } from "../../../main/types/AuthenticatedRequest";
-import { IForceLogoutUserUsecase } from "../../../application/admin/interfaces/IForceLogoutUserUsecase";
+import { IForceLogoutUserUsecase } from "../../../application/admin/users/interfaces/IForceLogoutUserUsecase";
 
 @injectable()
 export class AdminUserController {
@@ -21,7 +21,7 @@ export class AdminUserController {
     @inject(ADMIN_TYPES.UpdateRole) private readonly _updateRole: IUpdateUserRoleUsecase,
     @inject(ADMIN_TYPES.DeleteUser) private readonly _deleteUser: IDeleteUserUsecase,
     @inject(ADMIN_TYPES.ForceLogoutUser) private readonly _forceLogoutUser: IForceLogoutUserUsecase,
-  ) {}
+  ) { }
 
   listUsers = async (req: Request, res: Response) => {
     const users = await this._listUsers.execute({

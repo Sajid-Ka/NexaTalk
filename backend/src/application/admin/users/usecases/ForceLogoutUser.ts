@@ -1,13 +1,13 @@
 import { inject, injectable } from "inversify";
-import { ADMIN_TYPES } from "../../../main/di/modules/admin/admin.types";
-import { IAdminUserRepository } from "../../../domain/features/admin/repositories/IAdminUserRepository";
-import { ILogger } from "../../../domain/core/common/services/ILogger";
-import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
-import { ForbiddenError } from "../../../domain/core/errors/ForbiddenError";
-import { NotFoundError } from "../../../domain/core/errors/NotFoundError";
-import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
-import { ITokenService } from "../../../domain/features/auth/services/ITokenService";
-import { IRefreshTokenRepository } from "../../../domain/features/auth/repositories/IRefreshTokenRepository";
+import { ADMIN_TYPES } from "../../../../main/di/modules/admin/admin.types";
+import { IAdminUserRepository } from "../../../../domain/features/admin/repositories/IAdminUserRepository";
+import { ILogger } from "../../../../domain/core/common/services/ILogger";
+import { COMMON_TYPES } from "../../../../main/di/modules/common/common.types";
+import { ForbiddenError } from "../../../../domain/core/errors/ForbiddenError";
+import { NotFoundError } from "../../../../domain/core/errors/NotFoundError";
+import { AUTH_TYPES } from "../../../../main/di/modules/auth/auth.types";
+import { ITokenService } from "../../../../domain/features/auth/services/ITokenService";
+import { IRefreshTokenRepository } from "../../../../domain/features/auth/repositories/IRefreshTokenRepository";
 import { IForceLogoutUserUsecase } from "../interfaces/IForceLogoutUserUsecase";
 
 @injectable()
@@ -18,7 +18,7 @@ export class ForceLogoutUser implements IForceLogoutUserUsecase {
     @inject(AUTH_TYPES.TokenService) private readonly _tokenService: ITokenService,
     @inject(AUTH_TYPES.RefreshTokenRepository)
     private readonly _refreshRepo: IRefreshTokenRepository,
-  ) {}
+  ) { }
 
   async execute(userId: string, adminId: string): Promise<void> {
     this._logger.info("Force logout user attempt", { userId, adminId });
