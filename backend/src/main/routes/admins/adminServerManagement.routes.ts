@@ -14,15 +14,11 @@ import { ValidationSource } from "../../../shared/constants/validation.const";
 
 const router = Router();
 
-const controller = container.get<AdminServerController>(
-  ADMIN_TYPES.AdminServerController,
-);
+const controller = container.get<AdminServerController>(ADMIN_TYPES.AdminServerController);
 
 const tokenService = container.get<ITokenService>(AUTH_TYPES.TokenService);
 
-const userStatusService = container.get<IUserStatusService>(
-  AUTH_TYPES.UserStatusService,
-);
+const userStatusService = container.get<IUserStatusService>(AUTH_TYPES.UserStatusService);
 
 const authMiddleware = createAuthMiddleware(tokenService, userStatusService);
 

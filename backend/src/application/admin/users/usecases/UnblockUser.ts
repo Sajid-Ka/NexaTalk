@@ -13,7 +13,7 @@ export class UnblockUser implements IUnblockUserUsecase {
   constructor(
     @inject(ADMIN_TYPES.AdminUserRepository) private readonly _repo: IAdminUserRepository,
     @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
-  ) { }
+  ) {}
 
   async execute(userId: string, adminId: string): Promise<void> {
     this._logger.info("Unblock user attempt", { userId });

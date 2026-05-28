@@ -25,7 +25,6 @@ import { DeleteServerByAdmin } from "../../../../application/admin/servers/useca
 import { AdminUserController } from "../../../../presentation/admin/controllers/AdminUserController";
 import { AdminServerController } from "../../../../presentation/admin/controllers/AdminServerController";
 
-
 export function loadAdminModule(container: Container) {
   //repositories
   container
@@ -33,9 +32,9 @@ export function loadAdminModule(container: Container) {
     .to(AdminUserRepository)
     .inSingletonScope();
   container
-  .bind<IAdminServerRepository>(ADMIN_TYPES.AdminServerRepository)
-  .to(AdminServerRepository)
-  .inSingletonScope();
+    .bind<IAdminServerRepository>(ADMIN_TYPES.AdminServerRepository)
+    .to(AdminServerRepository)
+    .inSingletonScope();
 
   //usecases
   //users

@@ -12,7 +12,7 @@ export class UpdateUserRole implements IUpdateUserRoleUsecase {
   constructor(
     @inject(ADMIN_TYPES.AdminUserRepository) private readonly _repo: IAdminUserRepository,
     @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
-  ) { }
+  ) {}
 
   async execute(userId: string, role: GlobalRole): Promise<void> {
     this._logger.info("Update user role", { userId, role });

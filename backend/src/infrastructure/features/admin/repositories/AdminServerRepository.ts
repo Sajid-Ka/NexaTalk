@@ -30,9 +30,7 @@ export class AdminServerRepository implements IAdminServerRepository {
     if (query.search?.trim()) {
       const search = query.search.trim();
 
-      filter.$or = [
-        { name: { $regex: search, $options: "i" } },
-      ];
+      filter.$or = [{ name: { $regex: search, $options: "i" } }];
 
       if (Types.ObjectId.isValid(search)) {
         (filter.$or as Record<string, unknown>[]).push({
@@ -42,9 +40,7 @@ export class AdminServerRepository implements IAdminServerRepository {
     }
 
     const sort: Record<string, 1 | -1> =
-      query.sort === "members"
-        ? { memberCount: -1 }
-        : { createdAt: -1 };
+      query.sort === "members" ? { memberCount: -1 } : { createdAt: -1 };
 
     const [docs, total] = await Promise.all([
       ServerModel.find(filter).sort(sort).skip(skip).limit(limit).lean(),
@@ -71,10 +67,7 @@ export class AdminServerRepository implements IAdminServerRepository {
   }
 
   async disableServer(serverId: string): Promise<void> {
-    await ServerModel.updateOne(
-      { _id: serverId, deletedAt: null },
-      { $set: { isDisabled: true } },
-    );
+    await ServerModel.updateOne({ _id: serverId, deletedAt: null }, { $set: { isDisabled: true } });
   }
 
   async enableServer(serverId: string): Promise<void> {

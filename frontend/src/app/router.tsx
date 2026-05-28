@@ -12,6 +12,7 @@ import ForgotPasswordPage from "../features/auth/pages/ForgotPasswordPage";
 import ResetPasswordPage from "../features/auth/pages/ResetPasswordPage";
 import AdminDashboardPage from "../features/admin/dashboard/pages/AdminDashboardPage";
 import UserManagementPage from "../features/admin/users/pages/UserManagementPage";
+import ServerManagementPage from "../features/admin/servers/pages/ServerManagementPage";
 import AdminRoute from "../routes/AdminRoute";
 import NotFoundPage from "../shared/pages/NotFoundPage";
 import OnboardingPage from "../features/onboarding/pages/OnboardingPage";
@@ -126,6 +127,15 @@ export default function AppRouter() {
                 element={
                     <AdminRoute>
                         <UserManagementPage />
+                    </AdminRoute>
+                }
+            />
+
+            <Route
+                path={AppRoute.ADMIN_SERVERS}
+                element={
+                    <AdminRoute>
+                    <ServerManagementPage />
                     </AdminRoute>
                 }
             />

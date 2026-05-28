@@ -14,6 +14,7 @@ import { cn } from "../../../../shared/utils/cn";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../../auth/context/useAuth";
 import toast from "react-hot-toast";
+import { AppRoute } from "../../../../shared/constants/app-route.const";
 
 interface NavItemProps {
     icon: ElementType;
@@ -83,7 +84,12 @@ export default function AdminSidebar() {
                     active={location.pathname === "/admin/users"}
                     onClick={() => navigate("/admin/users")}
                 />
-                <NavItem icon={ShieldAlert} label="Server Moderation" />
+                <NavItem
+                    icon={ShieldAlert}
+                    label="Server Moderation"
+                    active={location.pathname === AppRoute.ADMIN_SERVERS}
+                    onClick={() => navigate(AppRoute.ADMIN_SERVERS)}
+                />
                 <NavItem icon={MessageSquareWarning} label="Reports Queue" badge={12} />
                 <NavItem icon={CreditCard} label="Earnings & Pay" />
                 <NavItem icon={Settings} label="Platform Settings" />

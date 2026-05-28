@@ -16,7 +16,7 @@ export class DeleteUser implements IDeleteUserUsecase {
     @inject(ADMIN_TYPES.AdminUserRepository) private readonly _repo: IAdminUserRepository,
     @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
     @inject(AUTH_TYPES.TokenService) private readonly _tokenService: ITokenService,
-  ) { }
+  ) {}
 
   async execute(userId: string, adminId: string): Promise<void> {
     this._logger.warn("Delete user attempt", { userId });

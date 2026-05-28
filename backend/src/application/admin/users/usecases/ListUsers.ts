@@ -13,7 +13,7 @@ export class ListUsers implements IListUsersUsecase {
   constructor(
     @inject(ADMIN_TYPES.AdminUserRepository) private readonly _repo: IAdminUserRepository,
     @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
-  ) { }
+  ) {}
 
   async execute(query: ListUsersRequestQuery): Promise<PaginatedUsersResponse> {
     this._logger.info("Admin listing users", { query });

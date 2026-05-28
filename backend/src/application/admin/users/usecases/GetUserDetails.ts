@@ -12,7 +12,7 @@ export class GetUserDetails implements IGetUserDetailsUsecase {
   constructor(
     @inject(ADMIN_TYPES.AdminUserRepository) private _repo: IAdminUserRepository,
     @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
-  ) { }
+  ) {}
 
   async execute(userId: string): Promise<AdminUserResponse> {
     this._logger.info("Get user details", { userId });

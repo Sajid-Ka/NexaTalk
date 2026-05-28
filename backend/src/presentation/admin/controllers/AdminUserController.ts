@@ -21,7 +21,7 @@ export class AdminUserController {
     @inject(ADMIN_TYPES.UpdateRole) private readonly _updateRole: IUpdateUserRoleUsecase,
     @inject(ADMIN_TYPES.DeleteUser) private readonly _deleteUser: IDeleteUserUsecase,
     @inject(ADMIN_TYPES.ForceLogoutUser) private readonly _forceLogoutUser: IForceLogoutUserUsecase,
-  ) { }
+  ) {}
 
   listUsers = async (req: Request, res: Response) => {
     const users = await this._listUsers.execute({

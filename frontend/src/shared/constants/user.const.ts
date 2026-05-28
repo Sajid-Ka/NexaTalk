@@ -29,3 +29,11 @@ export const UserTab = {
 } as const;
 
 export type UserTab = (typeof UserTab)[keyof typeof UserTab];
+
+export const AdminUserSortOrder = {
+  ASC: "asc",
+  DESC: "desc",
+} as const;
+
+export type AdminUserSortOrder =
+  (typeof AdminUserSortOrder)[keyof typeof AdminUserSortOrder];

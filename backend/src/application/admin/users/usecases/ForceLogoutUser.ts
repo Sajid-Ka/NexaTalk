@@ -18,7 +18,7 @@ export class ForceLogoutUser implements IForceLogoutUserUsecase {
     @inject(AUTH_TYPES.TokenService) private readonly _tokenService: ITokenService,
     @inject(AUTH_TYPES.RefreshTokenRepository)
     private readonly _refreshRepo: IRefreshTokenRepository,
-  ) { }
+  ) {}
 
   async execute(userId: string, adminId: string): Promise<void> {
     this._logger.info("Force logout user attempt", { userId, adminId });

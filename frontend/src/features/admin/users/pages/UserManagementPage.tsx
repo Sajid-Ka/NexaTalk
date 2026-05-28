@@ -17,6 +17,7 @@ import {
 } from "../api/userManagementApi";
 
 import {
+  AdminUserSortOrder,
   UserRole,
   UserStatus,
   UserTab,
@@ -56,7 +57,7 @@ export default function UserManagementPage() {
     useState<string>("joinedDate");
 
   const [sortOrder, setSortOrder] =
-    useState<"asc" | "desc">("desc");
+    useState<AdminUserSortOrder>(AdminUserSortOrder.DESC);
 
   useEffect(() => {
     const timer = setTimeout(
@@ -114,7 +115,7 @@ export default function UserManagementPage() {
   const handleSort = (key: string) => {
     if (sortBy === key) {
       setSortOrder(
-        sortOrder === "asc" ? "desc" : "asc"
+        sortOrder === AdminUserSortOrder.ASC ? AdminUserSortOrder.DESC : AdminUserSortOrder.ASC
       );
     } else {
       setSortBy(key);

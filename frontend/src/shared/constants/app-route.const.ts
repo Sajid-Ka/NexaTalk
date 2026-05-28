@@ -12,14 +12,14 @@ export const AppRoute = {
 
   ADMIN: "/admin",
   ADMIN_USERS: "/admin/users",
-  
+  ADMIN_SERVERS: "/admin/servers",
+
   ONBOARDING: "/onboarding",
-  
+
   SERVERS: "/servers",
   SERVER_DASHBOARD: "/servers/:serverId",
 
   NOT_FOUND: "*",
 } as const;
 
-export type AppRoute =
-  (typeof AppRoute)[keyof typeof AppRoute];
+export type AppRoute = (typeof AppRoute)[keyof typeof AppRoute];
