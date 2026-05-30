@@ -3,6 +3,7 @@ import { User } from "../entities/User";
 
 export interface IUserRepository extends IBaseRepository<User> {
   findByEmail(email: string): Promise<User | null>;
+  findByEmailIncludingDeleted(email: string): Promise<User | null>;
   findByUsername(username: string): Promise<User | null>;
   search(query: string, limit: number): Promise<User[]>;
 }

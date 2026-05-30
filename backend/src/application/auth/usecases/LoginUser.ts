@@ -18,6 +18,7 @@ import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 import { TimeUtil } from "../../../shared/utils/time/time.util";
 import { CACHE_KEYS } from "../../../shared/constants/cacheKeys";
 import { ILogger } from "../../../domain/core/common/services/ILogger";
+import { AccountDeletedError } from "../../../domain/features/auth/errors/AccountDeletedError";
 
 @injectable()
 export class LoginUser implements ILoginUserUsecase {
@@ -36,7 +37,7 @@ export class LoginUser implements ILoginUserUsecase {
   async execute(dto: LoginUserRequest, ip?: string, ua?: string): Promise<LoginUserResponse> {
     this._logger.info("Login attempt", { email: dto.email });
 
-    const user = await this._userRepo.findByEmail(dto.email);
+    const user = await this._userRepo.findByEmailIncludingDeleted(dto.email);
     if (!user) {
       this._logger.warn("Invalid credentials", { email: dto.email });
       throw new InvalidCredentialsError();
@@ -46,6 +47,15 @@ export class LoginUser implements ILoginUserUsecase {
     if (!valid) {
       this._logger.warn("Invalid credentials", { email: dto.email });
       throw new InvalidCredentialsError();
+    }
+
+    if (user.deletedAt || user.accountStatus === UserAccountStatus.DELETED) {
+      this._logger.warn("Login attempt for deleted user", {
+        userId: user.id,
+        status: user.accountStatus,
+      });
+
+      throw new AccountDeletedError();
     }
 
     if (!user.isEmailVerified) throw new EmailNotVerifiedError();

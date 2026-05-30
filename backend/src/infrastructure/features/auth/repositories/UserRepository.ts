@@ -27,6 +27,12 @@ export class UserRepository
     return this.findOne({ email, deletedAt: null } as Partial<User>);
   }
 
+  async findByEmailIncludingDeleted(email: string): Promise<User | null> {
+    const doc = await this.model.findOne({ email }).lean();
+
+    return doc ? this.mapper.toDomain(doc) : null;
+  }
+
   async delete(id: string, transaction?: TransactionContext): Promise<boolean> {
     await this.updateRaw(id, { $set: { deletedAt: new Date() } }, transaction);
     return true;

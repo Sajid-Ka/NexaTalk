@@ -52,6 +52,13 @@ export default function LoginForm() {
                     return;
                 }
 
+                if (code === "ACCOUNT_DELETED") {
+                    setServerError(
+                        message || "Your account has been deleted. Please contact support if you think this is a mistake."
+                    );
+                    return;
+                }
+
                 if (code === "USER_BLOCKED") {
                     setServerError(message || "Your account is blocked. Please contact support.");
                     return;
