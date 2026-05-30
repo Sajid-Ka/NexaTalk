@@ -4,6 +4,7 @@ import { registerSchema } from "../../presentation/auth/validators/registerValid
 import { loginSchema } from "../../presentation/auth/validators/loginValidator";
 import { rateLimit } from "../../infrastructure/core/http/middlewares/rateLimit.middleware";
 import { verifyEmailSchema } from "../../presentation/auth/validators/verifyEmailValidator";
+import { requestVerificationEmailSchema } from "../../presentation/auth/validators/requestVerificationEmailValidator";
 import { container } from "../di/container";
 import { AUTH_TYPES } from "../di/modules/auth/auth.types";
 import { createAuthMiddleware } from "../middlewares/authMiddleware";
@@ -32,6 +33,12 @@ router.post(
   "/verify-email",
   validate(verifyEmailSchema),
   authController.verifyEmail.bind(authController),
+);
+router.post(
+  "/resend-verification-email",
+  rateLimit("verify-email", env.RATE_LIMIT_RESET, env.RATE_LIMIT_WINDOW_SECONDS),
+  validate(requestVerificationEmailSchema),
+  authController.requestVerificationEmail,
 );
 router.post(
   "/login",

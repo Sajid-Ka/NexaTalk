@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
@@ -8,16 +9,21 @@ import LoginFields from "./LoginFields";
 import { useAuth } from "../context/useAuth";
 import { useState } from "react";
 import { UserRole } from "../../../shared/constants/user.const";
+import toast from "react-hot-toast";
+import { resendVerificationEmailApi } from "../api/authApi";
 
 export default function LoginForm() {
     const navigate = useNavigate();
     const { login } = useAuth();
 
     const [serverError, setServerError] = useState<string | null>(null);
+    const [isResending, setIsResending] = useState(false);
 
     const {
         register,
         handleSubmit,
+        getValues,
+        trigger,
         formState: { errors, isSubmitting },
     } = useForm<LoginFormData>({
         resolver: zodResolver(loginSchema),
@@ -35,13 +41,63 @@ export default function LoginForm() {
             else navigate("/home", {replace : true})
 
         } catch (error: unknown) {
-            const err = error as { response?: { data?: { message?: string } } };
-            const message = err?.response?.data?.message;
-            if (message === "Email not verified") {
-                setServerError("Please verify your email before logging in.");
-            } else {
+            if (axios.isAxiosError(error)) {
+                const code = error.response?.data?.error?.code;
+                const message =
+                    error.response?.data?.error?.message ||
+                    error.response?.data?.message;
+
+                if (code === "EMAIL_NOT_VERIFIED" || message === "Email is not verified") {
+                    setServerError("Please verify your email before logging in.");
+                    return;
+                }
+
+                if (code === "USER_BLOCKED") {
+                    setServerError(message || "Your account is blocked. Please contact support.");
+                    return;
+                }
+
                 setServerError(message || "Invalid email or password");
+                return;
             }
+
+            setServerError("Invalid email or password");
+        }
+    };
+
+    const handleResendVerificationEmail = async () => {
+        const isEmailValid = await trigger("email");
+        if (!isEmailValid) {
+            toast.error("Please enter a valid email address first.");
+            return;
+        }
+
+        const toastId = toast.loading("Sending verification link...");
+
+        try {
+            setIsResending(true);
+
+            const email = getValues("email");
+            const response = await resendVerificationEmailApi(email);
+
+            toast.success(
+                response.data?.message || "Verification link resent. Please check your inbox.",
+                { id: toastId }
+            );
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+                toast.error(
+                    error.response?.data?.error?.message ||
+                    error.response?.data?.message ||
+                    "Failed to resend verification link.",
+                    { id: toastId }
+                );
+                return;
+            }
+
+            toast.error("Failed to resend verification link.", { id: toastId });
+        } finally {
+            setIsResending(false);
         }
     };
 
@@ -56,12 +112,26 @@ export default function LoginForm() {
                             {serverError}
                         </p>
                         {serverError === "Please verify your email before logging in." && (
-                            <Link
-                                to="/check-email"
-                                className="inline-block text-[#3B82F6] text-sm hover:underline"
+                            <button
+                                type="button"
+                                onClick={handleResendVerificationEmail}
+                                disabled={isResending}
+                                className="
+                                    rounded-lg
+                                    border
+                                    border-gray-600
+                                    px-4
+                                    py-2
+                                    text-sm
+                                    text-gray-200
+                                    transition-colors
+                                    hover:bg-gray-800
+                                    disabled:cursor-not-allowed
+                                    disabled:opacity-60
+                                "
                             >
-                                Resend verification email
-                            </Link>
+                                {isResending ? "Sending..." : "Resend verification email"}
+                            </button>
                         )}
                     </div>
                 )}

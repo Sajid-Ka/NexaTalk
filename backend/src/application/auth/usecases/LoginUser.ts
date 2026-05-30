@@ -55,7 +55,7 @@ export class LoginUser implements ILoginUserUsecase {
         userId: user.id,
         status: user.accountStatus,
       });
-      throw new UserBlockedError();
+      throw new UserBlockedError(user.blockedReason);
     }
 
     const accessToken = this._tokenService.generateAccessToken(

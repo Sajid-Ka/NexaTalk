@@ -20,6 +20,7 @@ import { LogoutAllDevice } from "../../../../application/auth/usecases/LogoutAll
 import { ListUserSessions } from "../../../../application/auth/usecases/ListUserSessions";
 import { RevokeSession } from "../../../../application/auth/usecases/RevokeSession";
 import { SendVerificationEmail } from "../../../../application/auth/usecases/SendVerificationEmail";
+import { RequestVerificationEmail } from "../../../../application/auth/usecases/RequestVerificationEmail";
 import { VerifyEmail } from "../../../../application/auth/usecases/VerifyEmail";
 import { RequestPasswordReset } from "../../../../application/auth/usecases/RequestPasswordReset";
 import { ResetPassword } from "../../../../application/auth/usecases/ResetPassword";
@@ -57,6 +58,7 @@ export function loadAuthModule(container: Container) {
   container.bind(AUTH_TYPES.ListUserSessions).to(ListUserSessions);
   container.bind(AUTH_TYPES.RevokeSession).to(RevokeSession);
   container.bind(AUTH_TYPES.SendVerificationEmail).to(SendVerificationEmail);
+  container.bind(AUTH_TYPES.RequestVerificationEmail).to(RequestVerificationEmail);
   container.bind(AUTH_TYPES.VerifyEmail).to(VerifyEmail);
   container.bind(AUTH_TYPES.RequestPasswordReset).to(RequestPasswordReset);
   container.bind(AUTH_TYPES.ResetPassword).to(ResetPassword);

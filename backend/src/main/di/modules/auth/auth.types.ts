@@ -18,6 +18,7 @@ export const AUTH_TYPES = {
   ListUserSessions: Symbol.for("ListUserSessions"),
   RevokeSession: Symbol.for("RevokeSession"),
   SendVerificationEmail: Symbol.for("SendVerificationEmail"),
+  RequestVerificationEmail: Symbol.for("RequestVerificationEmail"),
   VerifyEmail: Symbol.for("VerifyEmail"),
   RequestPasswordReset: Symbol.for("RequestPasswordReset"),
   ResetPassword: Symbol.for("ResetPassword"),

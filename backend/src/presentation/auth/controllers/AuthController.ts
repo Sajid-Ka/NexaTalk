@@ -9,6 +9,7 @@ import { IRegisterUserUsecase } from "../../../application/auth/interfaces/IRegi
 import { IRefreshSessionUsecase } from "../../../application/auth/interfaces/IRefreshSessionUsecase";
 import { IRequestPasswordResetUsecase } from "../../../application/auth/interfaces/IRequestPasswordResetUsecase";
 import { IResetPasswordUsecase } from "../../../application/auth/interfaces/IResetPasswordUsecase";
+import { IRequestVerificationEmailUsecase } from "../../../application/auth/interfaces/IRequestVerificationEmailUsecase";
 import { IVerifyEmailUsecase } from "../../../application/auth/interfaces/IVerifyEmailUsecase";
 import { UnauthorizedError } from "../../../domain/core/errors/UnauthorizedError";
 import { inject, injectable } from "inversify";
@@ -25,6 +26,8 @@ export class AuthController {
     @inject(AUTH_TYPES.LoginUser) private readonly _loginUser: ILoginUserUsecase,
     @inject(AUTH_TYPES.RefreshSession) private readonly _refreshSession: IRefreshSessionUsecase,
     @inject(AUTH_TYPES.VerifyEmail) private readonly _verifyEmailUsecase: IVerifyEmailUsecase,
+    @inject(AUTH_TYPES.RequestVerificationEmail)
+    private readonly _requestVerificationEmail: IRequestVerificationEmailUsecase,
     @inject(AUTH_TYPES.RequestPasswordReset)
     private readonly _requestPasswordReset: IRequestPasswordResetUsecase,
     @inject(AUTH_TYPES.ResetPassword) private readonly _resetPassword: IResetPasswordUsecase,
@@ -47,6 +50,14 @@ export class AuthController {
     await this._verifyEmailUsecase.execute(token);
 
     return res.status(200).json(successResponse(null, AuthMessage.EMAIL_VERIFIED));
+  };
+
+  requestVerificationEmail = async (req: AuthenticatedRequest, res: Response) => {
+    const { email } = req.body;
+
+    await this._requestVerificationEmail.execute(email);
+
+    return res.status(200).json(successResponse(null, "Verification email sent"));
   };
 
   login = async (req: AuthenticatedRequest, res: Response) => {
