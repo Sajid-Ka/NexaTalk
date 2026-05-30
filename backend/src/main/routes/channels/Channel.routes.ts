@@ -6,8 +6,9 @@ import { AUTH_TYPES } from "../../di/modules/auth/auth.types";
 import { ITokenService } from "../../../domain/features/auth/services/ITokenService";
 import { IUserStatusService } from "../../../domain/features/auth/services/IUserStatusService";
 import { validate } from "../../../presentation/validators.ts/validate";
-import { createServerChannelSchema } from "../../../presentation/channels/validators/createServerChannelValidator";
+import { createChannelSchema } from "../../../presentation/channels/validators/createChannelValidator";
 import { CHANNELS_TYPES } from "../../di/modules/channels/channels.types";
+import { updateChannelSchema } from "../../../presentation/channels/validators/updateChannelValidator";
 
 const router = Router();
 
@@ -20,6 +21,12 @@ const authMiddleware = createAuthMiddleware(tokenService, userStatusService);
 router.use(authMiddleware);
 
 router.get("/:serverId/channels", controller.getChannels);
-router.post("/:serverId/channels", validate(createServerChannelSchema), controller.createChannel);
+router.post("/:serverId/channels", validate(createChannelSchema), controller.createChannel);
+router.patch(
+  "/:serverId/channels/:channelId",
+  validate(updateChannelSchema),
+  controller.updateChannel,
+);
+router.delete("/:serverId/channels/:channelId", controller.deleteChannel);
 
 export default router;

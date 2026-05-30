@@ -29,4 +29,14 @@ export class ChannelRepository
     const count = await this.model.countDocuments({ serverId, type, name });
     return count > 0;
   }
+
+  async updateName(channelId: string, name: string): Promise<Channel | null> {
+    const doc = await this.model.findByIdAndUpdate(channelId, { name }, { new: true }).lean();
+
+    return doc ? this.mapper.toDomain(doc) : null;
+  }
+
+  async deleteChannel(channelId: string): Promise<void> {
+    await this.model.findByIdAndDelete(channelId);
+  }
 }

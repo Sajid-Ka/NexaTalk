@@ -1,4 +1,4 @@
-import { Hash, Plus, Settings, Volume2 } from "lucide-react";
+import { Hash, Plus, Settings, Volume2, Trash2, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ChannelType } from "../../../shared/constants/channel.const";
 import { cn } from "../../../shared/utils/cn";
@@ -13,6 +13,8 @@ interface ChannelSidebarProps {
   onSelectChannel: (channel: Channel) => void;
   onCreateClick: (type: ChannelType) => void;
   onServerHomeClick: () => void;
+  onRenameClick: (channel: Channel) => void;
+  onDeleteClick: (channel: Channel) => void;
 }
 
 export default function ChannelSidebar({
@@ -23,6 +25,8 @@ export default function ChannelSidebar({
   onSelectChannel,
   onCreateClick,
   onServerHomeClick,
+  onRenameClick,
+  onDeleteClick,
 }: ChannelSidebarProps) {
   const navigate = useNavigate();
   const textChannels = channels.filter((channel) => channel.type === ChannelType.TEXT);
@@ -57,6 +61,8 @@ export default function ChannelSidebar({
           canManageChannels={canManageChannels}
           onSelectChannel={onSelectChannel}
           onCreateClick={onCreateClick}
+          onRenameClick={onRenameClick}
+          onDeleteClick={onDeleteClick}
         />
 
         <ChannelGroup
@@ -67,6 +73,8 @@ export default function ChannelSidebar({
           canManageChannels={canManageChannels}
           onSelectChannel={onSelectChannel}
           onCreateClick={onCreateClick}
+          onRenameClick={onRenameClick}
+          onDeleteClick={onDeleteClick}
         />
       </div>
     </aside>
@@ -81,6 +89,8 @@ interface ChannelGroupProps {
   canManageChannels: boolean;
   onSelectChannel: (channel: Channel) => void;
   onCreateClick: (type: ChannelType) => void;
+  onRenameClick: (channel: Channel) => void;
+  onDeleteClick: (channel: Channel) => void;
 }
 
 function ChannelGroup({
@@ -91,6 +101,8 @@ function ChannelGroup({
   canManageChannels,
   onSelectChannel,
   onCreateClick,
+  onRenameClick,
+  onDeleteClick,
 }: ChannelGroupProps) {
   const Icon = type === ChannelType.TEXT ? Hash : Volume2;
 
@@ -114,20 +126,46 @@ function ChannelGroup({
 
       <div className="space-y-1">
         {channels.map((channel) => (
-          <button
+          <div
             key={channel.id}
-            type="button"
-            onClick={() => onSelectChannel(channel)}
             className={cn(
-              "flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-sm transition",
+              "group flex h-9 w-full items-center rounded-lg px-2 transition",
               selectedChannelId === channel.id
                 ? "bg-white/10 text-white"
                 : "text-white/50 hover:bg-white/[0.06] hover:text-white/80",
             )}
           >
-            <Icon size={16} className="shrink-0" />
-            <span className="truncate">{channel.name}</span>
-          </button>
+            <button
+              type="button"
+              onClick={() => onSelectChannel(channel)}
+              className="flex min-w-0 flex-1 items-center gap-2 text-left text-sm"
+            >
+              <Icon size={16} className="shrink-0" />
+              <span className="truncate">{channel.name}</span>
+            </button>
+
+            {canManageChannels && (
+              <div className="ml-2 hidden shrink-0 items-center gap-1 group-hover:flex">
+                <button
+                  type="button"
+                  onClick={() => onRenameClick(channel)}
+                  className="rounded p-1 text-white/35 hover:bg-white/10 hover:text-white"
+                  aria-label="Rename channel"
+                >
+                  <Pencil size={13} />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => onDeleteClick(channel)}
+                  className="rounded p-1 text-white/35 hover:bg-red-500/15 hover:text-red-300"
+                  aria-label="Delete channel"
+                >
+                  <Trash2 size={13} />
+                </button>
+              </div>
+            )}
+          </div>
         ))}
 
         {channels.length === 0 && (

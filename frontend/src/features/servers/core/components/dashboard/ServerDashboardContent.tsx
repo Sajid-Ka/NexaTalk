@@ -3,10 +3,16 @@ import { Hash, Lock, Plus, Settings, Share2, Users, Volume2, Wifi } from "lucide
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../../auth/context/useAuth";
-import { createChannelApi, getChannelsApi } from "../../../../channels/api/channelApi";
+import ChannelPage from "../../../../channels/pages/ChannelPage";
+import ChannelRenameModal from "../../../../channels/components/ChannelRenameModal";
+import ConfirmModal from "../../../../../shared/ui/ConfirmModal";
+import {
+  createChannelApi,
+  deleteChannelApi,
+  getChannelsApi,
+  updateChannelApi,
+} from "../../../../channels/api/channelApi";
 import ChannelCreateModal from "../../../../channels/components/ChannelCreateModal";
-import ChannelMainPane from "../../../../channels/components/ChannelMainPane";
-import ChannelSidebar from "../../../../channels/components/ChannelSidebar";
 import type { Channel } from "../../../../channels/types";
 import {
   ChannelType,
@@ -15,6 +21,7 @@ import {
 import { ServerMemberRole } from "../../../../../shared/constants/server.const";
 import type { Server } from "../../types";
 import OnlineMembersSidebar from "./OnlineMembersSidebar";
+
 
 interface Props {
   server: Server;
@@ -57,6 +64,24 @@ export default function ServerDashboardContent({ server }: Props) {
     isOpen: false,
     type: ChannelType.TEXT,
   });
+
+  const [renameModal, setRenameModal] = useState<{
+    isOpen: boolean;
+    channel: Channel | null;
+  }>({
+    isOpen: false,
+    channel: null,
+  });
+
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean;
+    channel: Channel | null;
+  }>({
+    isOpen: false,
+    channel: null,
+  });
+
+const [actionLoading, setActionLoading] = useState(false);
 
   const members = useMemo(() => server.members ?? [], [server.members]);
   const onlineMembers = members.filter((member) => member.status !== "offline");
@@ -129,21 +154,79 @@ export default function ServerDashboardContent({ server }: Props) {
     }
   };
 
+  const handleRenameChannel = async (name: string) => {
+    if (!renameModal.channel) return;
+
+    try {
+      setActionLoading(true);
+
+      const response = await updateChannelApi(
+        server.id,
+        renameModal.channel.id,
+        { name },
+      );
+
+      const updatedChannel = response.data.data as Channel;
+
+      setChannels((current) =>
+        current.map((channel) =>
+          channel.id === updatedChannel.id ? updatedChannel : channel,
+        ),
+      );
+
+      setSelectedChannel((current) =>
+        current?.id === updatedChannel.id ? updatedChannel : current,
+      );
+
+      setRenameModal({ isOpen: false, channel: null });
+      toast.success("Channel renamed");
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Failed to rename channel"));
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDeleteChannel = async () => {
+    if (!deleteModal.channel) return;
+
+    try {
+      setActionLoading(true);
+
+      await deleteChannelApi(server.id, deleteModal.channel.id);
+
+      setChannels((current) =>
+        current.filter((channel) => channel.id !== deleteModal.channel?.id),
+      );
+
+      setSelectedChannel((current) =>
+        current?.id === deleteModal.channel?.id ? null : current,
+      );
+
+      setDeleteModal({ isOpen: false, channel: null });
+      toast.success("Channel deleted");
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Failed to delete channel"));
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   if (selectedChannel) {
     return (
-      <div className="flex min-h-0 flex-1 overflow-hidden bg-[#070A12] text-white">
-        <ChannelSidebar
+      <>
+        <ChannelPage
           server={server}
+          members={members}
           channels={channels}
-          selectedChannelId={selectedChannel.id}
+          selectedChannel={selectedChannel}
           canManageChannels={canManageChannels}
           onSelectChannel={setSelectedChannel}
           onCreateClick={openCreateModal}
           onServerHomeClick={() => setSelectedChannel(null)}
+          onRenameClick={(channel) => setRenameModal({ isOpen: true, channel })}
+          onDeleteClick={(channel) => setDeleteModal({ isOpen: true, channel })}
         />
-
-        <ChannelMainPane channel={selectedChannel} />
-        <OnlineMembersSidebar members={members} />
 
         {createModal.isOpen && (
           <ChannelCreateModal
@@ -156,7 +239,24 @@ export default function ServerDashboardContent({ server }: Props) {
             onCreate={handleCreateChannel}
           />
         )}
-      </div>
+
+        <ChannelRenameModal
+          isOpen={renameModal.isOpen}
+          channel={renameModal.channel}
+          loading={actionLoading}
+          onClose={() => setRenameModal({ isOpen: false, channel: null })}
+          onRename={handleRenameChannel}
+        />
+
+        <ConfirmModal
+          isOpen={deleteModal.isOpen}
+          onClose={() => setDeleteModal({ isOpen: false, channel: null })}
+          onConfirm={handleDeleteChannel}
+          title={`Delete ${deleteModal.channel?.name}?`}
+          message="This channel will be permanently deleted."
+          confirmText="Delete Channel"
+        />
+      </>
     );
   }
 
