@@ -47,6 +47,19 @@ export class UserRepository
     return docs.map((doc) => this.mapper.toDomain(doc));
   }
 
+  async findByUsername(username: string): Promise<User | null> {
+    const escapedUsername = username.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    const doc = await this.model
+      .findOne({
+        username: new RegExp(`^${escapedUsername}$`, "i"),
+        deletedAt: null,
+      })
+      .lean();
+
+    return doc ? this.mapper.toDomain(doc) : null;
+  }
+
   //Handle soft deleted users when they try to register again
   async create(entity: User, transaction?: TransactionContext): Promise<User> {
     const existingDeletedUser = await this.model
@@ -75,6 +88,17 @@ export class UserRepository
 
     if (existingActiveUser) {
       throw new ConflictError();
+    }
+
+    const existingUsername = await this.model
+      .findOne({
+        username: new RegExp(`^${entity.username.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i"),
+        deletedAt: null,
+      })
+      .session(toMongoSession(transaction) ?? null);
+
+    if (existingUsername) {
+      throw new ConflictError("USERNAME_ALREADY_TAKEN", "Username already taken");
     }
 
     // No existing user found, create new one

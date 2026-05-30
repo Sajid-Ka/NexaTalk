@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
 import { signupSchema, type SignupFormData } from "../validators/signupSchema";
@@ -14,6 +15,7 @@ export default function SignupForm() {
     const {
         register,
         handleSubmit,
+        setError,
         formState: { errors, isSubmitting },
     } = useForm<SignupFormData>({
         resolver: zodResolver(signupSchema),
@@ -27,15 +29,30 @@ export default function SignupForm() {
 
             navigate("/check-email");
         } catch (error: unknown) {
-            const err = error as { response?: { data?: { message?: string; error?: {code?: string; message?: string; } } } };
-            console.log("Signup error:", err.response);
+            if (axios.isAxiosError(error)) {
+                const code = error.response?.data?.error?.code;
+                const message =
+                    error.response?.data?.error?.message ||
+                    error.response?.data?.message ||
+                    "Failed to create account";
 
-            const message =
-                err?.response?.data?.error?.message ||
-                err?.response?.data?.message ||
-                "Email Already registered";
+                if (code === "USERNAME_ALREADY_TAKEN") {
+                    setError("username", { message: "This username is already taken." });
+                    toast.error("This username is already taken. Please choose another one.");
+                    return;
+                }
 
-            toast.error(message);
+                if (code === "EMAIL_ALREADY_REGISTERED") {
+                    setError("email", { message: "This email is already registered." });
+                    toast.error("This email is already registered. Please log in instead.");
+                    return;
+                }
+
+                toast.error(message);
+                return;
+            }
+
+            toast.error("Failed to create account");
         }
     };
 

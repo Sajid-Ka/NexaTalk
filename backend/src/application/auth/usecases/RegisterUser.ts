@@ -28,8 +28,15 @@ export class RegisterUser implements IRegisterUserUsecase {
   ) {}
 
   async execute(dto: RegisterUserRequest): Promise<RegisterUserResponse> {
-    const exists = await this._userRepo.findByEmail(dto.email);
-    if (exists) throw new ConflictError();
+    const emailExists = await this._userRepo.findByEmail(dto.email);
+    if (emailExists) {
+      throw new ConflictError("EMAIL_ALREADY_REGISTERED", "Email already registered");
+    }
+
+    const usernameExists = await this._userRepo.findByUsername(dto.username);
+    if (usernameExists) {
+      throw new ConflictError("USERNAME_ALREADY_TAKEN", "Username already taken");
+    }
 
     const hashedPassword = await this._hasher.hash(dto.password);
 
