@@ -9,6 +9,7 @@ import { loadOnboardingModule } from "./modules/onboarding/onboarding.module";
 import { loadUserModule } from "./modules/user/user.module";
 import { loadFriendsModule } from "./modules/friends/friends.module";
 import { loadServersModule } from "./modules/servers/servers.module";
+import { loadChannelsModule } from "./modules/channels/channels.module";
 
 const container = new Container();
 
@@ -22,5 +23,6 @@ loadOnboardingModule(container);
 loadUserModule(container);
 loadFriendsModule(container);
 loadServersModule(container);
+loadChannelsModule(container);
 
 export { container };

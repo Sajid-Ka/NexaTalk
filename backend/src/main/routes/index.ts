@@ -9,6 +9,7 @@ import userRoutes from "./userSettingsRoutes";
 import profileRoutes from "./profileRoutes";
 import friendRoutes from "./friendRoutes";
 import serverRoutes from "./servers";
+import channelRoutes from "./channels";
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.use("/user", userRoutes);
 router.use("/profiles", profileRoutes);
 router.use("/friends", friendRoutes);
 router.use("/servers", serverRoutes);
+router.use("/servers", channelRoutes);
 
 export default router;

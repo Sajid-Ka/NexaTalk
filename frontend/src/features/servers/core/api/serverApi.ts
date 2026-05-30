@@ -21,5 +21,3 @@ export const leaveServerApi = (serverId: string) =>
 
 export const joinByInviteApi = (code: string) =>
   api.post(`/servers/invite/${code}`);
-
-

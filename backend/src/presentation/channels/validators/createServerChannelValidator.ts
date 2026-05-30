@@ -1,0 +1,7 @@
+import { z } from "zod";
+import { ChannelType } from "../../../shared/constants/channel.const";
+
+export const createServerChannelSchema = z.object({
+  name: z.string().trim().min(1).max(60),
+  type: z.enum([ChannelType.TEXT, ChannelType.VOICE]),
+});
