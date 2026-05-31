@@ -8,18 +8,18 @@ import type { User } from "../type/userManagement.types";
 interface GetUserColumnsParams {
   currentUserId?: string;
   onSelectUser: (user: User) => void;
-  onBlockUser: (userId: string) => void;
+  onBlockClick: (user: User) => void;
   onUnblockUser: (userId: string) => void;
-  onForceLogout: (userId: string) => void;
+  onForceLogoutClick: (user: User) => void;
   onDeleteClick: (user: User) => void;
 }
 
 export const getUserColumns = ({
   currentUserId,
   onSelectUser,
-  onBlockUser,
+  onBlockClick,
   onUnblockUser,
-  onForceLogout,
+  onForceLogoutClick,
   onDeleteClick,
 }: GetUserColumnsParams): Column<User>[] => [
   {
@@ -103,7 +103,7 @@ export const getUserColumns = ({
               type="button"
               onClick={(event) => {
                 event.stopPropagation();
-                onBlockUser(row.id);
+                onBlockClick(row);
               }}
               className="p-1.5 text-gray-500 hover:text-red-500"
               title="Block User"
@@ -128,7 +128,7 @@ export const getUserColumns = ({
             type="button"
             onClick={(event) => {
               event.stopPropagation();
-              onForceLogout(row.id);
+              onForceLogoutClick(row);
             }}
             className="p-1.5 text-gray-500 hover:text-yellow-500"
             title="Force Logout"
