@@ -44,12 +44,23 @@ export class RespondFriendRequest implements IRespondFriendRequestUsecase {
       throw new BadRequestError("This friend request has already been processed");
     }
 
+    const friendUser = await this._userRepo.findById(friendId);
+
+    if (request.status === FriendsStatus.BLOCKED) {
+      const result = await FriendMapper.toResponse(friendship, friendUser!);
+
+      await this._friendRepo.deleteFriend(friendship.userId, friendship.friendId);
+
+      this._logger.info("Friend request rejected", { userId, friendId });
+
+      return result;
+    }
+
     const updated = await this._friendRepo.updateStatus(friendship.id, request.status);
 
-    const friendUser = await this._userRepo.findById(friendId);
     const result = await FriendMapper.toResponse(updated, friendUser!);
 
-    this._logger.info("Friend request responded", { userId, friendId, status: request.status });
+    this._logger.info("Friend request accepted", { userId, friendId });
 
     return result;
   }

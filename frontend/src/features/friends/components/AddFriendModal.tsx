@@ -4,8 +4,8 @@ import Button from "../../../shared/ui/Button";
 import Input from "../../../shared/ui/Input";
 import Avatar from "../../../shared/ui/Avatar";
 import { searchUsersApi } from "../../profile/api/profileApi";
-import type { SearchUserResponse } from "../../profile/api/profileApi";
-import { sendFriendRequestApi } from "../../friends/api/friendApi";
+import type { UserSearchResult } from "../../profile/api/profileApi";
+import { sendFriendRequestApi } from "../api/friendApi";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 
@@ -25,7 +25,7 @@ interface ApiErrorResponse {
 export default function AddFriendModal({ isOpen, onClose, onSuccess }: AddFriendModalProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [results, setResults] = useState<SearchUserResponse[]>([]);
+  const [results, setResults] = useState<UserSearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState<string | null>(null);
 
@@ -163,6 +163,9 @@ export default function AddFriendModal({ isOpen, onClose, onSuccess }: AddFriend
                     <Avatar src={user.avatar} fallback={user.username} size="md" />
                     <div>
                       <p className="font-medium text-white">{user.username}</p>
+                      {user.isFriend && (
+                        <p className="text-xs font-semibold text-green-500">Friend</p>
+                      )}
                     </div>
                   </div>
                   <Button

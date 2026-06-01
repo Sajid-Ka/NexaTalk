@@ -1,5 +1,5 @@
 import DashboardLayout from "../components/DashboardLayout";
-import FriendsList from "../components/FriendsList";
+import FriendsList from "../../friends/components/FriendsList";
 
 export default function HomePage() {
     return (

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
-import { 
-  Users, Search, MessageSquare, Phone, UserPlus, 
-  Check, X, UserMinus 
+import {
+  Users, Search, MessageSquare, Phone, UserPlus,
+  Check, X, UserMinus
 } from "lucide-react";
 import Avatar from "../../../shared/ui/Avatar";
 import Button from "../../../shared/ui/Button";
@@ -31,6 +31,7 @@ export default function FriendsList() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [processing, setProcessing] = useState<string | null>(null);
+  const [pendingCount, setPendingCount] = useState(0);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(searchQuery), 300);
@@ -41,14 +42,31 @@ export default function FriendsList() {
     setLoading(true);
     try {
       let friendsData;
-      
+
       if (activeTab === FriendTab.PENDING) {
-        // Fetch pending requests (received)
-        const res = await getPendingRequestsApi("received");
-        friendsData = { friends: res.data.data, total: res.data.data.length, online: 0, offline: 0 };
+        // Fetch pending requests (send and recieve)
+        const [recievedRes, sentRes] = await Promise.all([
+          getPendingRequestsApi("received"),
+          getPendingRequestsApi("sent"),
+        ])
+
+        const receivedRequests = recievedRes.data.data;
+        const sentRequests = sentRes.data.data;
+
+        friendsData = {
+          friends: [...receivedRequests, ...sentRequests],
+          total: receivedRequests.length + sentRequests.length,
+          online: 0,
+          offline: 0,
+        }
+        setPendingCount(receivedRequests.length)
       } else if (activeTab === FriendTab.BLOCKED) {
-        const res = await getFriendsApi({ status: "blocked", search: debouncedSearch || undefined });
-        friendsData = res.data.data;
+        friendsData = {
+          friends: [],
+          total: 0,
+          online: 0,
+          offline: 0,
+        };
       } else {
         const status = activeTab === FriendTab.ONLINE ? "accepted" : undefined;
         const res = await getFriendsApi({
@@ -57,7 +75,7 @@ export default function FriendsList() {
         });
         friendsData = res.data.data;
       }
-      
+
       setFriends(friendsData.friends);
     } catch {
       toast.error("Failed to load friends");
@@ -70,12 +88,27 @@ export default function FriendsList() {
     fetchFriends();
   }, [fetchFriends]);
 
+  const fetchPendingCount = useCallback(async () => {
+    try {
+      const res = await getPendingRequestsApi("received");
+
+      setPendingCount(res.data.data.length);
+    } catch {
+      setPendingCount(0);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchPendingCount();
+  }, [fetchPendingCount]);
+
   const handleAcceptRequest = async (userId: string, requestId: string) => {
     setProcessing(requestId);
     try {
       await respondFriendRequestApi(userId, { status: "accepted" });
       toast.success("Friend request accepted");
       fetchFriends();
+      fetchPendingCount()
     } catch (err) {
       let errorMessage = "Failed to accept request";
       if (err instanceof AxiosError) {
@@ -94,6 +127,7 @@ export default function FriendsList() {
       await respondFriendRequestApi(userId, { status: "blocked" });
       toast.success("Friend request rejected");
       fetchFriends();
+      fetchPendingCount()
     } catch (err) {
       let errorMessage = "Failed to reject request";
       if (err instanceof AxiosError) {
@@ -133,7 +167,6 @@ export default function FriendsList() {
     : friends;
 
   const onlineCount = friends.filter(f => f.friend.status === UserPresence.ONLINE).length;
-  const pendingCount = friends.filter(f => f.status === "pending").length;
 
   // Helper function to get status text
   const getStatusText = (status: UserPresence) => {
@@ -144,6 +177,9 @@ export default function FriendsList() {
       default: return "Offline";
     }
   };
+
+  const isReceivedPendingRequest = (friend: Friend) =>
+    activeTab === FriendTab.PENDING && friend.friendId !== friend.friend.id;
 
   return (
     <div className="flex-1 flex flex-col min-w-0">
@@ -172,15 +208,15 @@ export default function FriendsList() {
                   <span className="ml-1 text-xs">({onlineCount})</span>
                 )}
                 {tab.id === FriendTab.PENDING && pendingCount > 0 && (
-                  <span className="ml-1 text-xs text-yellow-500">({pendingCount})</span>
+                  <span className="ml-1 text-xs text-violet-500">({pendingCount})</span>
                 )}
               </button>
             ))}
           </nav>
         </div>
 
-        <Button 
-          size="sm" 
+        <Button
+          size="sm"
           onClick={() => setShowAddModal(true)}
           className="bg-indigo-600 rounded-lg text-xs h-8 px-4 border-none font-bold flex items-center gap-1"
         >
@@ -211,33 +247,35 @@ export default function FriendsList() {
           </div>
         ) : filteredFriends.length === 0 ? (
           <div className="text-center py-12 text-white/40">
-            {activeTab === FriendTab.PENDING ? "No pending requests" : "No friends found"}
+            {activeTab === FriendTab.PENDING ? "No pending requests" : activeTab === FriendTab.BLOCKED ? "No blocked users" : "No friends found"}
           </div>
         ) : (
           <div className="space-y-1">
             {filteredFriends.map((friend) => (
               <div key={friend.id} className="group flex items-center justify-between px-4 py-3 rounded-xl hover:bg-white/5 transition-all cursor-pointer border border-transparent hover:border-white/5">
                 <div className="flex items-center gap-4">
-                  <Avatar 
-                    src={friend.friend.avatar} 
-                    fallback={friend.friend.username} 
-                    status={friend.friend.status as "online" | "offline" | "idle" | "dnd"} 
-                    size="md" 
+                  <Avatar
+                    src={friend.friend.avatar}
+                    fallback={friend.friend.username}
+                    status={friend.friend.status as "online" | "offline" | "idle" | "dnd"}
+                    size="md"
                   />
                   <div className="min-w-0">
                     <p className="font-bold text-sm text-white">{friend.friend.username}</p>
                     <p className="text-xs text-white/40 truncate">
-                      {friend.status === "pending" 
-                        ? "Friend request pending" 
+                      {friend.status === "pending"
+                        ? isReceivedPendingRequest(friend)
+                          ? "Incoming friend request"
+                          : "Friend request sent"
                         : getStatusText(friend.friend.status)}
                     </p>
                   </div>
                 </div>
-                
+
                 {/* Actions based on status */}
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {friend.status === "pending" ? (
-                    // Show Accept/Reject buttons for pending requests
+                  {friend.status === "pending" && isReceivedPendingRequest(friend) ? (
+                    // Show Accept/Reject buttons for recieved requests
                     <>
                       <button
                         onClick={() => handleAcceptRequest(friend.userId, friend.id)}
@@ -256,7 +294,7 @@ export default function FriendsList() {
                         <X size={18} />
                       </button>
                     </>
-                  ) : (
+                  ) : friend.status === "pending" ? null : (
                     // Show message/phone/remove for accepted friends
                     <>
                       <button className="p-2.5 rounded-full bg-[#090B11] text-white/50 hover:text-indigo-400 transition-colors">
@@ -284,9 +322,9 @@ export default function FriendsList() {
       </div>
 
       {/* Add Friend Modal */}
-      <AddFriendModal 
-        isOpen={showAddModal} 
-        onClose={() => setShowAddModal(false)} 
+      <AddFriendModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
         onSuccess={fetchFriends}
       />
     </div>

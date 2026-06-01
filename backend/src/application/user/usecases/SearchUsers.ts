@@ -5,11 +5,15 @@ import { ILogger } from "../../../domain/core/common/services/ILogger";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 import { ISearchUsersUsecase } from "../interfaces/ISearchUsersUsecase";
 import { SearchUserResponse } from "../dtos/responses/SearchUserResponse";
+import { FRIENDS_TYPES } from "../../../main/di/modules/friends/friends.types";
+import { IFriendRepository } from "../../../domain/features/friends/repositories/IFriendRepository";
 
 @injectable()
 export class SearchUsers implements ISearchUsersUsecase {
   constructor(
     @inject(AUTH_TYPES.UserRepository) private readonly _userRepo: IUserRepository,
+    @inject(FRIENDS_TYPES.FriendRepository)
+    private readonly _friendRepo: IFriendRepository,
     @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
   ) {}
 
@@ -30,11 +34,16 @@ export class SearchUsers implements ISearchUsersUsecase {
     // Filter out the current user if excludeUserId provided
     const filteredUsers = excludeUserId ? users.filter((u) => u.id !== excludeUserId) : users;
 
-    return filteredUsers.map((user) => ({
-      id: user.id,
-      username: user.username,
-      avatar: user.avatar,
-      status: user.status,
-    }));
+    return Promise.all(
+      filteredUsers.map(async (user) => ({
+        id: user.id,
+        username: user.username,
+        avatar: user.avatar,
+        status: user.status,
+        isFriend: excludeUserId
+          ? await this._friendRepo.checkIfFriends(excludeUserId, user.id)
+          : false,
+      })),
+    );
   }
 }

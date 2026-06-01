@@ -5,4 +5,5 @@ export interface SearchUserResponse {
   username: string;
   avatar?: string;
   status: UserPresenceStatus;
+  isFriend?: boolean;
 }
