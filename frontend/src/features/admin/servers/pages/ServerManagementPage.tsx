@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { Activity, Ban, Grid2X2 } from "lucide-react";
+import { Activity, Ban } from "lucide-react";
 import type { ElementType } from "react";
 import AdminSidebar from "../../shared/components/AdminSidebar";
 import ManagementPageHeader from "../../../../shared/ui/management/ManagementPageHeader";
@@ -52,7 +52,7 @@ export default function ServerManagementPage() {
     null,
   );
   const [activeTab, setActiveTab] = useState<AdminServerStatus>(
-    AdminServerStatus.ALL,
+    AdminServerStatus.ACTIVE,
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -208,10 +208,10 @@ export default function ServerManagementPage() {
             <ManagementToolbar>
               <div className="flex flex-wrap items-center gap-2 rounded-xl border border-white/5 bg-[#0F121D] p-1">
                 <FilterButton
-                  active={activeTab === AdminServerStatus.ALL}
-                  onClick={() => setActiveTab(AdminServerStatus.ALL)}
-                  icon={Grid2X2}
-                  label="All Servers"
+                  active={activeTab === AdminServerStatus.ACTIVE}
+                  onClick={() => setActiveTab(AdminServerStatus.ACTIVE)}
+                  icon={Activity}
+                  label="Active Servers"
                 />
 
                 <FilterButton
@@ -219,17 +219,6 @@ export default function ServerManagementPage() {
                   onClick={() => setActiveTab(AdminServerStatus.DISABLED)}
                   icon={Ban}
                   label="Disabled Servers"
-                />
-
-                <FilterButton
-                  active={sortBy === AdminServerSort.MEMBER_COUNT}
-                  onClick={() => {
-                    setActiveTab(AdminServerStatus.ALL);
-                    setSortBy(AdminServerSort.MEMBER_COUNT);
-                    setSortOrder("desc");
-                  }}
-                  icon={Activity}
-                  label="Trending Servers"
                 />
               </div>
 
