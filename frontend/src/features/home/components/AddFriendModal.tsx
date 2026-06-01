@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, Search, UserPlus } from "lucide-react";
 import Button from "../../../shared/ui/Button";
 import Input from "../../../shared/ui/Input";
@@ -24,18 +24,80 @@ interface ApiErrorResponse {
 
 export default function AddFriendModal({ isOpen, onClose, onSuccess }: AddFriendModalProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [results, setResults] = useState<SearchUserResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState<string | null>(null);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery.trim());
+    },500);
+
+    return () => clearInterval(timer);
+  },[searchQuery])
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    if (debouncedSearch.length < 2) {
+      setResults([]);
+      setLoading(false);
+      return;
+    }
+
+    let ignore = false;
+
+    const searchUsers = async () => {
+      setLoading(true);
+
+      try {
+        const res = await searchUsersApi(debouncedSearch);
+
+        if (!ignore) {
+          setResults(res.data.data);
+        }
+      } catch {
+        if (!ignore) {
+          toast.error("Failed to search users");
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    };
+
+    searchUsers();
+
+    return () => {
+      ignore = true;
+    };
+  }, [debouncedSearch, isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setSearchQuery("");
+      setResults([]);
+      setLoading(false);
+      setSending(null);
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const handleSearch = async () => {
-    if (searchQuery.trim().length < 2) return;
-    
+    const query = searchQuery.trim();
+
+    if (query.length < 2) {
+      setResults([]);
+      return;
+    }
+
     setLoading(true);
+
     try {
-      const res = await searchUsersApi(searchQuery);
+      const res = await searchUsersApi(query);
       setResults(res.data.data);
     } catch {
       toast.error("Failed to search users");
