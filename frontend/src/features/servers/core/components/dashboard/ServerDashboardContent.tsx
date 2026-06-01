@@ -20,7 +20,7 @@ import {
 } from "../../../../../shared/constants/channel.const";
 import { ServerMemberRole } from "../../../../../shared/constants/server.const";
 import type { Server } from "../../types";
-import OnlineMembersSidebar from "./OnlineMembersSidebar";
+import UserStatusFooter from "../../../../home/components/UserStatusFooter";
 
 
 interface Props {
@@ -262,6 +262,7 @@ const [actionLoading, setActionLoading] = useState(false);
 
   return (
     <div className="flex min-h-0 flex-1 overflow-hidden bg-[#070A12] text-white">
+
       <main className="min-w-0 flex-1 overflow-y-auto">
         <ServerHomePane
           server={server}
@@ -275,7 +276,9 @@ const [actionLoading, setActionLoading] = useState(false);
         />
       </main>
 
-      <OnlineMembersSidebar members={members} />
+      <div className="absolute bottom-0 left-0 z-30 w-60 border-r border-white/5">
+        <UserStatusFooter />
+    </div>
 
       {createModal.isOpen && (
         <ChannelCreateModal

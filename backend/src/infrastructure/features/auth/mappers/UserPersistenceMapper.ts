@@ -18,6 +18,7 @@ export class UserPersistenceMapper implements IMapper<IUserPersistence, User> {
       accountStatus: doc.isBlocked ? UserAccountStatus.BLOCKED : UserAccountStatus.ACTIVE,
       isProfilePublic: doc.isProfilePublic,
       blockedReason: doc.blockedReason,
+      showOnlineStatus: doc.showOnlineStatus ?? true,
       lastSeenAt: doc.lastSeenAt,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
@@ -40,6 +41,7 @@ export class UserPersistenceMapper implements IMapper<IUserPersistence, User> {
       isProfilePublic: user.isProfilePublic,
       isBlocked: user.accountStatus === UserAccountStatus.BLOCKED,
       blockedReason: user.blockedReason ?? undefined,
+      showOnlineStatus: user.showOnlineStatus,
       lastSeenAt: user.lastSeenAt ?? undefined,
       deletedAt: user.deletedAt ?? undefined,
       isEmailVerified: user.isEmailVerified,
@@ -61,6 +63,7 @@ export class UserPersistenceMapper implements IMapper<IUserPersistence, User> {
       update.isBlocked = data.accountStatus === UserAccountStatus.BLOCKED;
     if (data.isProfilePublic !== undefined) update.isProfilePublic = data.isProfilePublic;
     if (data.blockedReason !== undefined) update.blockedReason = data.blockedReason;
+    if (data.showOnlineStatus !== undefined) update.showOnlineStatus = data.showOnlineStatus;
     if (data.lastSeenAt !== undefined) update.lastSeenAt = data.lastSeenAt;
     if (data.deletedAt !== undefined) update.deletedAt = data.deletedAt;
     if (data.isEmailVerified !== undefined) update.isEmailVerified = data.isEmailVerified;

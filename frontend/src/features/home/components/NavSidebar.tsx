@@ -1,44 +1,9 @@
-import { Users, MessageSquare, Users2, Mic2, Headphones, Settings } from "lucide-react";
+import { Users, MessageSquare, Users2 } from "lucide-react";
 import { cn } from "../../../shared/utils/cn";
-import Avatar from "../../../shared/ui/Avatar";
 import Badge from "../../../shared/ui/Badge";
-import { useAuth } from "../../auth/context/useAuth";
-import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { getMyProfileApi } from "../../profile/api/profileApi";
+import UserStatusFooter from "./UserStatusFooter";
 
 export default function NavSidebar() {
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const [avatar, setAvatar] = useState<string>("");
-  const [username, setUsername] = useState<string>("");
-
-  useEffect(() => {
-    if (!user?.id) return;
-
-    let isMounted = true;
-
-    const fetchProfile = async () => {
-      try {
-        const res = await getMyProfileApi();
-        if (isMounted) {
-          setAvatar(res.data.data.avatar || "");
-          setUsername(res.data.data.username);
-        }
-      } catch {
-        if (isMounted) {
-          setUsername(user?.username || "");
-        }
-      }
-    };
-
-    fetchProfile();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [user?.id, user?.username]);
-
   const mainItems = [
     { icon: Users, label: "Friends", active: true },
     { icon: MessageSquare, label: "Direct Messages", badge: 4 },
@@ -46,7 +11,7 @@ export default function NavSidebar() {
   ];
 
   return (
-    <aside className="w-60 flex flex-col bg-[#0F121D] shrink-0 overflow-hidden">
+    <aside className="relative w-60 flex flex-col bg-[#0F121D] shrink-0">
       {/* Header */}
       <div className="h-12 px-4 flex items-center border-b border-white/5 shadow-sm">
         <h1 className="font-bold text-sm tracking-wide flex items-center gap-2">
@@ -72,33 +37,7 @@ export default function NavSidebar() {
       </div>
 
       {/* User Status Footer */}
-      <div className="p-2 bg-[#090B11] flex items-center gap-2">
-        <div className="flex flex-1 items-center gap-2 px-2 py-1 rounded-lg hover:bg-white/5 transition-colors cursor-pointer group">
-          <Avatar 
-            src={avatar || "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex"} 
-            fallback={username?.slice(0, 2).toUpperCase() ?? "NA"} 
-            size="sm" 
-            status="online"
-          />
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-bold text-white truncate">{username || user?.username}</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-0.5">
-          <button className="p-1.5 rounded-lg text-white/50 hover:bg-white/10 hover:text-white transition-colors">
-            <Mic2 size={16} />
-          </button>
-          <button className="p-1.5 rounded-lg text-white/50 hover:bg-white/10 hover:text-white transition-colors">
-            <Headphones size={16} />
-          </button>
-          <button
-            onClick={() => navigate("/settings")}
-            className="p-1.5 rounded-lg text-white/50 hover:bg-white/10 hover:text-white transition-colors"
-          >
-            <Settings size={16} />
-          </button>
-        </div>
-      </div>
+      <UserStatusFooter />
     </aside>
   );
 }

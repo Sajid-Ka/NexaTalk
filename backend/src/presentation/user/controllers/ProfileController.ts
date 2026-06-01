@@ -32,9 +32,11 @@ export class ProfileController {
 
   updateProfile = async (req: AuthenticatedRequest, res: Response) => {
     const request: UpdateProfileRequest = {
+      username: req.body.username,
       avatar: req.body.avatar,
       bio: req.body.bio,
       isProfilePublic: req.body.isProfilePublic,
+      showOnlineStatus: req.body.showOnlineStatus,
     };
 
     const profile = await this._updateProfile.execute(req.user!.userId, request);

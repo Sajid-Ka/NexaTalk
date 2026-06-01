@@ -7,6 +7,7 @@ import { ISearchUsersUsecase } from "../interfaces/ISearchUsersUsecase";
 import { SearchUserResponse } from "../dtos/responses/SearchUserResponse";
 import { FRIENDS_TYPES } from "../../../main/di/modules/friends/friends.types";
 import { IFriendRepository } from "../../../domain/features/friends/repositories/IFriendRepository";
+import { UserPresenceStatus } from "../../../shared/constants/userPresenceStatus.const";
 
 @injectable()
 export class SearchUsers implements ISearchUsersUsecase {
@@ -29,7 +30,7 @@ export class SearchUsers implements ISearchUsersUsecase {
     }
 
     // Search users by username
-    const users = await this._userRepo.search(query, limit);
+    const users = await this._userRepo.searchPublicProfiles(query, limit);
 
     // Filter out the current user if excludeUserId provided
     const filteredUsers = excludeUserId ? users.filter((u) => u.id !== excludeUserId) : users;
@@ -39,7 +40,7 @@ export class SearchUsers implements ISearchUsersUsecase {
         id: user.id,
         username: user.username,
         avatar: user.avatar,
-        status: user.status,
+        status: user.showOnlineStatus ? user.status : UserPresenceStatus.OFFLINE,
         isFriend: excludeUserId
           ? await this._friendRepo.checkIfFriends(excludeUserId, user.id)
           : false,

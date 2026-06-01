@@ -10,6 +10,7 @@ export interface ProfileResponse {
   bio?: string;
   status: UserPresenceStatus;
   globalRole: GlobalRole;
+  showOnlineStatus: boolean;
   lastSeenAt?: Date;
   isProfilePublic: boolean;
   interests?: InterestResponse[];

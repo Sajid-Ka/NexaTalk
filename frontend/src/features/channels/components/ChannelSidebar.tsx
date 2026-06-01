@@ -2,6 +2,7 @@ import { Hash, Plus, Settings, Volume2, Trash2, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ChannelType } from "../../../shared/constants/channel.const";
 import { cn } from "../../../shared/utils/cn";
+import UserStatusFooter from "../../home/components/UserStatusFooter";
 import type { Server } from "../../servers/core/types";
 import type { Channel } from "../types";
 
@@ -77,6 +78,8 @@ export default function ChannelSidebar({
           onDeleteClick={onDeleteClick}
         />
       </div>
+
+      <UserStatusFooter />
     </aside>
   );
 }

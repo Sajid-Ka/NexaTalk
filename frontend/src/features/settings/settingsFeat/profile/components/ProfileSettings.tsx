@@ -1,15 +1,16 @@
 import { useState, useEffect, useRef } from "react";
-import { Upload, Trash2, Loader2 } from "lucide-react";
-import Input from "../../../../shared/ui/Input";
-import TextArea from "../../../../shared/ui/TextArea";
-import Switch from "../../../../shared/ui/Switch";
-import Button from "../../../../shared/ui/Button";
-import Avatar from "../../../../shared/ui/Avatar";
+import { Upload, Trash2, Loader2, Camera, FileText, Weight, Maximize2 } from "lucide-react";
+import Input from "../../../../../shared/ui/Input";
+import TextArea from "../../../../../shared/ui/TextArea";
+import Switch from "../../../../../shared/ui/Switch";
+import Button from "../../../../../shared/ui/Button";
+import Avatar from "../../../../../shared/ui/Avatar";
+import ConfirmModal from "../../../../../shared/ui/ConfirmModal";
 import ProfileCardPreview from "./ProfileCardPreview";
-import { getMyProfileApi, updateProfileApi } from "../../../profile/api/profileApi";
-import { uploadAvatarApi, deleteAvatarApi } from "../../../profile/api/profileApi";
+import { getMyProfileApi, updateProfileApi } from "../api/profileApi";
+import { uploadAvatarApi, deleteAvatarApi } from "../api/profileApi";
 import toast from "react-hot-toast";
-import { UserPresence } from "../../../../shared/constants/user.const";
+import { UserPresence } from "../../../../../shared/constants/user.const";
 import { AxiosError } from "axios";
 
 interface ProfileFormData {
@@ -23,6 +24,7 @@ interface ProfileFormData {
 
 interface ApiErrorResponse {
   error?: {
+    code?: string;
     message?: string;
   };
   message?: string;
@@ -40,6 +42,7 @@ export default function ProfileSettings() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [showRemoveAvatarConfirm, setShowRemoveAvatarConfirm] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -54,7 +57,7 @@ export default function ProfileSettings() {
         username: profile.username,
         bio: profile.bio || "",
         publicProfile: profile.isProfilePublic,
-        showOnlineStatus: true,
+        showOnlineStatus: profile.showOnlineStatus,
         showActivity: false,
         avatar: profile.avatar,
       });
@@ -93,7 +96,7 @@ export default function ProfileSettings() {
       toast.success("Avatar uploaded successfully");
     } catch (err) {
       console.error("Upload error details:", err);
-      
+
       let errorMessage = "Failed to upload avatar";
       if (err instanceof AxiosError) {
         const data = err.response?.data as ApiErrorResponse;
@@ -101,7 +104,7 @@ export default function ProfileSettings() {
       } else if (err instanceof Error) {
         errorMessage = err.message;
       }
-      
+
       toast.error(errorMessage);
     } finally {
       setUploading(false);
@@ -111,7 +114,7 @@ export default function ProfileSettings() {
 
   const handleAvatarRemove = async () => {
     if (!formData.avatar) return;
-    
+
     setUploading(true);
     try {
       await deleteAvatarApi();
@@ -125,14 +128,46 @@ export default function ProfileSettings() {
   };
 
   const handleSave = async () => {
+    const username = formData.username.trim();
+    const usernameRegex = /^[a-zA-Z0-9_]+$/;
+
+    if (username.length < 3) {
+      toast.error("Username must be at least 3 characters");
+      return;
+    }
+
+    if (username.length > 20) {
+      toast.error("Username must be max 20 characters");
+      return;
+    }
+
+    if (!usernameRegex.test(username)) {
+      toast.error("Only letters, numbers and underscore allowed");
+      return;
+    }
     setSaving(true);
     try {
       await updateProfileApi({
+        username: formData.username.trim(),
         bio: formData.bio,
         isProfilePublic: formData.publicProfile,
+        showOnlineStatus: formData.showOnlineStatus
       });
       toast.success("Profile updated successfully");
-    } catch {
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        const data = err.response?.data as ApiErrorResponse;
+        const code = data?.error?.code;
+
+        if (code === "USERNAME_ALREADY_TAKEN") {
+          toast.error("This username is already taken");
+          return;
+        }
+
+        toast.error(data?.error?.message || data?.message || "Failed to update profile");
+        return;
+      }
+
       toast.error("Failed to update profile");
     } finally {
       setSaving(false);
@@ -155,65 +190,91 @@ export default function ProfileSettings() {
 
         <div className="space-y-10">
           {/* Profile Picture */}
-          <section>
-            <h3 className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-6">
-              PROFILE PICTURE
-            </h3>
-            <div className="flex items-center gap-8">
-            <div className="relative">
-              <div className="relative w-40 h-40 rounded-full border-4 border-indigo-500/20 bg-white/[0.03] flex items-center justify-center overflow-hidden transition-all duration-300 hover:border-indigo-500/40">
-                <Avatar
-                  src={formData.avatar || undefined}
-                  fallback={formData.username[0]?.toUpperCase() || "U"}
-                  className="w-28 h-28 rounded-full object-cover"
-                />
+            <section>
+              <h3 className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-5">
+                Profile Picture
+              </h3>
 
-                {uploading && (
-                  <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center backdrop-blur-sm">
-                    <Loader2 className="w-10 h-10 text-white animate-spin" />
+              <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-6 flex items-center gap-8">
+                {/* Avatar with camera badge */}
+                <div className="relative flex-shrink-0">
+                  <div
+                    className="relative cursor-pointer"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <Avatar
+                      src={formData.avatar || undefined}
+                      fallback={formData.username[0]?.toUpperCase() || "U"}
+                      size="xl"
+                      className="w-24 h-24 text-3xl rounded-full border-[3px] border-[#090B11] ring-2 ring-indigo-500/30 shadow-lg transition-all duration-200 hover:ring-indigo-500/60"
+                    />
+                    {uploading && (
+                      <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center backdrop-blur-sm">
+                        <Loader2 className="w-8 h-8 text-white animate-spin" />
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            </div>
-
-              <div className="flex flex-col gap-3">
-                <div className="flex gap-3">
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleAvatarUpload}
-                    accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-                    className="hidden"
-                  />
-                  <Button
-                    variant="primary"
+                  {/* Camera badge */}
+                  <button
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploading}
-                    className="bg-indigo-600 hover:bg-indigo-700 px-6 rounded-2xl"
+                    className="absolute bottom-0.5 right-0.5 w-7 h-7 rounded-full bg-[#0f1117] border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
                   >
-                    <Upload className="w-4 h-4 mr-2" />
-                    Upload New
-                  </Button>
-
-                  {formData.avatar && (
-                    <Button
-                      variant="secondary"
-                      onClick={handleAvatarRemove}
-                      disabled={uploading}
-                      className="px-6 rounded-2xl bg-red-500/10 hover:bg-red-500/20 text-red-400"
-                    >
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      Remove
-                    </Button>
-                  )}
+                    <Camera className="w-3.5 h-3.5 text-white/60" />
+                  </button>
                 </div>
 
-                <p className="text-[10px] text-white/20 font-medium">
-                  JPG, PNG, GIF or WebP. Max size 5MB.
-                </p>
+                {/* Info + actions */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-white mb-0.5">Your avatar</p>
+                  <p className="text-xs text-white/30 mb-4">Shown on your profile, messages and activity</p>
+
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleAvatarUpload}
+                      accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                      className="hidden"
+                    />
+                    <Button
+                      variant="primary"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploading}
+                      className="bg-indigo-600 hover:bg-indigo-700 h-9 px-4 rounded-xl text-sm"
+                    >
+                      <Upload className="w-3.5 h-3.5 mr-1.5" />
+                      Upload photo
+                    </Button>
+                    {formData.avatar && (
+                      <Button
+                        variant="secondary"
+                        onClick={() => setShowRemoveAvatarConfirm(true)}
+                        disabled={uploading}
+                        className="h-9 px-4 rounded-xl text-sm bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/20"
+                      >
+                        <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+                        Remove
+                      </Button>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-          </section>
+
+              {/* Meta hints */}
+              <div className="flex gap-5 mt-3 px-1">
+                {[
+                  { icon: <FileText className="w-3.5 h-3.5" />, text: "JPG, PNG, GIF or WebP" },
+                  { icon: <Weight className="w-3.5 h-3.5" />, text: "Max 5 MB" },
+                  { icon: <Maximize2 className="w-3.5 h-3.5" />, text: "Recommended 400 × 400 px" },
+                ].map(({ icon, text }) => (
+                  <div key={text} className="flex items-center gap-1.5 text-[11px] text-white/20">
+                    {icon}
+                    {text}
+                  </div>
+                ))}
+              </div>
+            </section>
 
           {/* Username */}
           <section>
@@ -222,11 +283,13 @@ export default function ProfileSettings() {
             </h3>
             <Input
               value={formData.username}
-              disabled
+              onChange={(e) => handleChange("username", e.target.value)}
               placeholder="Username"
-              className="bg-white/[0.03] border-white/5 h-14 rounded-2xl text-base opacity-75 cursor-not-allowed"
+              className="bg-white/[0.03] border-white/5 h-14 rounded-2xl text-base"
             />
-            <p className="text-xs text-white/30 mt-2">Username cannot be changed</p>
+            <p className="text-xs text-white/30 mt-2">
+              3-20 characters. Letters, numbers and underscore only.
+            </p>
           </section>
 
           {/* Bio */}
@@ -266,13 +329,13 @@ export default function ProfileSettings() {
 
           {/* Actions */}
           <footer className="flex items-center justify-end gap-6 pt-10 mt-10 border-t border-white/5">
-            <button 
+            <button
               onClick={fetchProfile}
               className="text-sm font-bold text-white/40 hover:text-white transition-colors"
             >
               Discard Changes
             </button>
-            <Button 
+            <Button
               onClick={handleSave}
               isLoading={saving}
               className="bg-indigo-600 hover:bg-indigo-700 px-10 h-14 rounded-2xl text-base shadow-xl shadow-indigo-600/20"
@@ -294,6 +357,17 @@ export default function ProfileSettings() {
           isPro={false}
         />
       </div>
+
+      <ConfirmModal
+        isOpen={showRemoveAvatarConfirm}
+        onClose={() => setShowRemoveAvatarConfirm(false)}
+        onConfirm={handleAvatarRemove}
+        title="Remove Profile Image"
+        message="Are you sure you want to remove your profile image?"
+        confirmText="Remove"
+        cancelText="Cancel"
+        variant="danger"
+      />
     </div>
   );
 }

@@ -10,6 +10,7 @@ import { UpdateProfileRequest } from "../dtos/requests/UpdateProfileRequest";
 import { ProfileResponse } from "../dtos/responses/ProfileResponse";
 import { ProfileMapper } from "../mappers/ProfileMapper";
 import { IUpdateProfileUsecase } from "../interfaces/IUpdateProfileUsecase";
+import { ConflictError } from "../../../domain/features/auth/errors/ConflictError";
 
 @injectable()
 export class UpdateProfile implements IUpdateProfileUsecase {
@@ -28,10 +29,22 @@ export class UpdateProfile implements IUpdateProfileUsecase {
       throw new NotFoundError("User not found");
     }
 
+    const nextUsername = request.username?.trim();
+
+    if (nextUsername && nextUsername.toLowerCase() !== user.username.toLowerCase()) {
+      const usernameExists = await this._userRepo.findByUsername(nextUsername);
+
+      if (usernameExists) {
+        throw new ConflictError("USERNAME_ALREADY_TAKEN", "Username already taken");
+      }
+    }
+
     const updatedUser = await this._userRepo.update(userId, {
+      username: nextUsername ?? undefined,
       avatar: request.avatar ?? undefined,
       bio: request.bio,
       isProfilePublic: request.isProfilePublic,
+      showOnlineStatus: request.showOnlineStatus,
     });
 
     if (!updatedUser) {

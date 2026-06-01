@@ -3,8 +3,8 @@ import { X, Search, UserPlus } from "lucide-react";
 import Button from "../../../shared/ui/Button";
 import Input from "../../../shared/ui/Input";
 import Avatar from "../../../shared/ui/Avatar";
-import { searchUsersApi } from "../../profile/api/profileApi";
-import type { UserSearchResult } from "../../profile/api/profileApi";
+import { searchUsersApi } from "../../settings/settingsFeat/profile/api/profileApi";
+import type { UserSearchResult } from "../../settings/settingsFeat/profile/api/profileApi";
 import { sendFriendRequestApi } from "../api/friendApi";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
@@ -32,10 +32,10 @@ export default function AddFriendModal({ isOpen, onClose, onSuccess }: AddFriend
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchQuery.trim());
-    },500);
+    }, 500);
 
     return () => clearInterval(timer);
-  },[searchQuery])
+  }, [searchQuery])
 
   useEffect(() => {
     if (!isOpen) return;
