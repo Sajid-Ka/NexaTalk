@@ -18,6 +18,7 @@ import {
 
 import {
   AdminUserSortOrder,
+  UserPresence,
   UserRole,
   UserStatus,
   UserTab,
@@ -39,8 +40,12 @@ interface ApiUser {
   email: string;
   role: UserRole;
   status: UserStatus;
+  presenceStatus?: UserPresence;
   createdAt: string;
 }
+
+const getPresenceLabel = (presenceStatus?: UserPresence) =>
+  presenceStatus === UserPresence.ONLINE ? "Online" : "Offline";
 
 export default function UserManagementPage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -86,10 +91,8 @@ export default function UserManagementPage() {
             u.role === UserRole.ADMIN
               ? "Admin"
               : "User",
-          status:
-            u.status === UserStatus.ACTIVE
-              ? "Online"
-              : "Offline",
+          status: getPresenceLabel(u.presenceStatus),
+          accountStatus: u.status,
           joinedDate: new Date(
             u.createdAt
           ).toLocaleDateString(),
@@ -139,10 +142,8 @@ export default function UserManagementPage() {
           userData.role === "admin"
             ? "Admin"
             : "User",
-        status:
-          userData.status === "active"
-            ? "Online"
-            : "Offline",
+        status: getPresenceLabel(userData.presenceStatus),
+        accountStatus: userData.status,
         joinedDate: new Date(
           userData.createdAt
         ).toLocaleDateString(),
@@ -173,7 +174,7 @@ export default function UserManagementPage() {
       setUsers((prev) =>
         prev.map((u) =>
           u.id === userId
-            ? { ...u, status: "Offline" }
+            ? { ...u, accountStatus: UserStatus.BLOCKED, status: "Offline" }
             : u
         )
       );
@@ -183,6 +184,7 @@ export default function UserManagementPage() {
           prev
             ? {
                 ...prev,
+                accountStatus: UserStatus.BLOCKED,
                 status: "Offline",
               }
             : null
@@ -216,7 +218,7 @@ export default function UserManagementPage() {
       setUsers((prev) =>
         prev.map((u) =>
           u.id === userId
-            ? { ...u, status: "Online" }
+            ? { ...u, accountStatus: UserStatus.ACTIVE }
             : u
         )
       );
@@ -226,7 +228,7 @@ export default function UserManagementPage() {
           prev
             ? {
                 ...prev,
-                status: "Online",
+                accountStatus: UserStatus.ACTIVE,
               }
             : null
         );
@@ -255,6 +257,25 @@ export default function UserManagementPage() {
   ) => {
     try {
       await forceLogoutUserApi(userId);
+
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === userId
+            ? { ...u, status: "Offline" }
+            : u
+        )
+      );
+
+      if (selectedUser?.id === userId) {
+        setSelectedUser((prev) =>
+          prev
+            ? {
+                ...prev,
+                status: "Offline",
+              }
+            : null
+        );
+      }
 
       toast.success(
         "User logged out successfully"
@@ -376,7 +397,7 @@ export default function UserManagementPage() {
                 </ManagementCard>
               </div>
 
-              <aside className="hidden w-[320px] xl:block">
+              <aside className="hidden w-[360px] xl:block">
                 <ManagementCard>
                   <UserDetailSidebar
                     user={selectedUser}

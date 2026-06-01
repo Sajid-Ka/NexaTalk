@@ -4,6 +4,7 @@ export interface User {
   email: string;
   role: "Admin" | "User";
   status: "Online" | "Offline";
+  accountStatus: "active" | "blocked" | "deleted";
   joinedDate: string;
   initials: string;
 }

@@ -30,6 +30,7 @@ export class GetUserDetails implements IGetUserDetailsUsecase {
       email: user.email,
       role: user.globalRole,
       status: user.accountStatus,
+      presenceStatus: user.status,
       createdAt: user.createdAt,
     };
   }

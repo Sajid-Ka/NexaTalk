@@ -98,7 +98,7 @@ export const getUserColumns = ({
             <Eye size={16} />
           </button>
 
-          {row.status === "Online" ? (
+          {row.accountStatus === "active" ? (
             <button
               type="button"
               onClick={(event) => {

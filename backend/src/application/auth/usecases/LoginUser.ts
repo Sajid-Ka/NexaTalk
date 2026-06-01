@@ -19,6 +19,7 @@ import { TimeUtil } from "../../../shared/utils/time/time.util";
 import { CACHE_KEYS } from "../../../shared/constants/cacheKeys";
 import { ILogger } from "../../../domain/core/common/services/ILogger";
 import { AccountDeletedError } from "../../../domain/features/auth/errors/AccountDeletedError";
+import { UserPresenceStatus } from "../../../shared/constants/userPresenceStatus.const";
 
 @injectable()
 export class LoginUser implements ILoginUserUsecase {
@@ -92,8 +93,13 @@ export class LoginUser implements ILoginUserUsecase {
       TimeUtil.daysToSeconds(this._refreshTTLDays),
     );
 
+    const onlineUser = await this._userRepo.update(user.id, {
+      status: UserPresenceStatus.ONLINE,
+      lastSeenAt: null,
+    });
+
     this._logger.info("Login success", { userId: user.id });
 
-    return LoginUserMapper.toLoginResponse(user, accessToken, refreshTokenRaw);
+    return LoginUserMapper.toLoginResponse(onlineUser ?? user, accessToken, refreshTokenRaw);
   }
 }
