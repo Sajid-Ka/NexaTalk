@@ -10,11 +10,19 @@ import TextArea from "../../../../shared/ui/TextArea";
 import { useAppDispatch } from "../../../../app/store";
 import { createServer } from "../store/serverSlice";
 import { cn } from "../../../../shared/utils/cn";
-import { ServerPrivacy } from "../../../../shared/constants/server.const";
+import { ServerPrivacy, ServerValidation } from "../../../../shared/constants/server.const";
 
 const createServerSchema = z.object({
-  name: z.string().min(3, "Server name must be at least 3 characters").max(50),
-  description: z.string().max(200).optional(),
+  name: z
+    .string()
+    .trim()
+    .min(ServerValidation.MIN_NAME_LENGTH, `Server name must be at least ${ServerValidation.MIN_NAME_LENGTH} characters`)
+    .max(ServerValidation.MAX_NAME_LENGTH, `Server name must be at most ${ServerValidation.MAX_NAME_LENGTH} characters`),
+  description: z
+    .string()
+    .trim()
+    .max(ServerValidation.MAX_DESCRIPTION_LENGTH, `Description must be at most ${ServerValidation.MAX_DESCRIPTION_LENGTH} characters`)
+    .optional(),
   privacy: z.enum([ServerPrivacy.PRIVATE, ServerPrivacy.PUBLIC]),
 });
 
@@ -45,7 +53,12 @@ const CreateServerModal: React.FC<CreateServerModalProps> = ({ isOpen, onClose }
   const onSubmit = async (data: CreateServerFormValues) => {
     setLoading(true);
     try {
-      await dispatch(createServer({ ...data, privacy })).unwrap();
+      await dispatch(createServer({
+        ...data,
+        name: data.name.trim(),
+        description: data.description?.trim(),
+        privacy,
+      })).unwrap();
       reset();
       onClose();
     } catch (error) {

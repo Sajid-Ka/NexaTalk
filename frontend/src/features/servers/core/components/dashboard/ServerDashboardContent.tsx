@@ -20,7 +20,6 @@ import {
 } from "../../../../../shared/constants/channel.const";
 import { ServerMemberRole } from "../../../../../shared/constants/server.const";
 import type { Server } from "../../types";
-import UserStatusFooter from "../../../../home/components/UserStatusFooter";
 
 
 interface Props {
@@ -36,6 +35,25 @@ interface ApiError {
   };
   message?: string;
 }
+
+//image setting helper function
+const getImageUrl = (url?: string) => {
+  if (!url) return "";
+
+  if (
+    url.startsWith("http://") ||
+    url.startsWith("https://") ||
+    url.startsWith("blob:") ||
+    url.startsWith("data:")
+  ) {
+    return url;
+  }
+
+  const apiBaseUrl = import.meta.env.VITE_API_URL || window.location.origin;
+  const apiOrigin = new URL(apiBaseUrl, window.location.origin).origin;
+
+  return url.startsWith("/") ? `${apiOrigin}${url}` : `${apiOrigin}/${url}`;
+};
 
 const getErrorMessage = (error: unknown, fallback: string) => {
   const apiError = error as ApiError;
@@ -276,10 +294,6 @@ const [actionLoading, setActionLoading] = useState(false);
         />
       </main>
 
-      <div className="absolute bottom-0 left-0 z-30 w-60 border-r border-white/5">
-        <UserStatusFooter />
-    </div>
-
       {createModal.isOpen && (
         <ChannelCreateModal
           isOpen={createModal.isOpen}
@@ -321,53 +335,75 @@ function ServerHomePane({
 
   return (
     <div className="min-h-full bg-[#070A12]">
-      <section className="border-b border-white/10 bg-gradient-to-br from-indigo-950/80 via-[#0E1220] to-emerald-950/40 px-8 pb-8 pt-6">
-        <div className="mb-20 flex justify-end gap-3">
-          <button className="inline-flex h-9 items-center gap-2 rounded-lg border border-white/15 px-4 text-sm font-semibold text-white/85 hover:bg-white/10">
-            <Share2 size={15} />
-            Invite
-          </button>
+      <section className="relative overflow-hidden border-b border-white/10 bg-[#070A12] px-8 pb-8 pt-6">
+        {server.banner ? (
+          <img
+            src={getImageUrl(server.banner)}
+            alt={`${server.name} banner`}
+            className="absolute inset-0 h-full w-full object-cover opacity-60"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-950/80 via-[#0E1220] to-emerald-950/40" />
+        )}
 
-          <button
-            onClick={onSettingsClick}
-            className="inline-flex h-9 items-center gap-2 rounded-lg border border-white/15 px-4 text-sm font-semibold text-white/85 hover:bg-white/10"
-          >
-            <Settings size={15} />
-            Settings
-          </button>
-        </div>
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,10,18,0.92)_0%,rgba(7,10,18,0.55)_48%,rgba(7,10,18,0.82)_100%)]" />
 
-        <div className="flex items-end gap-5">
-          <div className="flex h-28 w-28 items-center justify-center rounded-3xl border-4 border-[#070A12] bg-[#111827] text-4xl font-black text-cyan-300 shadow-xl">
-            {server.name.charAt(0).toUpperCase()}
+        <div className="relative z-10">
+          <div className="mb-20 flex justify-end gap-3">
+            <button className="inline-flex h-9 items-center gap-2 rounded-lg border border-white/15 px-4 text-sm font-semibold text-white/85 hover:bg-white/10">
+              <Share2 size={15} />
+              Invite
+            </button>
+
+            <button
+              onClick={onSettingsClick}
+              className="inline-flex h-9 items-center gap-2 rounded-lg border border-white/15 px-4 text-sm font-semibold text-white/85 hover:bg-white/10"
+            >
+              <Settings size={15} />
+              Settings
+            </button>
           </div>
 
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-3">
-              <h1 className="truncate text-5xl font-black text-white">{server.name}</h1>
-              <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-bold uppercase text-white">
-                <Lock size={13} />
-                {server.privacy}
-              </span>
+          <div className="flex items-end gap-5">
+            <div className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-3xl border-4 border-[#070A12] bg-[#111827] text-4xl font-black text-cyan-300 shadow-xl">
+              {server.icon ? (
+                <img
+                  src={getImageUrl(server.icon)}
+                  alt={server.name}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                server.name.charAt(0).toUpperCase()
+              )}
             </div>
 
-            <div className="mt-3 flex flex-wrap gap-2">
-              <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-sm text-emerald-200">
-                <Wifi size={14} />
-                {onlineCount} online
-              </span>
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-3">
+                <h1 className="truncate text-5xl font-black text-white">{server.name}</h1>
+                <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-bold uppercase text-white">
+                  <Lock size={13} />
+                  {server.privacy}
+                </span>
+              </div>
 
-              <span className="inline-flex items-center gap-2 rounded-full border border-indigo-400/30 bg-indigo-400/10 px-3 py-1 text-sm text-indigo-100">
-                <Users size={14} />
-                {server.memberCount} members
-              </span>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-sm text-emerald-200">
+                  <Wifi size={14} />
+                  {onlineCount} online
+                </span>
+
+                <span className="inline-flex items-center gap-2 rounded-full border border-indigo-400/30 bg-indigo-400/10 px-3 py-1 text-sm text-indigo-100">
+                  <Users size={14} />
+                  {server.memberCount} members
+                </span>
+              </div>
+
+              {server.description && (
+                <p className="mt-6 max-w-2xl text-base leading-7 text-white/75">
+                  {server.description}
+                </p>
+              )}
             </div>
-
-            {server.description && (
-              <p className="mt-6 max-w-2xl text-base leading-7 text-white/75">
-                {server.description}
-              </p>
-            )}
           </div>
         </div>
       </section>

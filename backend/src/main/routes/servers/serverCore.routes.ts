@@ -9,6 +9,7 @@ import { IUserStatusService } from "../../../domain/features/auth/services/IUser
 import { validate } from "../../../presentation/validators.ts/validate";
 import { createServerSchema } from "../../../presentation/servers/validators/core/createServerValidator";
 import { updateServerSchema } from "../../../presentation/servers/validators/core/updateServerValidator";
+import { upload } from "../../../infrastructure/core/storage/multer.config";
 
 const router = Router();
 
@@ -26,6 +27,7 @@ router.post("/", validate(createServerSchema), controller.createServer);
 router.get("/user", controller.getUserServers);
 router.get("/public", controller.getPublicServers);
 router.get("/:serverId", controller.getServer);
+router.post("/:serverId/image", upload.single("image"), controller.uploadServerImage);
 router.patch("/:serverId", validate(updateServerSchema), controller.updateServer);
 router.delete("/:serverId", controller.deleteServer);
 

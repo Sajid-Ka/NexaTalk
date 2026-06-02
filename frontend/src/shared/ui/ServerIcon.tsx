@@ -54,10 +54,8 @@ const ServerIcon: React.FC<ServerIconProps> = ({
 
       {/* Tooltip */}
       {(tooltip || name) && (
-        <div className="absolute left-14 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-[#090B11] border border-white/10 text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 whitespace-nowrap pointer-events-none translate-x-1 group-hover:translate-x-0 z-[100] shadow-xl">
+        <div className="fixed left-[76px] z-[9999] -mt-6 px-3 py-1.5 bg-[#090B11] border border-white/10 text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 whitespace-nowrap pointer-events-none shadow-xl">
           {tooltip || name}
-          {/* Tooltip Arrow */}
-          <div className="absolute -left-1 top-1/2 -translate-y-1/2 border-y-[4px] border-y-transparent border-r-[4px] border-r-white/10" />
         </div>
       )}
     </div>
