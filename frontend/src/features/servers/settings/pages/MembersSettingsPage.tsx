@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { RefreshCw, Users } from "lucide-react";
+import { RefreshCw, Users, Search } from "lucide-react";
 import Button from "../../../../shared/ui/Button";
 import SettingsPageContainer from "../../../../shared/ui/settings/SettingsPageContainer";
 import SettingsPageHeader from "../../../../shared/ui/settings/SettingsPageHeader";
@@ -35,6 +35,9 @@ export default function MembersSettingsPage() {
   const { serverId } = useParams<{ serverId: string }>();
   const { user } = useAuth();
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
   const [members, setMembers] = useState<ServerSettingsMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -42,6 +45,14 @@ export default function MembersSettingsPage() {
     isOpen: boolean;
     member: ServerSettingsMember | null;
   }>({ isOpen: false, member: null });
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery.trim().toLowerCase());
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const currentUserRole = useMemo(() => {
     const currentMember = members.find((member) => member.userId === user?.id);
@@ -66,6 +77,16 @@ export default function MembersSettingsPage() {
   useEffect(() => {
     fetchMembers();
   }, [fetchMembers]);
+
+  const filteredMembers = useMemo(() => {
+    if (!debouncedSearch) return members;
+
+    return members.filter((member) => {
+      const username = member.username.toLowerCase();
+
+      return username.includes(debouncedSearch) 
+    });
+  }, [members, debouncedSearch]);
 
   const handlePromoteToAdmin = async (member: ServerSettingsMember) => {
     if (!serverId) return;
@@ -148,16 +169,46 @@ export default function MembersSettingsPage() {
         }
       />
 
+     
+
       <SettingsSection
         title="Server Members"
-        description={`${members.length} member${members.length === 1 ? "" : "s"} in this server.`}
+        description={
+                      debouncedSearch
+                        ? `${filteredMembers.length} matching member${filteredMembers.length === 1 ? "" : "s"} out of ${members.length}.`
+                        : `${members.length} member${members.length === 1 ? "" : "s"} in this server.`
+                    }
       >
+
+         <div className="mb-4 flex items-center justify-between gap-3">
+          <div className="relative w-full max-w-md">
+            <Search
+              size={18}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+            />
+
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="Search members by name, ID, or role..."
+              className="h-11 w-full rounded-xl border border-white/10 bg-[#0F121D] pl-10 pr-4 text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+
+          {debouncedSearch && (
+            <p className="shrink-0 text-sm text-slate-400">
+              {filteredMembers.length} result{filteredMembers.length === 1 ? "" : "s"}
+            </p>
+          )}
+        </div>
+
         {loading ? (
           <div className="flex min-h-48 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] text-sm text-slate-400">
             <div className="h-6 w-6 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />
             <span className="ml-2">Loading members...</span>
           </div>
-        ) : members.length === 0 ? (
+        ) : filteredMembers.length === 0 ? (
           <div className="flex min-h-48 flex-col items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] text-center">
             <Users className="mb-3 text-slate-500" size={32} />
             <p className="font-medium text-white">No members found</p>
@@ -167,7 +218,7 @@ export default function MembersSettingsPage() {
           </div>
         ) : (
           <ServerMembersTable
-            members={members}
+            members={filteredMembers}
             currentUserRole={currentUserRole}
             tableLoading={loading}
             actionLoading={actionLoading !== null}

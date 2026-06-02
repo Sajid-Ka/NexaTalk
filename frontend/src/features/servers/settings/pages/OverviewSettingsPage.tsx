@@ -65,7 +65,7 @@ export default function OverviewSettingsPage() {
     if (!currentServer || currentServer.id !== serverId) {
       dispatch(fetchServerDetails(serverId));
     }
-  }, [serverId, currentServer?.id, dispatch]);
+  }, [serverId, currentServer, dispatch]);
 
   useEffect(() => {
     if (!currentServer) return;

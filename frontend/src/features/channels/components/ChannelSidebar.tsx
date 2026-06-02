@@ -43,14 +43,16 @@ export default function ChannelSidebar({
         >
           {server.name}
         </button>
-        <button
-          type="button"
-          onClick={() => navigate(`/servers/${server.id}/settings`)}
-          className="rounded-lg p-1.5 text-white/45 transition hover:bg-white/5 hover:text-white"
-          aria-label="Open server settings"
-        >
-          <Settings size={16} />
-        </button>
+        {canManageChannels && (
+          <button
+            type="button"
+            onClick={() => navigate(`/servers/${server.id}/settings`)}
+            className="rounded-lg p-1.5 text-white/45 transition hover:bg-white/5 hover:text-white"
+            aria-label="Open server settings"
+          >
+            <Settings size={16} />
+          </button>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto px-2 py-4">
