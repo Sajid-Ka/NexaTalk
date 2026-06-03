@@ -46,6 +46,22 @@ export default function MembersSettingsPage() {
     member: ServerSettingsMember | null;
   }>({ isOpen: false, member: null });
 
+  const [promoteModal, setPromoteModal] = useState<{
+    isOpen: boolean;
+    member: ServerSettingsMember | null;
+  }>({
+    isOpen: false,
+    member: null,
+  });
+
+  const [demoteModal, setDemoteModal] = useState<{
+    isOpen: boolean;
+    member: ServerSettingsMember | null;
+  }>({
+    isOpen: false,
+    member: null,
+  });
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchQuery.trim().toLowerCase());
@@ -88,43 +104,93 @@ export default function MembersSettingsPage() {
     });
   }, [members, debouncedSearch]);
 
-  const handlePromoteToAdmin = async (member: ServerSettingsMember) => {
-    if (!serverId) return;
+  const handlePromoteToAdmin = (
+    member: ServerSettingsMember
+  ) => {
+    setPromoteModal({
+      isOpen: true,
+      member,
+    });
+  };
+
+  const confirmPromote = async () => {
+    if (!serverId || !promoteModal.member) return;
 
     try {
-      setActionLoading(member.id);
-      await updateMemberRoleApi(serverId, member.userId, ServerMemberRole.ADMIN);
+      setActionLoading(promoteModal.member.id);
+
+      await updateMemberRoleApi(
+        serverId,
+        promoteModal.member.userId,
+        ServerMemberRole.ADMIN
+      );
 
       setMembers((prev) =>
         prev.map((m) =>
-          m.userId === member.userId ? { ...m, role: ServerMemberRole.ADMIN } : m
+          m.userId === promoteModal.member?.userId
+            ? { ...m, role: ServerMemberRole.ADMIN }
+            : m
         )
       );
 
-      toast.success(`${member.username} is now an admin`);
+      toast.success(
+        `${promoteModal.member.username} is now an admin`
+      );
+
+      setPromoteModal({
+        isOpen: false,
+        member: null,
+      });
     } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to promote member"));
+      toast.error(
+        getErrorMessage(error, "Failed to promote member")
+      );
     } finally {
       setActionLoading(null);
     }
   };
 
-  const handleDemoteToMember = async (member: ServerSettingsMember) => {
-    if (!serverId) return;
+  const handleDemoteToMember = (
+    member: ServerSettingsMember
+  ) => {
+    setDemoteModal({
+      isOpen: true,
+      member,
+    });
+  };
+
+  const confirmDemote = async () => {
+    if (!serverId || !demoteModal.member) return;
 
     try {
-      setActionLoading(member.id);
-      await updateMemberRoleApi(serverId, member.userId, ServerMemberRole.MEMBER);
+      setActionLoading(demoteModal.member.id);
+
+      await updateMemberRoleApi(
+        serverId,
+        demoteModal.member.userId,
+        ServerMemberRole.MEMBER
+      );
 
       setMembers((prev) =>
         prev.map((m) =>
-          m.userId === member.userId ? { ...m, role: ServerMemberRole.MEMBER } : m
+          m.userId === demoteModal.member?.userId
+            ? { ...m, role: ServerMemberRole.MEMBER }
+            : m
         )
       );
 
-      toast.success(`${member.username} is now a member`);
+      toast.success(
+        `${demoteModal.member.username} is now a member`
+      );
+
+      setDemoteModal({
+        isOpen: false,
+        member: null,
+      });
     } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to demote member"));
+      toast.error(
+        getErrorMessage(error, "Failed to demote member")
+      );
     } finally {
       setActionLoading(null);
     }
@@ -228,6 +294,37 @@ export default function MembersSettingsPage() {
           />
         )}
       </SettingsSection>
+
+      <ConfirmModal
+        isOpen={promoteModal.isOpen}
+        onClose={() =>
+          setPromoteModal({
+            isOpen: false,
+            member: null,
+          })
+        }
+        onConfirm={confirmPromote}
+        title={`Promote ${promoteModal.member?.username}?`}
+        description={`Are you sure you want to promote ${promoteModal.member?.username} to admin?`}
+        confirmText="Promote to Admin"
+        loading={actionLoading === promoteModal.member?.id}
+      />
+
+      <ConfirmModal
+        isOpen={demoteModal.isOpen}
+        onClose={() =>
+          setDemoteModal({
+            isOpen: false,
+            member: null,
+          })
+        }
+        onConfirm={confirmDemote}
+        title={`Demote ${demoteModal.member?.username}?`}
+        description={`Are you sure you want to remove admin privileges from ${demoteModal.member?.username}?`}
+        confirmText="Demote to Member"
+        destructive
+        loading={actionLoading === demoteModal.member?.id}
+      />
 
       <ConfirmModal
         isOpen={kickModal.isOpen}
