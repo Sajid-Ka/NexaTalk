@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { Ban, RefreshCw, ShieldOff, Trash2, Search, UserPlus, X } from "lucide-react";
+import { Ban, ShieldOff, Trash2, UserPlus, X } from "lucide-react";
 import { useParams } from "react-router-dom";
 import Button from "../../../../shared/ui/Button";
 import Input from "../../../../shared/ui/Input";
@@ -31,6 +31,8 @@ type ServerBanResponse = {
   data: ServerBan;
 };
 
+const SEARCH_DEBOUNCE_MS = 500;
+
 const getErrorMessage = (error: unknown, fallback: string) => {
   if (axios.isAxiosError(error)) {
     return error.response?.data?.error?.message ?? fallback;
@@ -47,10 +49,13 @@ export default function BansSettingsPage() {
   const [creating, setCreating] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [candidates, setCandidates] = useState<ServerBanCandidate[]>([]);
   const [selectedUser, setSelectedUser] = useState<ServerBanCandidate | null>(null);
   const [searching, setSearching] = useState(false);
   const [reason, setReason] = useState("");
+  const [hasSearched, setHasSearched] = useState(false);
+  const [banModalOpen, setBanModalOpen] = useState(false);
   const [unbanModal, setUnbanModal] = useState<{
     isOpen: boolean;
     ban: ServerBan | null;
@@ -80,30 +85,65 @@ export default function BansSettingsPage() {
     fetchBans();
   }, [fetchBans]);
 
-  const handleSearchCandidates = async () => {
-    if (!serverId || searchQuery.trim().length < 2) return;
+  // Debounce search input — search runs after user stops typing
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery.trim());
+    }, SEARCH_DEBOUNCE_MS);
 
-    try {
-      setSearching(true);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
-      const response = await searchServerBanCandidatesApi(
-        serverId,
-        searchQuery.trim(),
-      );
+  // Auto-search when debounced query changes
+  useEffect(() => {
+    if (!serverId) return;
 
-      const payload = response.data as {
-        success: boolean;
-        message?: string;
-        data: ServerBanCandidate[];
-      };
-
-      setCandidates(payload.data);
-    } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to search users"));
-    } finally {
+    if (debouncedSearch.length < 2) {
+      setCandidates([]);
+      setHasSearched(false);
       setSearching(false);
+      return;
     }
-  };
+
+    let ignore = false;
+
+    const search = async () => {
+      try {
+        setSearching(true);
+        setHasSearched(true);
+
+        const response = await searchServerBanCandidatesApi(
+          serverId,
+          debouncedSearch,
+        );
+
+        const payload = response.data as {
+          success: boolean;
+          message?: string;
+          data: ServerBanCandidate[];
+        };
+
+        if (!ignore) {
+          setCandidates(payload.data ?? []);
+        }
+      } catch (error) {
+        if (!ignore) {
+          toast.error(getErrorMessage(error, "Failed to search users"));
+          setCandidates([]);
+        }
+      } finally {
+        if (!ignore) {
+          setSearching(false);
+        }
+      }
+    };
+
+    search();
+
+    return () => {
+      ignore = true;
+    };
+  }, [debouncedSearch, serverId]);
 
   const handleBanUser = async () => {
     if (!serverId || !selectedUser) return;
@@ -120,9 +160,12 @@ export default function BansSettingsPage() {
 
       setBans((current) => [payload.data, ...current]);
       setSearchQuery("");
+      setDebouncedSearch("");
       setCandidates([]);
       setSelectedUser(null);
       setReason("");
+      setHasSearched(false);
+      setBanModalOpen(false);
 
       toast.success("User banned successfully");
     } catch (error) {
@@ -158,18 +201,6 @@ export default function BansSettingsPage() {
       <SettingsPageHeader
         title="Bans"
         description="Manage users who are blocked from joining this server."
-        actions={
-          <Button
-            type="button"
-            variant="secondary"
-            className="gap-2"
-            isLoading={loading}
-            onClick={fetchBans}
-          >
-            <RefreshCw size={16} />
-            Refresh
-          </Button>
-        }
       />
 
       <SettingsSection
@@ -178,7 +209,7 @@ export default function BansSettingsPage() {
         danger
       >
         <div className="space-y-5">
-          <div className="flex flex-col gap-3 sm:flex-row">
+          <div>
             <Input
               label="Search User"
               value={searchQuery}
@@ -188,27 +219,11 @@ export default function BansSettingsPage() {
                 setSearchQuery(event.target.value);
                 setSelectedUser(null);
               }}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  event.preventDefault();
-                  handleSearchCandidates();
-                }
-              }}
             />
 
-            <div className="flex items-end">
-              <Button
-                type="button"
-                variant="secondary"
-                className="w-full gap-2 whitespace-nowrap sm:w-auto"
-                disabled={searchQuery.trim().length < 2}
-                isLoading={searching}
-                onClick={handleSearchCandidates}
-              >
-                <Search size={16} className="shrink-0" />
-                Search
-              </Button>
-            </div>
+            {searching && (
+              <p className="mt-2 text-xs text-slate-400">Searching...</p>
+            )}
           </div>
 
           {selectedUser ? (
@@ -273,9 +288,9 @@ export default function BansSettingsPage() {
                 </button>
               ))}
             </div>
-          ) : searchQuery.trim().length >= 2 && !searching ? (
+          ) : hasSearched && !searching ? (
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-slate-400">
-              No matching users selected. Search to find users who can be banned.
+              No matching users found. Try a different username or email.
             </div>
           ) : null}
 
@@ -292,9 +307,8 @@ export default function BansSettingsPage() {
               type="button"
               variant="destructive"
               className="gap-2 whitespace-nowrap"
-              disabled={!selectedUser}
-              isLoading={creating}
-              onClick={handleBanUser}
+              disabled={!selectedUser || creating}
+              onClick={() => setBanModalOpen(true)}
             >
               <Ban size={16} className="shrink-0" />
               Ban User
@@ -391,6 +405,23 @@ export default function BansSettingsPage() {
           </div>
         )}
       </SettingsSection>
+
+      <ConfirmModal
+        isOpen={banModalOpen}
+        onClose={() => setBanModalOpen(false)}
+        onConfirm={handleBanUser}
+        title="Ban User"
+        message={
+          selectedUser
+            ? `Are you sure you want to ban "${selectedUser.username}" from this server? They will not be able to join again.${
+                reason.trim() ? ` Reason: ${reason.trim()}` : ""
+              }`
+            : "Are you sure you want to ban this user?"
+        }
+        confirmText="Ban User"
+        cancelText="Cancel"
+        variant="danger"
+      />
 
       <ConfirmModal
         isOpen={unbanModal.isOpen}
