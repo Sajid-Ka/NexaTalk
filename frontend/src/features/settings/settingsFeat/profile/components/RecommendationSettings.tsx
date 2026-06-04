@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import Switch from '../../../../shared/ui/Switch';
-import Button from '../../../../shared/ui/Button';
-import { getUserSettingsApi,updateUserSettingsApi } from '../../api/userSettingsApi';
+import Switch from '../../../../../shared/ui/Switch';
+import Button from '../../../../../shared/ui/Button';
+import { getUserSettingsApi, updateUserSettingsApi } from '../../../api/userSettingsApi';
 import toast from 'react-hot-toast';
 
 interface Settings {

@@ -49,7 +49,7 @@ export class GetFriends implements IGetFriendsUsecase {
         const response = await FriendMapper.toResponse(friendship, friendUser);
         friendResponses.push(response);
 
-        if (friendUser.status === UserPresenceStatus.ONLINE) {
+        if (friendUser.showOnlineStatus && friendUser.status === UserPresenceStatus.ONLINE) {
           onlineCount++;
         }
       }

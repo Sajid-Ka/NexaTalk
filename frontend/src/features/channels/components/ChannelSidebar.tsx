@@ -2,6 +2,7 @@ import { Hash, Plus, Settings, Volume2, Trash2, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ChannelType } from "../../../shared/constants/channel.const";
 import { cn } from "../../../shared/utils/cn";
+import UserStatusFooter from "../../home/components/UserStatusFooter";
 import type { Server } from "../../servers/core/types";
 import type { Channel } from "../types";
 
@@ -42,14 +43,16 @@ export default function ChannelSidebar({
         >
           {server.name}
         </button>
-        <button
-          type="button"
-          onClick={() => navigate(`/servers/${server.id}/settings`)}
-          className="rounded-lg p-1.5 text-white/45 transition hover:bg-white/5 hover:text-white"
-          aria-label="Open server settings"
-        >
-          <Settings size={16} />
-        </button>
+        {canManageChannels && (
+          <button
+            type="button"
+            onClick={() => navigate(`/servers/${server.id}/settings`)}
+            className="rounded-lg p-1.5 text-white/45 transition hover:bg-white/5 hover:text-white"
+            aria-label="Open server settings"
+          >
+            <Settings size={16} />
+          </button>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto px-2 py-4">
@@ -77,6 +80,8 @@ export default function ChannelSidebar({
           onDeleteClick={onDeleteClick}
         />
       </div>
+
+      <UserStatusFooter />
     </aside>
   );
 }

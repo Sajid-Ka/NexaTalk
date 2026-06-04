@@ -14,6 +14,7 @@ export interface IUserPersistence {
   isProfilePublic: boolean;
   isBlocked?: boolean;
   blockedReason?: string | null;
+  showOnlineStatus: boolean;
   lastSeenAt?: Date | null;
   createdAt: Date;
   updatedAt: Date;
@@ -44,6 +45,7 @@ const userSchema = new Schema<IUserPersistence>(
     isProfilePublic: { type: Boolean, default: true },
     isBlocked: { type: Boolean, default: false },
     blockedReason: { type: String, default: null },
+    showOnlineStatus: { type: Boolean, default: true },
     lastSeenAt: { type: Date, default: null },
     deletedAt: { type: Date, default: null },
     isEmailVerified: { type: Boolean, default: false },

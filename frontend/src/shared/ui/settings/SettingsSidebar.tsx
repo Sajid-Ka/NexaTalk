@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Button from "../Button";
@@ -8,17 +9,19 @@ interface SettingsSidebarProps {
   title: string;
   items: SettingsSidebarItem[];
   backTo: string;
+  footer?: ReactNode;
 }
 
 export default function SettingsSidebar({
   title,
   items,
   backTo,
+  footer,
 }: SettingsSidebarProps) {
   const navigate = useNavigate();
 
   return (
-    <aside className="w-[300px] border-r border-white/10 bg-[#0B1020]">
+    <aside className="flex h-screen w-[300px] shrink-0 flex-col border-r border-white/10 bg-[#0B1020]">
       <div className="flex items-center justify-between border-b border-white/10 p-5">
         <h1 className="text-lg font-bold text-white">{title}</h1>
 
@@ -33,7 +36,7 @@ export default function SettingsSidebar({
         </Button>
       </div>
 
-      <nav className="space-y-1 p-3">
+      <nav className="flex-1 space-y-1 overflow-y-auto p-3">
         {items.map((item) => (
           <SettingsNavItem
             key={item.to}
@@ -44,6 +47,8 @@ export default function SettingsSidebar({
           />
         ))}
       </nav>
+
+      {footer && <div className="border-t border-white/10">{footer}</div>}
     </aside>
   );
 }

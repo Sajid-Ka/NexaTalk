@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Outlet } from "react-router-dom";
 import SettingsSidebar from "../ui/settings/SettingsSidebar";
 import type { SettingsSidebarItem } from "../ui/settings/types";
@@ -6,12 +7,14 @@ interface SettingsLayoutProps {
   title: string;
   items: SettingsSidebarItem[];
   backTo: string;
+  sidebarFooter?: ReactNode;
 }
 
 export default function SettingsLayout({
   title,
   items,
   backTo,
+  sidebarFooter,
 }: SettingsLayoutProps) {
   return (
     <div className="h-screen overflow-hidden bg-[#070A12] text-white">
@@ -20,9 +23,10 @@ export default function SettingsLayout({
           title={title}
           items={items}
           backTo={backTo}
+          footer={sidebarFooter}
         />
 
-        <main className="flex-1 overflow-y-auto h-screen">
+        <main className="h-screen flex-1 overflow-y-auto">
           <Outlet />
         </main>
       </div>

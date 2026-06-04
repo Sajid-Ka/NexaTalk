@@ -111,4 +111,42 @@ export class ServerMemberRepository
 
     return result.deletedCount > 0;
   }
+
+  async searchMembers(serverId: string, query: string): Promise<ServerMember[]> {
+    const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const regex = new RegExp(escapedQuery, "i");
+
+    const members = await this.model.aggregate([
+      {
+        $match: {
+          serverId,
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          let: { userId: "$userId" },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ["$_id", { $toObjectId: "$$userId" }] },
+                deletedAt: null,
+              },
+            },
+          ],
+          as: "user",
+        },
+      },
+      {
+        $unwind: "$user",
+      },
+      {
+        $match: {
+          $or: [{ "user.username": regex }, { "user.email": regex }],
+        },
+      },
+    ]);
+
+    return members.map((member) => this.mapper.toDomain(member));
+  }
 }

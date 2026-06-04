@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { RefreshCw, Users } from "lucide-react";
+import { RefreshCw, Users, Search } from "lucide-react";
 import Button from "../../../../shared/ui/Button";
 import SettingsPageContainer from "../../../../shared/ui/settings/SettingsPageContainer";
 import SettingsPageHeader from "../../../../shared/ui/settings/SettingsPageHeader";
@@ -35,6 +35,9 @@ export default function MembersSettingsPage() {
   const { serverId } = useParams<{ serverId: string }>();
   const { user } = useAuth();
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
   const [members, setMembers] = useState<ServerSettingsMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -42,6 +45,30 @@ export default function MembersSettingsPage() {
     isOpen: boolean;
     member: ServerSettingsMember | null;
   }>({ isOpen: false, member: null });
+
+  const [promoteModal, setPromoteModal] = useState<{
+    isOpen: boolean;
+    member: ServerSettingsMember | null;
+  }>({
+    isOpen: false,
+    member: null,
+  });
+
+  const [demoteModal, setDemoteModal] = useState<{
+    isOpen: boolean;
+    member: ServerSettingsMember | null;
+  }>({
+    isOpen: false,
+    member: null,
+  });
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery.trim().toLowerCase());
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const currentUserRole = useMemo(() => {
     const currentMember = members.find((member) => member.userId === user?.id);
@@ -67,43 +94,103 @@ export default function MembersSettingsPage() {
     fetchMembers();
   }, [fetchMembers]);
 
-  const handlePromoteToAdmin = async (member: ServerSettingsMember) => {
-    if (!serverId) return;
+  const filteredMembers = useMemo(() => {
+    if (!debouncedSearch) return members;
+
+    return members.filter((member) => {
+      const username = member.username.toLowerCase();
+
+      return username.includes(debouncedSearch) 
+    });
+  }, [members, debouncedSearch]);
+
+  const handlePromoteToAdmin = (
+    member: ServerSettingsMember
+  ) => {
+    setPromoteModal({
+      isOpen: true,
+      member,
+    });
+  };
+
+  const confirmPromote = async () => {
+    if (!serverId || !promoteModal.member) return;
 
     try {
-      setActionLoading(member.id);
-      await updateMemberRoleApi(serverId, member.userId, ServerMemberRole.ADMIN);
+      setActionLoading(promoteModal.member.id);
+
+      await updateMemberRoleApi(
+        serverId,
+        promoteModal.member.userId,
+        ServerMemberRole.ADMIN
+      );
 
       setMembers((prev) =>
         prev.map((m) =>
-          m.userId === member.userId ? { ...m, role: ServerMemberRole.ADMIN } : m
+          m.userId === promoteModal.member?.userId
+            ? { ...m, role: ServerMemberRole.ADMIN }
+            : m
         )
       );
 
-      toast.success(`${member.username} is now an admin`);
+      toast.success(
+        `${promoteModal.member.username} is now an admin`
+      );
+
+      setPromoteModal({
+        isOpen: false,
+        member: null,
+      });
     } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to promote member"));
+      toast.error(
+        getErrorMessage(error, "Failed to promote member")
+      );
     } finally {
       setActionLoading(null);
     }
   };
 
-  const handleDemoteToMember = async (member: ServerSettingsMember) => {
-    if (!serverId) return;
+  const handleDemoteToMember = (
+    member: ServerSettingsMember
+  ) => {
+    setDemoteModal({
+      isOpen: true,
+      member,
+    });
+  };
+
+  const confirmDemote = async () => {
+    if (!serverId || !demoteModal.member) return;
 
     try {
-      setActionLoading(member.id);
-      await updateMemberRoleApi(serverId, member.userId, ServerMemberRole.MEMBER);
+      setActionLoading(demoteModal.member.id);
+
+      await updateMemberRoleApi(
+        serverId,
+        demoteModal.member.userId,
+        ServerMemberRole.MEMBER
+      );
 
       setMembers((prev) =>
         prev.map((m) =>
-          m.userId === member.userId ? { ...m, role: ServerMemberRole.MEMBER } : m
+          m.userId === demoteModal.member?.userId
+            ? { ...m, role: ServerMemberRole.MEMBER }
+            : m
         )
       );
 
-      toast.success(`${member.username} is now a member`);
+      toast.success(
+        `${demoteModal.member.username} is now a member`
+      );
+
+      setDemoteModal({
+        isOpen: false,
+        member: null,
+      });
     } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to demote member"));
+      toast.error(
+        getErrorMessage(error, "Failed to demote member")
+      );
     } finally {
       setActionLoading(null);
     }
@@ -148,16 +235,46 @@ export default function MembersSettingsPage() {
         }
       />
 
+     
+
       <SettingsSection
         title="Server Members"
-        description={`${members.length} member${members.length === 1 ? "" : "s"} in this server.`}
+        description={
+                      debouncedSearch
+                        ? `${filteredMembers.length} matching member${filteredMembers.length === 1 ? "" : "s"} out of ${members.length}.`
+                        : `${members.length} member${members.length === 1 ? "" : "s"} in this server.`
+                    }
       >
+
+         <div className="mb-4 flex items-center justify-between gap-3">
+          <div className="relative w-full max-w-md">
+            <Search
+              size={18}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+            />
+
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="Search members by name, ID, or role..."
+              className="h-11 w-full rounded-xl border border-white/10 bg-[#0F121D] pl-10 pr-4 text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+
+          {debouncedSearch && (
+            <p className="shrink-0 text-sm text-slate-400">
+              {filteredMembers.length} result{filteredMembers.length === 1 ? "" : "s"}
+            </p>
+          )}
+        </div>
+
         {loading ? (
           <div className="flex min-h-48 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] text-sm text-slate-400">
             <div className="h-6 w-6 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />
             <span className="ml-2">Loading members...</span>
           </div>
-        ) : members.length === 0 ? (
+        ) : filteredMembers.length === 0 ? (
           <div className="flex min-h-48 flex-col items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] text-center">
             <Users className="mb-3 text-slate-500" size={32} />
             <p className="font-medium text-white">No members found</p>
@@ -167,7 +284,7 @@ export default function MembersSettingsPage() {
           </div>
         ) : (
           <ServerMembersTable
-            members={members}
+            members={filteredMembers}
             currentUserRole={currentUserRole}
             tableLoading={loading}
             actionLoading={actionLoading !== null}
@@ -177,6 +294,37 @@ export default function MembersSettingsPage() {
           />
         )}
       </SettingsSection>
+
+      <ConfirmModal
+        isOpen={promoteModal.isOpen}
+        onClose={() =>
+          setPromoteModal({
+            isOpen: false,
+            member: null,
+          })
+        }
+        onConfirm={confirmPromote}
+        title={`Promote ${promoteModal.member?.username}?`}
+        description={`Are you sure you want to promote ${promoteModal.member?.username} to admin?`}
+        confirmText="Promote to Admin"
+        loading={actionLoading === promoteModal.member?.id}
+      />
+
+      <ConfirmModal
+        isOpen={demoteModal.isOpen}
+        onClose={() =>
+          setDemoteModal({
+            isOpen: false,
+            member: null,
+          })
+        }
+        onConfirm={confirmDemote}
+        title={`Demote ${demoteModal.member?.username}?`}
+        description={`Are you sure you want to remove admin privileges from ${demoteModal.member?.username}?`}
+        confirmText="Demote to Member"
+        destructive
+        loading={actionLoading === demoteModal.member?.id}
+      />
 
       <ConfirmModal
         isOpen={kickModal.isOpen}

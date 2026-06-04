@@ -1,8 +1,32 @@
 import { api } from "../../../../shared/api/axios";
+import type { ServerImageType } from "../../../../shared/constants/server.const";
 import type { CreateServerRequest } from "../../core/types";
+import type { Server } from "../../core/types";
 
 export const updateServerApi = (serverId: string, data: Partial<CreateServerRequest>) =>
-  api.patch(`/servers/${serverId}`, data);
+  api.patch<{ data: Server }>(`/servers/${serverId}`, data);
+
+export const uploadServerImageApi = async (
+  serverId: string,
+  file: File,
+  type: ServerImageType,
+): Promise<Server> => {
+  const formData = new FormData();
+  formData.append("image", file);
+  formData.append("type", type);
+
+  const response = await api.post<{ data: Server }>(
+    `/servers/${serverId}/image`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    },
+  );
+
+  return response.data.data;
+};
 
 export const getServerMembersApi = (serverId: string) =>
   api.get(`/servers/${serverId}/members`);

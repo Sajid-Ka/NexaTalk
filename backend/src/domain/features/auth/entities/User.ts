@@ -18,6 +18,7 @@ export interface UserProps {
   isProfilePublic?: boolean;
   blockedReason?: string | null;
 
+  showOnlineStatus?: boolean;
   lastSeenAt?: Date | null;
   deletedAt?: Date | null;
   createdAt?: Date;
@@ -43,6 +44,7 @@ export class User {
   public readonly isProfilePublic: boolean;
   public readonly blockedReason: string | null;
 
+  public readonly showOnlineStatus: boolean;
   public readonly lastSeenAt: Date | null;
   public readonly deletedAt: Date | null;
   public readonly createdAt: Date;
@@ -73,6 +75,7 @@ export class User {
     this.isProfilePublic = props.isProfilePublic ?? true;
     this.blockedReason = props.blockedReason ?? null;
 
+    this.showOnlineStatus = props.showOnlineStatus ?? true;
     this.lastSeenAt = props.lastSeenAt ?? null;
     this.deletedAt = props.deletedAt ?? null;
     this.createdAt = props.createdAt ?? new Date();

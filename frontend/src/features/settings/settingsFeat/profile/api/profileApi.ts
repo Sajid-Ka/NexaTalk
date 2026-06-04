@@ -1,5 +1,5 @@
-import { api } from "../../../shared/api/axios";
-import type { UserPresence, UserRole } from "../../../shared/constants/user.const";
+import { api } from "../../../../../shared/api/axios";
+import type { UserPresence, UserRole } from "../../../../../shared/constants/user.const";
 
 export interface ProfileResponse {
   id: string;
@@ -9,6 +9,7 @@ export interface ProfileResponse {
   bio?: string;
   status: UserPresence;
   globalRole: UserRole;
+  showOnlineStatus: boolean;
   lastSeenAt?: string;
   isProfilePublic: boolean;
   interests?: Array<{
@@ -27,6 +28,7 @@ export interface PublicProfileResponse {
   bio?: string;
   status: UserPresence;
   globalRole: UserRole;
+  showOnlineStatus?: boolean;
   lastSeenAt?: string;
   interests?: Array<{
     id: string;
@@ -37,9 +39,11 @@ export interface PublicProfileResponse {
 }
 
 export interface UpdateProfileRequest {
+  username?: string;
   avatar?: string | null;
   bio?: string;
   isProfilePublic?: boolean;
+  showOnlineStatus?: boolean;
 }
 
 export interface AvatarUploadResponse {
@@ -63,37 +67,37 @@ export interface SearchUserResponse {
 }
 
 // Profile endpoints
-export const getMyProfileApi = () => 
+export const getMyProfileApi = () =>
   api.get<{ data: ProfileResponse }>("/profiles/me");
 
-export const getProfileByIdApi = (userId: string) => 
+export const getProfileByIdApi = (userId: string) =>
   api.get<{ data: ProfileResponse | PublicProfileResponse }>(`/profiles/${userId}`);
 
-export const updateProfileApi = (data: UpdateProfileRequest) => 
+export const updateProfileApi = (data: UpdateProfileRequest) =>
   api.patch<{ data: ProfileResponse }>("/profiles/me", data);
 
 // Avatar endpoints - FIXED with proper response handling
 export const uploadAvatarApi = async (file: File): Promise<string> => {
   const formData = new FormData();
   formData.append("avatar", file);
-  
+
   try {
     const response = await api.post("/profiles/me/avatar", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
-    
+
     console.log("Full upload response:", response);
     console.log("Response data:", response.data);
-  
+
     const avatarUrl = response.data?.data?.avatarUrl;
-    
+
     if (!avatarUrl) {
       console.error("Avatar URL not found in response:", response.data);
       throw new Error("Invalid response from server");
     }
-    
+
     return avatarUrl;
   } catch (error) {
     console.error("Upload API error:", error);
@@ -101,10 +105,10 @@ export const uploadAvatarApi = async (file: File): Promise<string> => {
   }
 };
 
-export const deleteAvatarApi = () => 
+export const deleteAvatarApi = () =>
   api.delete("/profiles/me/avatar");
 
-export const searchUsersApi = (query: string, limit: number = 10) => 
-  api.get<{ data: UserSearchResult[] }>("/profiles/search", { 
-    params: { q: query, limit } 
+export const searchUsersApi = (query: string, limit: number = 10) =>
+  api.get<{ data: UserSearchResult[] }>("/profiles/search", {
+    params: { q: query, limit }
   });

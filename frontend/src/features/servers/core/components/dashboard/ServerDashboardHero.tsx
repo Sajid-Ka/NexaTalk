@@ -19,6 +19,26 @@ const formatCompact = (value: number) =>
     maximumFractionDigits: 1,
   }).format(value);
 
+
+//image setting helper function
+const getImageUrl = (url?: string) => {
+  if (!url) return "";
+
+  if (
+    url.startsWith("http://") ||
+    url.startsWith("https://") ||
+    url.startsWith("blob:") ||
+    url.startsWith("data:")
+  ) {
+    return url;
+  }
+
+  const apiBaseUrl = import.meta.env.VITE_API_URL || window.location.origin;
+  const apiOrigin = new URL(apiBaseUrl, window.location.origin).origin;
+
+  return url.startsWith("/") ? `${apiOrigin}${url}` : `${apiOrigin}/${url}`;
+};
+
 export default function ServerDashboardHero({
   server,
 }: ServerDashboardHeroProps) {
@@ -65,7 +85,7 @@ export default function ServerDashboardHero({
       <div className="relative h-[380px] overflow-hidden sm:h-[360px]">
         {server.banner ? (
           <img
-            src={server.banner}
+            src={getImageUrl(server.banner)}
             alt={`${server.name} banner`}
             className="h-full w-full object-cover opacity-70"
           />
@@ -82,7 +102,7 @@ export default function ServerDashboardHero({
             <div className="grid h-28 w-28 shrink-0 place-items-center overflow-hidden rounded-[28px] border-4 border-[#070A12] bg-[#111827] shadow-2xl shadow-indigo-950/50 ring-1 ring-white/15">
               {server.icon ? (
                 <img
-                  src={server.icon}
+                  src={getImageUrl(server.icon)}
                   alt={server.name}
                   className="h-full w-full object-cover"
                 />

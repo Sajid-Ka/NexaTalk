@@ -6,4 +6,5 @@ export interface IUserRepository extends IBaseRepository<User> {
   findByEmailIncludingDeleted(email: string): Promise<User | null>;
   findByUsername(username: string): Promise<User | null>;
   search(query: string, limit: number): Promise<User[]>;
+  searchPublicProfiles(query: string, limit: number): Promise<User[]>;
 }

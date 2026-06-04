@@ -59,21 +59,25 @@ export class SearchServerBanCandidates implements ISearchServerBanCandidatesUsec
       throw new InsufficientPermissionsError();
     }
 
-    //search the user for ban (fetch a user to ban him with searching his name or email)
-    const users = await this._userRepo.search(searchQuery, 10);
+    //search the user for ban (fetch a user to ban him with searching by his name)
+    const members = await this._memberRepo.searchMembers(serverId, searchQuery);
 
     const candidates = await Promise.all(
-      users.map(async (user) => {
-        if (user.id === currentUserId) return null;
-        if (user.id === server.ownerId) return null;
+      members.map(async (member) => {
+        if (member.userId === currentUserId) return null;
+        if (member.userId === server.ownerId) return null;
 
-        const existingBan = await this._banRepo.findByServerAndUser(serverId, user.id);
+        const existingBan = await this._banRepo.findByServerAndUser(serverId, member.userId);
 
         if (existingBan) return null;
 
-        const member = await this._memberRepo.findByServerAndUser(serverId, user.id);
+        if (isAdmin && member.role !== ServerMemberRole.MEMBER) {
+          return null;
+        }
 
-        if (isAdmin && member && member.role !== ServerMemberRole.MEMBER) {
+        const user = await this._userRepo.findById(member.userId);
+
+        if (!user) {
           return null;
         }
 
@@ -82,7 +86,7 @@ export class SearchServerBanCandidates implements ISearchServerBanCandidatesUsec
           username: user.username,
           email: user.email,
           avatar: user.avatar,
-          serverRole: member?.role ?? null,
+          serverRole: member.role,
         };
       }),
     );

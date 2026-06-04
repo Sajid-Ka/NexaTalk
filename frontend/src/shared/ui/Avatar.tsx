@@ -50,14 +50,15 @@ export default function Avatar({
   return (
     <div 
       ref={avatarRef}
-      className={cn("relative inline-block cursor-pointer", className)} 
+      className={cn(
+        "relative inline-flex items-center justify-center shrink-0 cursor-pointer",
+        sizeClasses[size],
+        className
+      )} 
       onClick={handleClick}
     >
       <div
-        className={cn(
-          "flex items-center justify-center rounded-full bg-white/10 overflow-hidden text-white font-medium h-full w-full",
-          sizeClasses[size]
-        )}
+        className="flex items-center justify-center rounded-full bg-white/10 overflow-hidden text-white font-medium h-full w-full"
       >
         {src ? (
           <img src={src} alt={alt || fallback} className="h-full w-full object-cover" />

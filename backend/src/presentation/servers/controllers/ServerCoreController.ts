@@ -9,9 +9,10 @@ import { IUpdateServerUsecase } from "../../../application/servers/core/interfac
 import { IDeleteServerUsecase } from "../../../application/servers/core/interfaces/IDeleteServerUsecase";
 import { IGetUserServersUsecase } from "../../../application/servers/core/interfaces/IGetUserServersUsecase";
 import { IGetPublicServersUsecase } from "../../../application/servers/core/interfaces/IGetPublicServersUsecase";
-
+import { BadRequestError } from "../../../domain/core/errors/BadRequestError";
 import { CreateServerRequest } from "../../../application/servers/core/dtos/requests/CreateServerRequest";
 import { UpdateServerRequest } from "../../../application/servers/core/dtos/requests/UpdateServerRequest";
+import { ServerImageType } from "../../../shared/constants/server.const";
 
 @injectable()
 export class ServerCoreController {
@@ -59,6 +60,26 @@ export class ServerCoreController {
     const server = await this._updateServer.execute(req.params.serverId, req.user!.userId, request);
 
     res.json(successResponse(server, "Server updated successfully"));
+  };
+
+  uploadServerImage = async (req: AuthenticatedRequest, res: Response) => {
+    const imageType: ServerImageType = req.body.type;
+
+    if (!req.file) {
+      throw new BadRequestError("No file uploaded");
+    }
+
+    if (imageType !== ServerImageType.ICON && imageType !== ServerImageType.BANNER) {
+      throw new BadRequestError("Invalid image type");
+    }
+
+    const imageUrl = `/uploads/avatars/${req.file.filename}`;
+
+    const server = await this._updateServer.execute(req.params.serverId, req.user!.userId, {
+      [imageType]: imageUrl,
+    });
+
+    res.json(successResponse(server, "Server image uploaded successfully"));
   };
 
   deleteServer = async (req: AuthenticatedRequest, res: Response) => {

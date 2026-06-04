@@ -50,7 +50,7 @@ export default function InvitesSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const [maxUses, setMaxUses] = useState("0");
+  const [maxUses, setMaxUses] = useState("10");
   const [expiresInDays, setExpiresInDays] = useState("7");
   const [revokeModal, setRevokeModal] = useState<{
     isOpen: boolean;
@@ -88,7 +88,7 @@ export default function InvitesSettingsPage() {
       setCreating(true);
 
       const response = await createInviteApi(serverId, {
-        maxUses: Number(maxUses) || 0,
+        maxUses: Number(maxUses) || 10,
         expiresInDays: Number(expiresInDays) || 7,
       });
 

@@ -1,8 +1,8 @@
 import { Server } from "../../../../domain/features/servers/entities/Server";
-import { ServerResponse } from "../dtos/responses/ServerResponse";
+import { ServerResponse, ServerMemberResponse } from "../dtos/responses/ServerResponse";
 
 export class ServerMapper {
-  static toResponse(server: Server): ServerResponse {
+  static toResponse(server: Server, members?: ServerMemberResponse[]): ServerResponse {
     return {
       id: server.id,
       name: server.name,
@@ -14,6 +14,7 @@ export class ServerMapper {
       isDisabled: server.isDisabled,
       memberCount: server.memberCount,
       tags: server.tags,
+      members,
       createdAt: server.createdAt,
       updatedAt: server.updatedAt,
     };

@@ -6,7 +6,7 @@ import {
   Ban,
   AlertTriangle,
 } from "lucide-react";
-
+import UserStatusFooter from "../../../home/components/UserStatusFooter";
 import { useParams } from "react-router-dom";
 import SettingsLayout from "../../../../shared/layouts/SettingsLayout";
 
@@ -52,6 +52,7 @@ export default function ServerSettingsLayout() {
       title="Server Settings"
       items={items}
       backTo={`/servers/${serverId}`}
+      sidebarFooter={<UserStatusFooter />}
     />
   );
 }

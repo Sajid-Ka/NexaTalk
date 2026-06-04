@@ -53,6 +53,22 @@ export class UserRepository
     return docs.map((doc) => this.mapper.toDomain(doc));
   }
 
+  async searchPublicProfiles(query: string, limit: number = 10): Promise<User[]> {
+    const regex = new RegExp(query, "i");
+
+    const docs = await this.model
+      .find({
+        $or: [{ username: { $regex: regex } }, { email: { $regex: regex } }],
+        deletedAt: null,
+        isBlocked: false,
+        isProfilePublic: true,
+      })
+      .limit(limit)
+      .lean();
+
+    return docs.map((doc) => this.mapper.toDomain(doc));
+  }
+
   async findByUsername(username: string): Promise<User | null> {
     const escapedUsername = username.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 

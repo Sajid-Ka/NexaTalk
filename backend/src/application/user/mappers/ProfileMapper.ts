@@ -13,6 +13,7 @@ export class ProfileMapper {
       bio: user.bio,
       status: user.status,
       globalRole: user.globalRole,
+      showOnlineStatus: user.showOnlineStatus,
       lastSeenAt: user.lastSeenAt || undefined,
       isProfilePublic: user.isProfilePublic,
       interests: InterestApplicationMapper.toResponseList(interests),

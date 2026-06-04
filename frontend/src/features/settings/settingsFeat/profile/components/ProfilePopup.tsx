@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import Avatar from "../../../shared/ui/Avatar";
-import Button from "../../../shared/ui/Button";
+import Avatar from "../../../../../shared/ui/Avatar";
+import Button from "../../../../../shared/ui/Button";
 import { X, MessageSquare, UserPlus } from "lucide-react";
 import { getProfileByIdApi } from "../api/profileApi";
-import { UserPresence } from "../../../shared/constants/user.const";
+import { UserPresence } from "../../../../../shared/constants/user.const";
 
 interface ProfileResponse {
   id: string;
@@ -39,31 +39,31 @@ function formatRelativeTime(dateString: string): string {
   const date = new Date(dateString);
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-  
+
   if (diffInSeconds < 60) {
     return 'just now';
   }
-  
+
   const diffInMinutes = Math.floor(diffInSeconds / 60);
   if (diffInMinutes < 60) {
     return `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
   }
-  
+
   const diffInHours = Math.floor(diffInMinutes / 60);
   if (diffInHours < 24) {
     return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
   }
-  
+
   const diffInDays = Math.floor(diffInHours / 24);
   if (diffInDays < 30) {
     return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
   }
-  
+
   const diffInMonths = Math.floor(diffInDays / 30);
   if (diffInMonths < 12) {
     return `${diffInMonths} month${diffInMonths > 1 ? 's' : ''} ago`;
   }
-  
+
   const diffInYears = Math.floor(diffInDays / 365);
   return `${diffInYears} year${diffInYears > 1 ? 's' : ''} ago`;
 }
@@ -125,12 +125,12 @@ export default function ProfilePopup({
   };
 
   return (
-    <div 
+    <div
       className="absolute z-50 bg-[#1A1D2D] rounded-2xl shadow-2xl border border-white/10 w-80 overflow-hidden"
       style={position ? { top: position.y, left: position.x } : {}}
     >
       {/* Close button */}
-      <button 
+      <button
         onClick={onClose}
         className="absolute top-3 right-3 p-1 rounded-lg hover:bg-white/10 transition-colors z-10"
       >
@@ -159,7 +159,7 @@ export default function ProfilePopup({
             <span className="text-xs text-white/60 capitalize">{statusText[profile.status]}</span>
           </div>
         </div>
-        
+
         {profile.bio && (
           <p className="text-sm text-white/60 mt-2 line-clamp-2">{profile.bio}</p>
         )}
