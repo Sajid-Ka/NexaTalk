@@ -3,8 +3,8 @@ import { ServerInterest } from "../../../../domain/features/interests/entities/S
 import { Interest } from "../../../../domain/features/interests/entities/Interest";
 import { IServerInterestRepository } from "../../../../domain/features/interests/repositories/IServerInterestRepository";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
-import { ServerInterestModel, IServerInterestPersistence } from "../database/ServerInterestModel";
-import { InterestModel } from "../database/InterestModel";
+import { ServerInterestModel, IServerInterestPersistence } from "../models/ServerInterestModel";
+import { InterestModel } from "../models/InterestModel";
 import { ServerInterestMapper } from "../mappers/ServerInterestMapper";
 import { InterestMapper } from "../mappers/InterestMapper";
 

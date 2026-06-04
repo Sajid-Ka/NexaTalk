@@ -60,7 +60,7 @@ export default function SettingsSidebar() {
             </div>
 
             {/* Navigation Items */}
-            <nav className="flex-1 overflow-y-auto px-4 py-2 space-y-1 no-scrollbar">
+            <nav className="flex-1 overflow-y-auto px-4 py-2 space-y-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                 {sidebarItems.map((item) => (
                     <button
                         key={item.id}

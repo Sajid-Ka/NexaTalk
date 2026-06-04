@@ -5,6 +5,7 @@ export const SERVERS_TYPES = {
   ServerInviteRepository: Symbol.for("ServerInviteRepository"),
   ServerBanRepository: Symbol.for("ServerBanRepository"),
   ServerAuditLogRepository: Symbol.for("ServerAuditLogRepository"),
+  ServerDirectInviteRepository: Symbol.for("ServerDirectInviteRepository"),
 
   // Use Cases
 
@@ -26,6 +27,10 @@ export const SERVERS_TYPES = {
   JoinServerByInvite: Symbol.for("JoinServerByInvite"),
   GetServerInvites: Symbol.for("GetServerInvites"),
   RevokeServerInvite: Symbol.for("RevokeServerInvite"),
+  SendDirectServerInvite: Symbol.for("SendDirectServerInvite"),
+  GetPendingDirectInvites: Symbol.for("GetPendingDirectInvites"),
+  RespondToDirectInvite: Symbol.for("RespondToDirectInvite"),
+  GetSentDirectInvites: Symbol.for("GetSentDirectInvites"),
   //bans
   GetServerBans: Symbol.for("GetServerBans"),
   BanServerMember: Symbol.for("BanServerMember"),
@@ -40,4 +45,5 @@ export const SERVERS_TYPES = {
   ServerInviteController: Symbol.for("ServerInviteController"),
   ServerBanController: Symbol.for("ServerBanController"),
   ServerAuditLogController: Symbol.for("ServerAuditLogController"),
+  ServerDirectInviteController: Symbol.for("ServerDirectInviteController"),
 };

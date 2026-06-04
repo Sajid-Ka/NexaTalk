@@ -1,5 +1,5 @@
 import { EmailVerificationToken } from "../../../../domain/features/auth/entities/EmailVerificationToken";
-import { IEmailVerificationTokenPersistence } from "../database/EmailVerificationTokenModel";
+import { IEmailVerificationTokenPersistence } from "../models/EmailVerificationTokenModel";
 import { IMapper } from "../../../core/common/mappers/IMapper";
 import { OmittedDatabaseFields } from "../../../../shared/constants/database-field.const";
 

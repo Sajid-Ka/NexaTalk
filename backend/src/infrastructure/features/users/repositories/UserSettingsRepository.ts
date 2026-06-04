@@ -2,7 +2,7 @@ import { injectable } from "inversify";
 import { UserSettings } from "../../../../domain/features/users/entities/UserSettings";
 import { IUserSettingsRepository } from "../../../../domain/features/users/repositories/IUserSettingsRepository";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
-import { UserSettingsModel, IUserSettingsPersistence } from "../database/UserSettingsModel";
+import { UserSettingsModel, IUserSettingsPersistence } from "../models/UserSettingsModel";
 import { UserSettingsMapper } from "../mappers/UserSettingsMapper";
 import { UserSettingsField } from "../../../../shared/constants/user-settings.const";
 

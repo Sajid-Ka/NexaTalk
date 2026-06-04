@@ -1,5 +1,5 @@
 import { RefreshTokenData } from "../../../../domain/features/auth/repositories/IRefreshTokenRepository";
-import { IRefreshTokenPersistence } from "../database/RefreshTokenModel";
+import { IRefreshTokenPersistence } from "../models/RefreshTokenModel";
 import { IMapper } from "../../../core/common/mappers/IMapper";
 import { OmittedDatabaseFields } from "../../../../shared/constants/database-field.const";
 

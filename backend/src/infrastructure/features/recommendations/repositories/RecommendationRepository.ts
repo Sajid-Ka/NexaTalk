@@ -2,7 +2,7 @@ import { injectable } from "inversify";
 import { Recommendation } from "../../../../domain/features/recommendations/entities/Recommendation";
 import { IRecommendationRepository } from "../../../../domain/features/recommendations/repositories/IRecommendationRepository";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
-import { RecommendationModel, IRecommendationPersistence } from "../database/RecommendationModel";
+import { RecommendationModel, IRecommendationPersistence } from "../models/RecommendationModel";
 import { RecommendationMapper } from "../mappers/RecommendationMapper";
 
 @injectable()

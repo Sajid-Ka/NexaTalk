@@ -3,7 +3,7 @@ import { Channel } from "../../../../domain/features/channels/entities/Channel";
 import { IChannelRepository } from "../../../../domain/features/channels/repositories/IChannelRepository";
 import { ChannelType } from "../../../../shared/constants/channel.const";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
-import { ChannelModel, IChannelPersistence } from "../database/ChannelModel";
+import { ChannelModel, IChannelPersistence } from "../models/ChannelModel";
 import { ChannelPersistenceMapper } from "../mappers/ChannelMapper";
 
 @injectable()

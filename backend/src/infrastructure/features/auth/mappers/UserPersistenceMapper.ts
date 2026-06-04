@@ -1,5 +1,5 @@
 import { User } from "../../../../domain/features/auth/entities/User";
-import { IUserPersistence } from "../database/UserModel";
+import { IUserPersistence } from "../models/UserModel";
 import { IMapper } from "../../../core/common/mappers/IMapper";
 import { UserAccountStatus } from "../../../../shared/constants/authStatus.const";
 import { OmittedDatabaseFields } from "../../../../shared/constants/database-field.const";

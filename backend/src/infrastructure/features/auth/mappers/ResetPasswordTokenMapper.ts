@@ -1,5 +1,5 @@
 import { ResetPasswordToken } from "../../../../domain/features/auth/entities/ResetPasswordToken";
-import { IResetPasswordTokenPersistence } from "../database/ResetPasswordTokenModel";
+import { IResetPasswordTokenPersistence } from "../models/ResetPasswordTokenModel";
 import { IMapper } from "../../../core/common/mappers/IMapper";
 import { OmittedDatabaseFields } from "../../../../shared/constants/database-field.const";
 

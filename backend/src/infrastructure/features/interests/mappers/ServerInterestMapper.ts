@@ -1,5 +1,5 @@
 import { ServerInterest } from "../../../../domain/features/interests/entities/ServerInterest";
-import { IServerInterestPersistence } from "../database/ServerInterestModel";
+import { IServerInterestPersistence } from "../models/ServerInterestModel";
 import { IMapper } from "../../../core/common/mappers/IMapper";
 import { OmittedDatabaseFields } from "../../../../shared/constants/database-field.const";
 

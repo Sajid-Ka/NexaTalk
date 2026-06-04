@@ -64,7 +64,8 @@ export default function ServerSidebar() {
             <div className="w-8 h-[2px] bg-white/10 rounded-full mb-6" />
 
             {/* Server List */}
-            <div className="flex-1 w-full flex flex-col items-center gap-4 py-2 overflow-y-auto overflow-x-hidden no-scrollbar min-h-0">
+                        {/* Server List */}
+            <div className="flex-1 w-full flex flex-col items-center gap-4 py-2 overflow-y-auto overflow-x-hidden [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden min-h-0">
                 {userServers.map((server) => (
                     <ServerIcon
                         key={server.id}
@@ -74,59 +75,47 @@ export default function ServerSidebar() {
                         onClick={() => handleServerClick(server)}
                     />
                 ))}
-
                 {loading && userServers.length === 0 && (
                     <div className="h-12 w-12 rounded-full border-2 border-dashed border-white/10 animate-spin" />
                 )}
-
-                <div
+            </div>
+            {/* Bottom Sticky Buttons */}
+            <div className="flex flex-col items-center gap-4 pt-2 w-full shrink-0">
+                {/* Create Server Button */}
+                <button
+                    onClick={() => setIsCreateModalOpen(true)}
                     className={cn(
-                        "flex flex-col items-center gap-4 py-4 w-full",
-                        userServers.length > 6 && "mt-auto"
+                        "relative h-12 w-12 flex items-center justify-center rounded-full transition-all duration-300 group",
+                        isCreateActive
+                            ? "bg-[#0B1020] text-white ring-2 ring-violet-500 ring-offset-2 ring-offset-[#090B11] shadow-[0_0_20px_rgba(139,92,246,0.6)]"
+                            : "bg-white/5 text-emerald-500 hover:bg-emerald-500 hover:text-white hover:ring-2 hover:ring-violet-500/50 hover:ring-offset-2 hover:ring-offset-[#090B11]"
                     )}
                 >
-
-                    {/* Create Server Button */}
-                    <button
-                        onClick={() => setIsCreateModalOpen(true)}
-                        className={cn(
-                            "relative h-12 w-12 flex items-center justify-center rounded-full transition-all duration-300 group",
-                            isCreateActive
-                                ? "bg-[#0B1020] text-white ring-2 ring-violet-500 ring-offset-2 ring-offset-[#090B11] shadow-[0_0_20px_rgba(139,92,246,0.6)]"
-                                : "bg-white/5 text-emerald-500 hover:bg-emerald-500 hover:text-white hover:ring-2 hover:ring-violet-500/50 hover:ring-offset-2 hover:ring-offset-[#090B11]"
-                        )}
-                    >
-                        <Plus size={24} />
-                    </button>
-
-                    {/* Join Server Button */}
-                    <button
-                        onClick={() => setIsJoinModalOpen(true)}
-                        className={cn(
-                            "relative h-12 w-12 flex items-center justify-center rounded-full transition-all duration-300 group",
-                            isJoinActive
-                                ? "bg-[#0B1020] text-white ring-2 ring-violet-500 ring-offset-2 ring-offset-[#090B11] shadow-[0_0_20px_rgba(139,92,246,0.6)]"
-                                : "bg-white/5 text-emerald-500 hover:bg-emerald-500 hover:text-white hover:ring-2 hover:ring-violet-500/50 hover:ring-offset-2 hover:ring-offset-[#090B11]"
-                        )}
-                    >
-                        <Compass size={24} />
-                    </button>
-
-                    {/* AI Chat Button */}
-                    <button className="h-12 w-12 flex items-center justify-center rounded-full bg-white/5 hover:bg-violet-600 transition-all duration-300 group relative ring-offset-[#090B11] hover:ring-2 hover:ring-violet-500/50 hover:ring-offset-2">
-                        <img
-                            src="/Chat bubble character with neon headphones.png"
-                            alt="AI"
-                            className="w-15 h-15 object-contain scale-[1.7] translate-y-[2px]"
-                        />
-
-                        <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-[#090B11] border border-white/10 text-white text-xs px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-xl z-50">
-                            AI Chat
-                        </div>
-                    </button>
-
-                </div>
-
+                    <Plus size={24} />
+                </button>
+                {/* Join Server Button */}
+                <button
+                    onClick={() => setIsJoinModalOpen(true)}
+                    className={cn(
+                        "relative h-12 w-12 flex items-center justify-center rounded-full transition-all duration-300 group",
+                        isJoinActive
+                            ? "bg-[#0B1020] text-white ring-2 ring-violet-500 ring-offset-2 ring-offset-[#090B11] shadow-[0_0_20px_rgba(139,92,246,0.6)]"
+                            : "bg-white/5 text-emerald-500 hover:bg-emerald-500 hover:text-white hover:ring-2 hover:ring-violet-500/50 hover:ring-offset-2 hover:ring-offset-[#090B11]"
+                    )}
+                >
+                    <Compass size={24} />
+                </button>
+                {/* AI Chat Button */}
+                <button className="h-12 w-12 flex items-center justify-center rounded-full bg-white/5 hover:bg-violet-600 transition-all duration-300 group relative ring-offset-[#090B11] hover:ring-2 hover:ring-violet-500/50 hover:ring-offset-2">
+                    <img
+                        src="/Chat bubble character with neon headphones.png"
+                        alt="AI"
+                        className="w-15 h-15 object-contain scale-[1.7] translate-y-[2px]"
+                    />
+                    <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-[#090B11] border border-white/10 text-white text-xs px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-xl z-50">
+                        AI Chat
+                    </div>
+                </button>
             </div>
 
 

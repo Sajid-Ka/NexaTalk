@@ -8,7 +8,10 @@ import {
   Users,
   Volume2,
   Wifi,
+  UserPlus
 } from "lucide-react";
+import InviteFriendsModal from "../InviteFriendsModal";
+import NotificationDropdown from "../../../../notifications/components/NotificationDropdown";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../../auth/context/useAuth";
@@ -338,6 +341,7 @@ function ServerHomePane({
   onCreateClick,
   onSettingsClick,
 }: ServerHomePaneProps) {
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const textChannels = channels.filter((channel) => channel.type === ChannelType.TEXT);
   const voiceChannels = channels.filter((channel) => channel.type === ChannelType.VOICE);
   const members = server.members ?? [];
@@ -365,8 +369,23 @@ function ServerHomePane({
         </div>
 
         <div className="relative z-10">
-          <div className="mb-5 flex justify-end gap-3">
+                    <div className="mb-5 flex justify-end gap-3">
+            
+            {/* Invite Friends Button (Only for Admins/Owners) */}
+            {canManageChannels && (
+              <button
+                onClick={() => setIsInviteModalOpen(true)}
+                className="inline-flex h-9 items-center gap-2 rounded-lg border border-white/15 px-4 text-sm font-semibold text-white/85 hover:bg-white/10"
+              >
+                <UserPlus size={15} />
+                Invite Friends
+              </button>
+            )}
 
+            {/* Notification Dropdown */}
+            <NotificationDropdown />
+
+            {/* Settings Button */}
             {canManageChannels && (
               <button
                 onClick={onSettingsClick}
@@ -377,6 +396,7 @@ function ServerHomePane({
               </button>
             )}
           </div>
+
 
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
             <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-[24px] border border-white/10 bg-[#111827] text-4xl font-black text-cyan-300 shadow-2xl shadow-black/40 ring-1 ring-violet-400/20 xl:h-28 xl:w-28 xl:rounded-[28px]">
@@ -466,9 +486,18 @@ function ServerHomePane({
       <div className="absolute bottom-0 left-0 z-20 w-full border-t border-white/10 bg-[#050812]/95 shadow-2xl shadow-black/50 backdrop-blur sm:left-0 sm:w-[320px] sm:rounded-tr-2xl sm:border-r">
         <UserStatusFooter />
       </div>
+      
+      {isInviteModalOpen && (
+        <InviteFriendsModal
+          isOpen={isInviteModalOpen}
+          onClose={() => setIsInviteModalOpen(false)}
+          serverId={server.id}
+        />
+      )}
     </div>
   );
 }
+
 
 interface ChannelCardSectionProps {
   title: string;

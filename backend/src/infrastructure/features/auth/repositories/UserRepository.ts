@@ -1,6 +1,6 @@
 import { IUserRepository } from "../../../../domain/features/auth/repositories/IUserRepository";
 import { User } from "../../../../domain/features/auth/entities/User";
-import { UserModel, IUserPersistence } from "../database/UserModel";
+import { UserModel, IUserPersistence } from "../models/UserModel";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
 import { UserPersistenceMapper } from "../mappers/UserPersistenceMapper";
 import { injectable } from "inversify";

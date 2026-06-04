@@ -4,7 +4,7 @@ import { User } from "../../../../domain/features/auth/entities/User";
 import { IAdminUserRepository } from "../../../../domain/features/admin/repositories/IAdminUserRepository";
 import { AdminUserQuery } from "../../../../domain/features/admin/types/AdminUserQuery";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
-import { UserModel, IUserPersistence } from "../../auth/database/UserModel";
+import { UserModel, IUserPersistence } from "../../auth/models/UserModel";
 import { UserPersistenceMapper } from "../../auth/mappers/UserPersistenceMapper";
 import { MongoQueryBuilder } from "../../../core/common/database/MongoQueryBuilder";
 

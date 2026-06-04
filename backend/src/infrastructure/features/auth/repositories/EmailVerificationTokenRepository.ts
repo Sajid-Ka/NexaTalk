@@ -3,7 +3,7 @@ import { EmailVerificationToken } from "../../../../domain/features/auth/entitie
 import {
   EmailVerificationTokenModel,
   IEmailVerificationTokenPersistence,
-} from "../database/EmailVerificationTokenModel";
+} from "../models/EmailVerificationTokenModel";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
 import { injectable } from "inversify";
 import { TransactionContext } from "../../../../domain/core/common/services/TransactionContext";

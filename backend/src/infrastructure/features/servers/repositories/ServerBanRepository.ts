@@ -2,7 +2,7 @@ import { injectable } from "inversify";
 import { ServerBan } from "../../../../domain/features/servers/entities/ServerBan";
 import { IServerBanRepository } from "../../../../domain/features/servers/repositories/IServerBanRepository";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
-import { ServerBanModel, IServerBanPersistence } from "../database/ServerBanModel";
+import { ServerBanModel, IServerBanPersistence } from "../models/ServerBanModel";
 import { ServerBanPersistenceMapper } from "../mappers/ServerBanMapper";
 
 @injectable()

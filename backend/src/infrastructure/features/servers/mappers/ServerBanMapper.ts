@@ -1,5 +1,5 @@
 import { ServerBan } from "../../../../domain/features/servers/entities/ServerBan";
-import { IServerBanPersistence } from "../database/ServerBanModel";
+import { IServerBanPersistence } from "../models/ServerBanModel";
 import { IMapper } from "../../../core/common/mappers/IMapper";
 import { OmittedDatabaseFields } from "../../../../shared/constants/database-field.const";
 

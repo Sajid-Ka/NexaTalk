@@ -1,5 +1,5 @@
 import { Channel } from "../../../../domain/features/channels/entities/Channel";
-import { IChannelPersistence } from "../database/ChannelModel";
+import { IChannelPersistence } from "../models/ChannelModel";
 import { IMapper } from "../../../core/common/mappers/IMapper";
 import { OmittedDatabaseFields } from "../../../../shared/constants/database-field.const";
 

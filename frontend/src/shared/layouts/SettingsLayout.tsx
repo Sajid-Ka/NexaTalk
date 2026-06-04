@@ -26,7 +26,7 @@ export default function SettingsLayout({
           footer={sidebarFooter}
         />
 
-        <main className="h-screen flex-1 overflow-y-auto">
+        <main className="h-screen flex-1 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <Outlet />
         </main>
       </div>

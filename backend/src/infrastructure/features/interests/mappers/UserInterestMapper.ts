@@ -1,5 +1,5 @@
 import { UserInterest } from "../../../../domain/features/interests/entities/UserInterest";
-import { IUserInterestPersistence } from "../database/UserInterestModel";
+import { IUserInterestPersistence } from "../models/UserInterestModel";
 import { IMapper } from "../../../core/common/mappers/IMapper";
 import { OmittedDatabaseFields } from "../../../../shared/constants/database-field.const";
 

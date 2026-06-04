@@ -68,9 +68,9 @@ function formatRelativeTime(dateString: string): string {
   return `${diffInYears} year${diffInYears > 1 ? 's' : ''} ago`;
 }
 
-export default function ProfilePopup({ 
-  userId, 
-  onClose, 
+export default function ProfilePopup({
+  userId,
+  onClose,
   position,
   hideMessageButton,
   onAddFriend,
@@ -192,9 +192,9 @@ export default function ProfilePopup({
               Message
             </Button>
           )}
-          <Button 
-            size="sm" 
-            variant="outline" 
+          <Button
+            size="sm"
+            variant="outline"
             className="flex-1"
             onClick={onAddFriend ? () => onAddFriend(profile.id) : undefined}
             isLoading={isSendingFriendRequest}

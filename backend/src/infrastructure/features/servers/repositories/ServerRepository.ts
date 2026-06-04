@@ -4,10 +4,10 @@ import { IServerRepository } from "../../../../domain/features/servers/repositor
 import { TransactionContext } from "../../../../domain/core/common/services/TransactionContext";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
 import { toMongoSession } from "../../../core/common/database/toMongoSession";
-import { ServerModel, IServerPersistence } from "../database/ServerModel";
+import { ServerModel, IServerPersistence } from "../models/ServerModel";
 import { ServerPersistenceMapper } from "../mappers/ServerMapper";
 import { ServerPrivacy } from "../../../../shared/constants/server.const";
-import { ServerMemberModel } from "../database/ServerMemberModel";
+import { ServerMemberModel } from "../models/ServerMemberModel";
 
 @injectable()
 export class ServerRepository

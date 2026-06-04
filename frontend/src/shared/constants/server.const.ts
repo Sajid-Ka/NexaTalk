@@ -29,3 +29,13 @@ export const ServerValidation = {
   MAX_TAGS: 3,
   MAX_TAG_LENGTH: 30,
 } as const;
+
+
+export const DirectInviteStatus = {
+  PENDING: "pending",
+  ACCEPTED: "accepted",
+  REJECTED: "rejected",
+} as const;
+
+export type DirectInviteStatus =
+  (typeof DirectInviteStatus)[keyof typeof DirectInviteStatus];

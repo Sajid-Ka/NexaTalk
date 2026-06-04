@@ -43,7 +43,7 @@ export default function SettingsSidebar({
         </Button>
       </div>
 
-      <nav className="flex-1 space-y-1 overflow-y-auto p-3">
+      <nav className="flex-1 space-y-1 overflow-y-auto p-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         {items.map((item) => (
           <SettingsNavItem
             key={item.to}

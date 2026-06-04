@@ -1,5 +1,5 @@
 import { ServerAuditLog } from "../../../../domain/features/servers/entities/ServerAuditLog";
-import { IServerAuditLogPersistence } from "../database/ServerAuditLogModel";
+import { IServerAuditLogPersistence } from "../models/ServerAuditLogModel";
 import { IMapper } from "../../../core/common/mappers/IMapper";
 import { OmittedDatabaseFields } from "../../../../shared/constants/database-field.const";
 

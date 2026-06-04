@@ -1,5 +1,5 @@
 import { Recommendation } from "../../../../domain/features/recommendations/entities/Recommendation";
-import { IRecommendationPersistence } from "../database/RecommendationModel";
+import { IRecommendationPersistence } from "../models/RecommendationModel";
 import { IMapper } from "../../../core/common/mappers/IMapper";
 import { OmittedDatabaseFields } from "../../../../shared/constants/database-field.const";
 

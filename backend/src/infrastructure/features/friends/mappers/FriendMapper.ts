@@ -1,5 +1,5 @@
 import { Friend } from "../../../../domain/features/friends/entities/Friend";
-import { IFriendPersistence } from "../database/FriendModel";
+import { IFriendPersistence } from "../models/FriendModel";
 import { IMapper } from "../../../core/common/mappers/IMapper";
 import { OmittedDatabaseFields } from "../../../../shared/constants/database-field.const";
 

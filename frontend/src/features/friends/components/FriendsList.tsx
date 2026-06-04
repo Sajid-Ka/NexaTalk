@@ -13,6 +13,7 @@ import AddFriendModal from "./AddFriendModal";
 import toast from "react-hot-toast";
 import { getPendingRequestsApi } from "../../friends/api/friendApi";
 import { FriendTab } from "../../../shared/constants/friend.const";
+import NotificationDropdown from "../../notifications/components/NotificationDropdown";
 import { AxiosError } from "axios";
 
 // Define error response type
@@ -215,14 +216,18 @@ export default function FriendsList() {
           </nav>
         </div>
 
-        <Button
-          size="sm"
-          onClick={() => setShowAddModal(true)}
-          className="bg-indigo-600 rounded-lg text-xs h-8 px-4 border-none font-bold flex items-center gap-1"
-        >
-          <UserPlus size={14} />
-          Add Friend
-        </Button>
+        <div className="flex items-center gap-3">
+          <NotificationDropdown />
+          <Button
+            size="sm"
+            onClick={() => setShowAddModal(true)}
+            className="bg-indigo-600 rounded-lg text-xs h-8 px-4 border-none font-bold flex items-center gap-1"
+          >
+            <UserPlus size={14} />
+            Add Friend
+          </Button>
+        </div>
+
       </header>
 
       {/* Search Bar */}

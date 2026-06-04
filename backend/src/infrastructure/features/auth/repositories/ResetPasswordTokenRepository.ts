@@ -3,7 +3,7 @@ import { ResetPasswordToken } from "../../../../domain/features/auth/entities/Re
 import {
   ResetPasswordTokenModel,
   IResetPasswordTokenPersistence,
-} from "../database/ResetPasswordTokenModel";
+} from "../models/ResetPasswordTokenModel";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
 import { injectable } from "inversify";
 import { TransactionContext } from "../../../../domain/core/common/services/TransactionContext";

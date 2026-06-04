@@ -7,6 +7,8 @@ import { ServerMemberRepository } from "../../../../infrastructure/features/serv
 import { ServerInviteRepository } from "../../../../infrastructure/features/servers/repositories/ServerInviteRepository";
 import { ServerBanRepository } from "../../../../infrastructure/features/servers/repositories/ServerBanRepository";
 import { ServerAuditLogRepository } from "../../../../infrastructure/features/servers/repositories/ServerAuditLogRepository";
+import { IServerDirectInviteRepository } from "../../../../domain/features/servers/repositories/IServerDirectInviteRepository";
+import { ServerDirectInviteRepository } from "../../../../infrastructure/features/servers/repositories/ServerDirectInviteRepository";
 
 // Use Cases
 import { CreateServer } from "../../../../application/servers/core/usecases/CreateServer";
@@ -39,6 +41,14 @@ import { SearchServerBanCandidates } from "../../../../application/servers/bans/
 import { ISearchServerBanCandidatesUsecase } from "../../../../application/servers/bans/interfaces/ISearchServerBanCandidatesUsecase";
 import { GetServerAuditLogs } from "../../../../application/servers/auditLogs/usecases/GetServerAuditLogs";
 import { IGetServerAuditLogsUsecase } from "../../../../application/servers/auditLogs/interfaces/IGetServerAuditLogsUsecase";
+import { ISendDirectServerInviteUsecase } from "../../../../application/servers/invites/interfaces/ISendDirectServerInviteUsecase";
+import { SendDirectServerInviteUsecase } from "../../../../application/servers/invites/usecases/SendDirectServerInviteUsecase";
+import { IGetPendingDirectInvitesUsecase } from "../../../../application/servers/invites/interfaces/IGetPendingDirectInvitesUsecase";
+import { GetPendingDirectInvitesUsecase } from "../../../../application/servers/invites/usecases/GetPendingDirectInvitesUsecase";
+import { IRespondToDirectInviteUsecase } from "../../../../application/servers/invites/interfaces/IRespondToDirectInviteUsecase";
+import { RespondToDirectInviteUsecase } from "../../../../application/servers/invites/usecases/RespondToDirectInviteUsecase";
+import { IGetSentDirectInvitesUsecase } from "../../../../application/servers/invites/interfaces/IGetSentDirectInvitesUsecase";
+import { GetSentDirectInvitesUsecase } from "../../../../application/servers/invites/usecases/GetSentDirectInvitesUsecase";
 
 // Controllers
 import { ServerCoreController } from "../../../../presentation/servers/controllers/ServerCoreController";
@@ -46,6 +56,7 @@ import { ServerMemberController } from "../../../../presentation/servers/control
 import { ServerInviteController } from "../../../../presentation/servers/controllers/ServerInviteController";
 import { ServerBanController } from "../../../../presentation/servers/controllers/ServerBanController";
 import { ServerAuditLogController } from "../../../../presentation/servers/controllers/ServerAuditLogController";
+import { ServerDirectInviteController } from "../../../../presentation/servers/controllers/ServerDirectInviteController";
 
 export function loadServersModule(container: Container) {
   // Repositories
@@ -63,6 +74,9 @@ export function loadServersModule(container: Container) {
     .bind(SERVERS_TYPES.ServerAuditLogRepository)
     .to(ServerAuditLogRepository)
     .inSingletonScope();
+  container
+    .bind<IServerDirectInviteRepository>(SERVERS_TYPES.ServerDirectInviteRepository)
+    .to(ServerDirectInviteRepository);
 
   // Use Cases
   //servers
@@ -85,6 +99,18 @@ export function loadServersModule(container: Container) {
   container
     .bind<IRevokeServerInviteUsecase>(SERVERS_TYPES.RevokeServerInvite)
     .to(RevokeServerInvite);
+  container
+    .bind<ISendDirectServerInviteUsecase>(SERVERS_TYPES.SendDirectServerInvite)
+    .to(SendDirectServerInviteUsecase);
+  container
+    .bind<IGetPendingDirectInvitesUsecase>(SERVERS_TYPES.GetPendingDirectInvites)
+    .to(GetPendingDirectInvitesUsecase);
+  container
+    .bind<IRespondToDirectInviteUsecase>(SERVERS_TYPES.RespondToDirectInvite)
+    .to(RespondToDirectInviteUsecase);
+  container
+    .bind<IGetSentDirectInvitesUsecase>(SERVERS_TYPES.GetSentDirectInvites)
+    .to(GetSentDirectInvitesUsecase);
   //bans
   container.bind<IGetServerBansUsecase>(SERVERS_TYPES.GetServerBans).to(GetServerBans);
   container.bind<IBanServerMemberUsecase>(SERVERS_TYPES.BanServerMember).to(BanServerMember);
@@ -109,4 +135,7 @@ export function loadServersModule(container: Container) {
   container
     .bind<ServerAuditLogController>(SERVERS_TYPES.ServerAuditLogController)
     .to(ServerAuditLogController);
+  container
+    .bind<ServerDirectInviteController>(SERVERS_TYPES.ServerDirectInviteController)
+    .to(ServerDirectInviteController);
 }

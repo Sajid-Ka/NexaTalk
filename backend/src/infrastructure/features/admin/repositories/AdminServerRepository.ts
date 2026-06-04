@@ -3,7 +3,7 @@ import { Types } from "mongoose";
 import { IAdminServerRepository } from "../../../../domain/features/admin/repositories/IAdminServerRepository";
 import { AdminServerQuery } from "../../../../domain/features/admin/types/AdminServerQuery";
 import { Server } from "../../../../domain/features/servers/entities/Server";
-import { ServerModel, IServerPersistence } from "../../servers/database/ServerModel";
+import { ServerModel, IServerPersistence } from "../../servers/models/ServerModel";
 import { ServerPersistenceMapper } from "../../servers/mappers/ServerMapper";
 
 @injectable()

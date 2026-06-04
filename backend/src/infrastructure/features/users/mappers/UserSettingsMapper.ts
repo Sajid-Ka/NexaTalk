@@ -1,5 +1,5 @@
 import { UserSettings } from "../../../../domain/features/users/entities/UserSettings";
-import { IUserSettingsPersistence } from "../database/UserSettingsModel";
+import { IUserSettingsPersistence } from "../models/UserSettingsModel";
 import { IMapper } from "../../../core/common/mappers/IMapper";
 import { OmittedDatabaseFields } from "../../../../shared/constants/database-field.const";
 

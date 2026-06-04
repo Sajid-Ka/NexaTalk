@@ -4,7 +4,7 @@ import { IServerInviteRepository } from "../../../../domain/features/servers/rep
 import { TransactionContext } from "../../../../domain/core/common/services/TransactionContext";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
 import { toMongoSession } from "../../../core/common/database/toMongoSession";
-import { ServerInviteModel, IServerInvitePersistence } from "../database/ServerInviteModel";
+import { ServerInviteModel, IServerInvitePersistence } from "../models/ServerInviteModel";
 import { ServerInvitePersistenceMapper } from "../mappers/ServerInviteMapper";
 
 @injectable()

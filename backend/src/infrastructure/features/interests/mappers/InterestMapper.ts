@@ -1,5 +1,5 @@
 import { Interest } from "../../../../domain/features/interests/entities/Interest";
-import { IInterestPersistence } from "../database/InterestModel";
+import { IInterestPersistence } from "../models/InterestModel";
 import { IMapper } from "../../../core/common/mappers/IMapper";
 import { OmittedDatabaseFields } from "../../../../shared/constants/database-field.const";
 import { InterestCategory } from "../../../../shared/constants/interests.const";

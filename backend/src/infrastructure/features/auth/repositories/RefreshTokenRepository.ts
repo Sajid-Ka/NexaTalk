@@ -5,7 +5,7 @@ import {
   RefreshTokenData,
 } from "../../../../domain/features/auth/repositories/IRefreshTokenRepository";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
-import { IRefreshTokenPersistence, RefreshTokenModel } from "../database/RefreshTokenModel";
+import { IRefreshTokenPersistence, RefreshTokenModel } from "../models/RefreshTokenModel";
 import { RefreshTokenMapper } from "../mappers/RefreshTokenMapper";
 import { injectable } from "inversify";
 

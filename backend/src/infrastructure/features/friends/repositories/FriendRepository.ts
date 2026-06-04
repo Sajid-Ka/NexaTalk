@@ -2,7 +2,7 @@ import { injectable } from "inversify";
 import { Friend } from "../../../../domain/features/friends/entities/Friend";
 import { IFriendRepository } from "../../../../domain/features/friends/repositories/IFriendRepository";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
-import { FriendModel, IFriendPersistence } from "../database/FriendModel";
+import { FriendModel, IFriendPersistence } from "../models/FriendModel";
 import { FriendPersistenceMapper } from "../mappers/FriendMapper";
 import { FriendsStatus } from "../../../../shared/constants/friends-status.const";
 

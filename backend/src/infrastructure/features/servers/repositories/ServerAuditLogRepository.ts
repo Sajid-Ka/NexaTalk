@@ -2,7 +2,7 @@ import { injectable } from "inversify";
 import { ServerAuditLog } from "../../../../domain/features/servers/entities/ServerAuditLog";
 import { IServerAuditLogRepository } from "../../../../domain/features/servers/repositories/IServerAuditLogRepository";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
-import { ServerAuditLogModel, IServerAuditLogPersistence } from "../database/ServerAuditLogModel";
+import { ServerAuditLogModel, IServerAuditLogPersistence } from "../models/ServerAuditLogModel";
 import { ServerAuditLogPersistenceMapper } from "../mappers/ServerAuditLogMapper";
 
 @injectable()

@@ -1,5 +1,5 @@
 import { ServerInvite } from "../../../../domain/features/servers/entities/ServerInvite";
-import { IServerInvitePersistence } from "../database/ServerInviteModel";
+import { IServerInvitePersistence } from "../models/ServerInviteModel";
 import { IMapper } from "../../../core/common/mappers/IMapper";
 import { OmittedDatabaseFields } from "../../../../shared/constants/database-field.const";
 

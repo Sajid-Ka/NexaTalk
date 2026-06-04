@@ -3,8 +3,8 @@ import { UserInterest } from "../../../../domain/features/interests/entities/Use
 import { Interest } from "../../../../domain/features/interests/entities/Interest";
 import { IUserInterestRepository } from "../../../../domain/features/interests/repositories/IUserInterestRepository";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
-import { UserInterestModel, IUserInterestPersistence } from "../database/UserInterestModel";
-import { InterestModel } from "../database/InterestModel";
+import { UserInterestModel, IUserInterestPersistence } from "../models/UserInterestModel";
+import { InterestModel } from "../models/InterestModel";
 import { UserInterestMapper } from "../mappers/UserInterestMapper";
 import { InterestMapper } from "../mappers/InterestMapper";
 import { MaxInterestsReachedError } from "../../../../domain/features/interests/errors/MaxInterestsReachedError";

@@ -1,5 +1,5 @@
 import { Server } from "../../../../domain/features/servers/entities/Server";
-import { IServerPersistence } from "../database/ServerModel";
+import { IServerPersistence } from "../models/ServerModel";
 import { IMapper } from "../../../core/common/mappers/IMapper";
 import { OmittedDatabaseFields } from "../../../../shared/constants/database-field.const";
 

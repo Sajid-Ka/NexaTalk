@@ -2,7 +2,7 @@ import { injectable } from "inversify";
 import { Interest } from "../../../../domain/features/interests/entities/Interest";
 import { IInterestRepository } from "../../../../domain/features/interests/repositories/IInterestRepository";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
-import { InterestModel, IInterestPersistence } from "../database/InterestModel";
+import { InterestModel, IInterestPersistence } from "../models/InterestModel";
 import { InterestMapper } from "../mappers/InterestMapper";
 import { InterestCategory } from "../../../../shared/constants/interests.const";
 import { INTEREST_KEYWORDS } from "../../../../shared/constants/interest-keywords.const";

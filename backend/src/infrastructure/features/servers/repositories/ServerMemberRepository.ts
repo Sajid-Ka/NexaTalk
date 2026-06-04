@@ -2,7 +2,7 @@ import { injectable } from "inversify";
 import { ServerMember } from "../../../../domain/features/servers/entities/ServerMember";
 import { IServerMemberRepository } from "../../../../domain/features/servers/repositories/IServerMemberRepository";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
-import { ServerMemberModel, IServerMemberPersistence } from "../database/ServerMemberModel";
+import { ServerMemberModel, IServerMemberPersistence } from "../models/ServerMemberModel";
 import { ServerMemberPersistenceMapper } from "../mappers/ServerMemberMapper";
 import { ServerMemberRole } from "../../../../shared/constants/server.const";
 
