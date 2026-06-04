@@ -150,6 +150,8 @@ export default function AppRouter() {
                 }
             >
                 <Route path=":serverId" element={<ServerDashboard />} />
+        
+                <Route path=":serverId/channels/:channelId" element={<ServerDashboard />} />
 
                 <Route
                     path=":serverId/settings"

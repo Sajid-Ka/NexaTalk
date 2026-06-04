@@ -44,12 +44,16 @@ export default function ConfirmModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      onClick={onClose}
+    >
       <div 
         className={cn(
           "w-full max-w-md rounded-2xl bg-[#0F121D] border shadow-2xl animate-in fade-in zoom-in duration-200",
           variants[variant].border
         )}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/5">

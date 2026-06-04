@@ -13,6 +13,7 @@ import { AppRoute } from "../../../../shared/constants/app-route.const";
 import { useAppDispatch, useAppSelector } from "../../../../app/store";
 import { removeServerFromState } from "../../core/store/serverSlice";
 import { deleteServerApi } from "../api/serverSettingsApi";
+import { useAuth } from "../../../auth/context/useAuth";
 
 const getErrorMessage = (error: unknown, fallback: string) => {
   if (axios.isAxiosError(error)) {
@@ -28,6 +29,10 @@ export default function DangerZonePage() {
   const dispatch = useAppDispatch();
 
   const { currentServer, userServers } = useAppSelector((state) => state.servers);
+  const { user } = useAuth();
+
+  const serverOwnerId = currentServer?.ownerId ?? userServers.find((server) => server.id === serverId)
+  const isOwner = user?.id === serverOwnerId;
 
   const serverName = useMemo(() => {
     return (
@@ -98,6 +103,7 @@ export default function DangerZonePage() {
               type="button"
               variant="destructive"
               className="gap-2 whitespace-nowrap"
+              disabled={!isOwner}
               onClick={() => setDeleteModalOpen(true)}
             >
               <Trash2 size={16} className="shrink-0" />

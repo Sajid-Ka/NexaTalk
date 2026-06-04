@@ -29,7 +29,14 @@ export default function SettingsSidebar({
           type="button"
           size="sm"
           variant="ghost"
-          onClick={() => navigate(backTo)}
+          onClick={() => {
+            // Check if there is a previous page within the app's history
+            if(window.history.state && window.history.state.idx > 0) {
+              navigate(-1);
+            }else{
+              navigate(backTo)
+            }
+          }}
           className="text-slate-300 hover:bg-white/10"
         >
           <ArrowLeft size={18} />

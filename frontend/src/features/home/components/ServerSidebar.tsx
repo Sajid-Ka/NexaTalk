@@ -26,6 +26,10 @@ export default function ServerSidebar() {
     }, [dispatch]);
 
     const handleServerClick = (server: Server) => {
+        if(server.id === serverId){
+            //if user click same server icon in inside the server then nothing happen
+            return;
+        }
         dispatch(setCurrentServer(server));
         navigate(`/servers/${server.id}`);
     };

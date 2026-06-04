@@ -9,7 +9,7 @@ import {
   Volume2,
   Wifi,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../../auth/context/useAuth";
 import ChannelPage from "../../../../channels/pages/ChannelPage";
@@ -83,7 +83,8 @@ export default function ServerDashboardContent({ server }: Props) {
   const { user } = useAuth();
 
   const [channels, setChannels] = useState<Channel[]>([]);
-  const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
+  const { channelId } = useParams<{ channelId: string}>();
+  const selectedChannel = channels.find((c) => c.id === channelId) || null;
   const [loadingChannels, setLoadingChannels] = useState(true);
   const [creatingChannel, setCreatingChannel] = useState(false);
 
@@ -132,7 +133,6 @@ export default function ServerDashboardContent({ server }: Props) {
     const loadChannels = async () => {
       try {
         setLoadingChannels(true);
-        setSelectedChannel(null);
 
         const response = await getChannelsApi(server.id);
         const nextChannels = response.data.data as Channel[];
@@ -173,7 +173,7 @@ export default function ServerDashboardContent({ server }: Props) {
       const createdChannel = response.data.data as Channel;
 
       setChannels((current) => [...current, createdChannel]);
-      setSelectedChannel(createdChannel);
+      navigate(`/servers/${server.id}/channels/${createdChannel.id}`)
       setCreateModal((current) => ({ ...current, isOpen: false }));
 
       toast.success("Channel created");
@@ -204,10 +204,6 @@ export default function ServerDashboardContent({ server }: Props) {
         ),
       );
 
-      setSelectedChannel((current) =>
-        current?.id === updatedChannel.id ? updatedChannel : current,
-      );
-
       setRenameModal({ isOpen: false, channel: null });
       toast.success("Channel renamed");
     } catch (error) {
@@ -229,9 +225,9 @@ export default function ServerDashboardContent({ server }: Props) {
         current.filter((channel) => channel.id !== deleteModal.channel?.id),
       );
 
-      setSelectedChannel((current) =>
-        current?.id === deleteModal.channel?.id ? null : current,
-      );
+      if(deleteModal.channel?.id === channelId){
+        navigate(`/servers/${server.id}`);
+      }
 
       setDeleteModal({ isOpen: false, channel: null });
       toast.success("Channel deleted");
@@ -251,9 +247,9 @@ export default function ServerDashboardContent({ server }: Props) {
           channels={channels}
           selectedChannel={selectedChannel}
           canManageChannels={canManageChannels}
-          onSelectChannel={setSelectedChannel}
+          onSelectChannel={(channel) => navigate(`/servers/${server.id}/channels/${channel.id}`)}
           onCreateClick={openCreateModal}
-          onServerHomeClick={() => setSelectedChannel(null)}
+          onServerHomeClick={() => navigate(`/servers/${server.id}`)}
           onRenameClick={(channel) => setRenameModal({ isOpen: true, channel })}
           onDeleteClick={(channel) => setDeleteModal({ isOpen: true, channel })}
         />
@@ -300,7 +296,7 @@ export default function ServerDashboardContent({ server }: Props) {
           onlineCount={onlineMembers.length}
           loadingChannels={loadingChannels}
           canManageChannels={canManageChannels}
-          onSelectChannel={setSelectedChannel}
+          onSelectChannel={(channel) => navigate(`/servers/${server.id}/channels/${channel.id}`)}
           onCreateClick={openCreateModal}
           onSettingsClick={() => navigate(`/servers/${server.id}/settings`)}
         />
