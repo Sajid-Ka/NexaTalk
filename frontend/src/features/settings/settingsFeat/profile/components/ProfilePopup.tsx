@@ -28,7 +28,11 @@ interface ProfilePopupProps {
   userId: string;
   onClose: () => void;
   position?: { x: number; y: number };
+  hideMessageButton?: boolean;
+  onAddFriend?: (userId: string) => void;
+  isSendingFriendRequest?: boolean;
 }
+
 
 // Simple function to format relative time
 function formatRelativeTime(dateString: string): string {
@@ -64,7 +68,15 @@ function formatRelativeTime(dateString: string): string {
   return `${diffInYears} year${diffInYears > 1 ? 's' : ''} ago`;
 }
 
-export default function ProfilePopup({ userId, onClose, position }: ProfilePopupProps) {
+export default function ProfilePopup({ 
+  userId, 
+  onClose, 
+  position,
+  hideMessageButton,
+  onAddFriend,
+  isSendingFriendRequest
+}: ProfilePopupProps) {
+
   const [profile, setProfile] = useState<ProfileResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -174,11 +186,19 @@ export default function ProfilePopup({ userId, onClose, position }: ProfilePopup
 
         {/* Actions */}
         <div className="flex gap-2 mt-4">
-          <Button size="sm" className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-sm py-2">
-            <MessageSquare size={14} className="mr-1" />
-            Message
-          </Button>
-          <Button size="sm" variant="outline" className="flex-1">
+          {!hideMessageButton && (
+            <Button size="sm" className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-sm py-2">
+              <MessageSquare size={14} className="mr-1" />
+              Message
+            </Button>
+          )}
+          <Button 
+            size="sm" 
+            variant="outline" 
+            className="flex-1"
+            onClick={onAddFriend ? () => onAddFriend(profile.id) : undefined}
+            isLoading={isSendingFriendRequest}
+          >
             <UserPlus size={14} className="mr-1" />
             Add Friend
           </Button>

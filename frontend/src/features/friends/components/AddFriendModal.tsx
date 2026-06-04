@@ -8,6 +8,7 @@ import type { UserSearchResult } from "../../settings/settingsFeat/profile/api/p
 import { sendFriendRequestApi } from "../api/friendApi";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
+import ProfilePopup from "../../settings/settingsFeat/profile/components/ProfilePopup";
 
 interface AddFriendModalProps {
   isOpen: boolean;
@@ -28,6 +29,9 @@ export default function AddFriendModal({ isOpen, onClose, onSuccess }: AddFriend
   const [results, setResults] = useState<UserSearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState<string | null>(null);
+  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
+  const [profilePosition, setProfilePosition] = useState<{ x: number; y: number }>();
+
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -81,6 +85,7 @@ export default function AddFriendModal({ isOpen, onClose, onSuccess }: AddFriend
       setResults([]);
       setLoading(false);
       setSending(null);
+      setSelectedProfileId(null);
     }
   }, [isOpen]);
 
@@ -106,6 +111,14 @@ export default function AddFriendModal({ isOpen, onClose, onSuccess }: AddFriend
     }
   };
 
+  const handleAvatarClick = (e: React.MouseEvent, userId: string) => {
+    e.stopPropagation();
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    // Position the popup slightly to the right of the clicked avatar
+    setProfilePosition({ x: rect.right + 16, y: rect.top });
+    setSelectedProfileId(userId);
+  };
+
   const handleSendRequest = async (userId: string) => {
     setSending(userId);
     try {
@@ -125,8 +138,14 @@ export default function AddFriendModal({ isOpen, onClose, onSuccess }: AddFriend
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-2xl bg-[#0F121D] border border-white/10 shadow-2xl">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div 
+        className="w-full max-w-md rounded-2xl bg-[#0F121D] border border-white/10 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/5">
           <h3 className="text-lg font-bold text-white">Add Friend</h3>
@@ -160,7 +179,9 @@ export default function AddFriendModal({ isOpen, onClose, onSuccess }: AddFriend
               results.map((user) => (
                 <div key={user.id} className="flex items-center justify-between p-3 rounded-xl hover:bg-white/5 transition-colors">
                   <div className="flex items-center gap-3">
-                    <Avatar src={user.avatar} fallback={user.username} size="md" />
+                    <div className="cursor-pointer hover:opacity-80 transition-opacity" onClick={(e) => handleAvatarClick(e, user.id)}>
+                      <Avatar src={user.avatar} fallback={user.username} size="md" />
+                    </div>
                     <div>
                       <p className="font-medium text-white">{user.username}</p>
                       {user.isFriend && (
@@ -183,6 +204,18 @@ export default function AddFriendModal({ isOpen, onClose, onSuccess }: AddFriend
           </div>
         </div>
       </div>
+       {selectedProfileId && (
+        <div onClick={(e) => e.stopPropagation()}>
+          <ProfilePopup
+            userId={selectedProfileId}
+            onClose={() => setSelectedProfileId(null)}
+            position={profilePosition}
+            hideMessageButton={true}
+            onAddFriend={handleSendRequest}
+            isSendingFriendRequest={sending === selectedProfileId}
+          />
+        </div>
+      )}
     </div>
   );
 }
