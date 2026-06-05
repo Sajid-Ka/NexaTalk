@@ -13,6 +13,8 @@ export class ServerMapper {
       privacy: server.privacy,
       isDisabled: server.isDisabled,
       memberCount: server.memberCount,
+      channelCount: server.channelCount,
+      ownerName: server.ownerName,
       tags: server.tags,
       members,
       createdAt: server.createdAt,

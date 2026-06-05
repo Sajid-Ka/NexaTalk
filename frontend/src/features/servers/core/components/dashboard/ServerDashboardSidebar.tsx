@@ -82,6 +82,7 @@ export default function ServerDashboardSidebar({
   const onlineMembers = members.filter((member) => member.status !== "offline");
   const onlineCount = enrichedServer.onlineCount ?? onlineMembers.length;
   const channelCount = enrichedServer.channelCount ?? enrichedServer.channels?.length ?? 0;
+  const memberCount = Math.max(server.memberCount || 0, members.length);
 
   return (
     <aside className="lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)]">
@@ -101,7 +102,7 @@ export default function ServerDashboardSidebar({
 
             <div>
               <p className="text-2xl font-black text-white">
-                {formatCompact(server.memberCount)}
+                {formatCompact(memberCount)}
               </p>
               <p className="mt-1 text-xs text-slate-400">Members</p>
             </div>

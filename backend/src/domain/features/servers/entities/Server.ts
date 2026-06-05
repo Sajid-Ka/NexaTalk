@@ -14,6 +14,8 @@ export interface ServerProps {
   privacy: ServerPrivacy;
   isDisabled?: boolean;
   memberCount?: number;
+  channelCount?: number;
+  ownerName?: string;
   tags?: string[];
   createdAt?: Date;
   updatedAt?: Date;
@@ -30,6 +32,8 @@ export class Server {
   public readonly privacy: ServerPrivacy;
   public readonly isDisabled: boolean;
   public readonly memberCount: number;
+  public readonly channelCount?: number;
+  public readonly ownerName?: string;
   public readonly tags: string[];
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
@@ -61,6 +65,8 @@ export class Server {
     this.privacy = props.privacy;
     this.isDisabled = props.isDisabled ?? false;
     this.memberCount = props.memberCount ?? 1;
+    this.channelCount = props.channelCount;
+    this.ownerName = props.ownerName;
     this.tags = props.tags ?? [];
     this.createdAt = props.createdAt ?? new Date();
     this.updatedAt = props.updatedAt ?? new Date();

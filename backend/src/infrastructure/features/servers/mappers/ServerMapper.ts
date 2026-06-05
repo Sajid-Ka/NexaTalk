@@ -15,6 +15,8 @@ export class ServerPersistenceMapper implements IMapper<IServerPersistence, Serv
       privacy: doc.privacy,
       isDisabled: doc.isDisabled,
       memberCount: doc.memberCount,
+      channelCount: doc.channelCount,
+      ownerName: doc.ownerName,
       tags: doc.tags,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,

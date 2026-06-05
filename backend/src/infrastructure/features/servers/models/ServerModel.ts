@@ -11,6 +11,8 @@ export interface IServerPersistence {
   privacy: ServerPrivacy;
   isDisabled: boolean;
   memberCount: number;
+  channelCount?: number;
+  ownerName?: string;
   tags: string[];
   createdAt: Date;
   updatedAt: Date;

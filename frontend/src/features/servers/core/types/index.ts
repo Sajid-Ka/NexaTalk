@@ -22,6 +22,8 @@ export interface Server {
   privacy: ServerPrivacy;
   isDisabled: boolean;
   memberCount: number;
+  channelCount?: number;
+  ownerName?: string;
   tags: string[];
   members?: ServerMember[];
   createdAt: string;

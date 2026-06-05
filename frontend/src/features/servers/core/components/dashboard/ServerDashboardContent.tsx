@@ -346,7 +346,7 @@ function ServerHomePane({
   const voiceChannels = channels.filter((channel) => channel.type === ChannelType.VOICE);
   const members = server.members ?? [];
   const onlineMembers = members.filter((member) => member.status !== UserPresence.OFFLINE);
-  const memberCount = server.memberCount || members.length;
+  const memberCount = Math.max(server.memberCount || 0, members.length);
 
   return (
     <div className="relative flex h-full min-h-0 flex-col overflow-hidden bg-[#050812]">

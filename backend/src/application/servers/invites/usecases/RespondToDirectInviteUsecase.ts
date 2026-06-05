@@ -2,6 +2,7 @@ import { inject, injectable } from "inversify";
 import { SERVERS_TYPES } from "../../../../main/di/modules/servers/servers.types";
 import { IServerDirectInviteRepository } from "../../../../domain/features/servers/repositories/IServerDirectInviteRepository";
 import { IServerMemberRepository } from "../../../../domain/features/servers/repositories/IServerMemberRepository";
+import { IServerRepository } from "../../../../domain/features/servers/repositories/IServerRepository";
 import { IRespondToDirectInviteUsecase } from "../interfaces/IRespondToDirectInviteUsecase";
 import { ServerMember } from "../../../../domain/features/servers/entities/ServerMember";
 import { ServerMemberRole } from "../../../../shared/constants/server.const";
@@ -16,6 +17,8 @@ export class RespondToDirectInviteUsecase implements IRespondToDirectInviteUseca
     private readonly _directInviteRepo: IServerDirectInviteRepository,
     @inject(SERVERS_TYPES.ServerMemberRepository)
     private readonly _memberRepo: IServerMemberRepository,
+    @inject(SERVERS_TYPES.ServerRepository)
+    private readonly _serverRepo: IServerRepository,
   ) {}
 
   async execute(
@@ -52,6 +55,9 @@ export class RespondToDirectInviteUsecase implements IRespondToDirectInviteUseca
         });
 
         await this._memberRepo.create(newMember);
+
+        // INCREMENT MEMBER COUNT HERE
+        await this._serverRepo.incrementMemberCount(invite.serverId);
       }
     }
   }

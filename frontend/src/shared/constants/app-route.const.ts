@@ -19,6 +19,8 @@ export const AppRoute = {
   SERVERS: "/servers",
   SERVER_DASHBOARD: "/servers/:serverId",
 
+  DISCOVER: "/discover",
+
   NOT_FOUND: "*",
 } as const;
 

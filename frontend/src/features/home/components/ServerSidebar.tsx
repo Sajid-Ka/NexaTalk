@@ -6,8 +6,8 @@ import ServerIcon from "../../../shared/ui/ServerIcon";
 import { useAppDispatch, useAppSelector } from "../../../app/store";
 import { fetchUserServers, setCurrentServer } from "../../servers/core/store/serverSlice";
 import CreateServerModal from "../../servers/core/components/CreateServerModal";
-import JoinServerModal from "../../servers/core/components/JoinServerModal";
 import type { Server } from "../../servers/core/types";
+import { AppRoute } from "../../../shared/constants/app-route.const";
 
 
 
@@ -19,7 +19,6 @@ export default function ServerSidebar() {
     const { userServers, loading } = useAppSelector((state) => state.servers);
 
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-    const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
 
     useEffect(() => {
         dispatch(fetchUserServers());
@@ -36,7 +35,7 @@ export default function ServerSidebar() {
 
     const isHomeActive = !serverId && (location.pathname === "/" || location.pathname === "/home");
     const isCreateActive = isCreateModalOpen;
-    const isJoinActive = isJoinModalOpen;
+    const isJoinActive = location.pathname === AppRoute.DISCOVER;
 
 
 
@@ -95,7 +94,7 @@ export default function ServerSidebar() {
                 </button>
                 {/* Join Server Button */}
                 <button
-                    onClick={() => setIsJoinModalOpen(true)}
+                    onClick={() => navigate(AppRoute.DISCOVER)}
                     className={cn(
                         "relative h-12 w-12 flex items-center justify-center rounded-full transition-all duration-300 group",
                         isJoinActive
@@ -123,10 +122,6 @@ export default function ServerSidebar() {
             <CreateServerModal
                 isOpen={isCreateModalOpen}
                 onClose={() => setIsCreateModalOpen(false)}
-            />
-            <JoinServerModal
-                isOpen={isJoinModalOpen}
-                onClose={() => setIsJoinModalOpen(false)}
             />
         </aside>
     );

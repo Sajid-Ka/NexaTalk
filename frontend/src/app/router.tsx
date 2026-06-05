@@ -27,6 +27,7 @@ import InvitesSettingsPage from "../features/servers/settings/pages/InvitesSetti
 import AuditLogsPage from "../features/servers/settings/pages/AuditLogsSettingsPage";
 import BansSettingsPage from "../features/servers/settings/pages/BansSettingsPage";
 import DangerZonePage from "../features/servers/settings/pages/DangerZonePage";
+import JoinServerPage from "../features/servers/core/pages/JoinServerPage";
 
 export default function AppRouter() {
     return (
@@ -68,6 +69,14 @@ export default function AppRouter() {
                 element={
                     <ProtectedRoute>
                         <OnboardingPage />
+                    </ProtectedRoute>
+                }
+            />
+            <Route 
+                path={AppRoute.DISCOVER}
+                element={
+                    <ProtectedRoute>
+                        <JoinServerPage />
                     </ProtectedRoute>
                 }
             />

@@ -22,6 +22,9 @@ import SettingsPageHeader from "../../../../shared/ui/settings/SettingsPageHeade
 import SettingsPageContainer from "../../../../shared/ui/settings/SettingsPageContainer";
 import { cn } from "../../../../shared/utils/cn";
 
+// Auth context for checking ownership
+import { useAuth } from "../../../auth/context/useAuth";
+
 //image loader helper function
 const getImageUrl = (url?: string) => {
   if (!url) return "";
@@ -42,7 +45,7 @@ const getImageUrl = (url?: string) => {
 };
 
 export default function OverviewSettingsPage() {
-
+  const { user } = useAuth();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [privacy, setPrivacy] = useState<ServerPrivacy>(ServerPrivacy.PRIVATE);
@@ -58,6 +61,9 @@ export default function OverviewSettingsPage() {
   const iconInputRef = useRef<HTMLInputElement>(null);
   const bannerInputRef = useRef<HTMLInputElement>(null);
   const [uploadingType, setUploadingType] = useState<"icon" | "banner" | null>(null);
+
+  // Check if current user is the owner
+  const isOwner = currentServer?.ownerId === user?.id;
 
   useEffect(() => {
     if (!serverId) return;
@@ -148,7 +154,8 @@ export default function OverviewSettingsPage() {
     return (
       name.trim() !== (currentServer.name || "").trim() ||
       description.trim() !== (currentServer.description || "").trim() ||
-      privacy !== currentServer.privacy ||
+      // Only track privacy changes if the user is the owner
+      (isOwner && privacy !== currentServer.privacy) ||
       JSON.stringify(nextTags) !== JSON.stringify(currentTags)
     );
   };
@@ -171,12 +178,14 @@ export default function OverviewSettingsPage() {
     setSaving(true);
 
     try {
-      const response = await updateServerApi(serverId, {
+      const payload = {
         name: name.trim(),
         description: description.trim(),
-        privacy,
         tags: normalizeTags(tags),
-      });
+        ...(isOwner && { privacy }),
+      };
+      const response = await updateServerApi(serverId, payload);
+
 
       dispatch(setCurrentServer(response.data.data));
       dispatch(fetchUserServers());
@@ -368,69 +377,71 @@ export default function OverviewSettingsPage() {
         </div>
       </SettingsSection>
 
-      {/* PRIVACY */}
-      <SettingsSection
-        title="Server Privacy"
-        description="Control who can discover and join your server."
-      >
-        <SettingsGrid columns={2}>
-          {/* PUBLIC */}
-          <button
-            type="button"
-            onClick={() => setPrivacy(ServerPrivacy.PUBLIC)}
-            className={cn(
-              "rounded-2xl border p-5 text-left transition hover:border-indigo-400",
-              privacy === ServerPrivacy.PUBLIC
-                ? "border-indigo-500/30 bg-indigo-500/10"
-                : "border-white/10 bg-white/[0.03]"
-            )}
-          >
-            <div className="flex items-start gap-4">
-              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-indigo-500/20 text-indigo-200">
-                <Globe size={22} />
+      {/* PRIVACY - ONLY SHOWN TO OWNER */}
+      {isOwner && (
+        <SettingsSection
+          title="Server Privacy"
+          description="Control who can discover and join your server."
+        >
+          <SettingsGrid columns={2}>
+            {/* PUBLIC */}
+            <button
+              type="button"
+              onClick={() => setPrivacy(ServerPrivacy.PUBLIC)}
+              className={cn(
+                "rounded-2xl border p-5 text-left transition hover:border-indigo-400",
+                privacy === ServerPrivacy.PUBLIC
+                  ? "border-indigo-500/30 bg-indigo-500/10"
+                  : "border-white/10 bg-white/[0.03]"
+              )}
+            >
+              <div className="flex items-start gap-4">
+                <div className="grid h-12 w-12 place-items-center rounded-2xl bg-indigo-500/20 text-indigo-200">
+                  <Globe size={22} />
+                </div>
+
+                <div>
+                  <p className="font-bold text-white">
+                    Public Server
+                  </p>
+
+                  <p className="mt-1 text-sm leading-6 text-slate-400">
+                    Anyone can discover and join your community.
+                  </p>
+                </div>
               </div>
+            </button>
 
-              <div>
-                <p className="font-bold text-white">
-                  Public Server
-                </p>
+            {/* PRIVATE */}
+            <button
+              type="button"
+              onClick={() => setPrivacy(ServerPrivacy.PRIVATE)}
+              className={cn(
+                "rounded-2xl border p-5 text-left transition hover:border-white/20",
+                privacy === ServerPrivacy.PRIVATE
+                  ? "border-indigo-500/30 bg-indigo-500/10"
+                  : "border-white/10 bg-white/[0.03]"
+              )}
+            >
+              <div className="flex items-start gap-4">
+                <div className="grid h-12 w-12 place-items-center rounded-2xl bg-white/10 text-slate-200">
+                  <Lock size={22} />
+                </div>
 
-                <p className="mt-1 text-sm leading-6 text-slate-400">
-                  Anyone can discover and join your community.
-                </p>
+                <div>
+                  <p className="font-bold text-white">
+                    Private Server
+                  </p>
+
+                  <p className="mt-1 text-sm leading-6 text-slate-400">
+                    Only invited users can join this server.
+                  </p>
+                </div>
               </div>
-            </div>
-          </button>
-
-          {/* PRIVATE */}
-          <button
-            type="button"
-            onClick={() => setPrivacy(ServerPrivacy.PRIVATE)}
-            className={cn(
-              "rounded-2xl border p-5 text-left transition hover:border-white/20",
-              privacy === ServerPrivacy.PRIVATE
-                ? "border-indigo-500/30 bg-indigo-500/10"
-                : "border-white/10 bg-white/[0.03]"
-            )}
-          >
-            <div className="flex items-start gap-4">
-              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-white/10 text-slate-200">
-                <Lock size={22} />
-              </div>
-
-              <div>
-                <p className="font-bold text-white">
-                  Private Server
-                </p>
-
-                <p className="mt-1 text-sm leading-6 text-slate-400">
-                  Only invited users can join this server.
-                </p>
-              </div>
-            </div>
-          </button>
-        </SettingsGrid>
-      </SettingsSection>
+            </button>
+          </SettingsGrid>
+        </SettingsSection>
+      )}
 
       {/* TAGS */}
       <SettingsSection
