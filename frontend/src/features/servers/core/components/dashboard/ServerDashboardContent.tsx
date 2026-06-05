@@ -8,7 +8,8 @@ import {
   Users,
   Volume2,
   Wifi,
-  UserPlus
+  UserPlus,
+  Trash2,
 } from "lucide-react";
 import InviteFriendsModal from "../InviteFriendsModal";
 import NotificationDropdown from "../../../../notifications/components/NotificationDropdown";
@@ -302,6 +303,8 @@ export default function ServerDashboardContent({ server }: Props) {
           onSelectChannel={(channel) => navigate(`/servers/${server.id}/channels/${channel.id}`)}
           onCreateClick={openCreateModal}
           onSettingsClick={() => navigate(`/servers/${server.id}/settings`)}
+          onRenameClick={(channel) => setRenameModal({ isOpen: true, channel })}
+          onDeleteClick={(channel) => setDeleteModal({ isOpen: true, channel })}
         />
       </main>
 
@@ -316,6 +319,22 @@ export default function ServerDashboardContent({ server }: Props) {
           onCreate={handleCreateChannel}
         />
       )}
+
+      <ChannelRenameModal
+        isOpen={renameModal.isOpen}
+        channel={renameModal.channel}
+        loading={actionLoading}
+        onClose={() => setRenameModal({ isOpen: false, channel: null })}
+        onRename={handleRenameChannel}
+      />
+      <ConfirmModal
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, channel: null })}
+        onConfirm={handleDeleteChannel}
+        title={`Delete ${deleteModal.channel?.name}?`}
+        message="This channel will be permanently deleted."
+        confirmText="Delete Channel"
+      />
     </div>
   );
 }
@@ -329,6 +348,8 @@ interface ServerHomePaneProps {
   onSelectChannel: (channel: Channel) => void;
   onCreateClick: (type: ChannelTypeValue) => void;
   onSettingsClick: () => void;
+  onRenameClick: (channel: Channel) => void;
+  onDeleteClick: (channel: Channel) => void;
 }
 
 function ServerHomePane({
@@ -340,6 +361,8 @@ function ServerHomePane({
   onSelectChannel,
   onCreateClick,
   onSettingsClick,
+  onRenameClick,
+  onDeleteClick,
 }: ServerHomePaneProps) {
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const textChannels = channels.filter((channel) => channel.type === ChannelType.TEXT);
@@ -458,6 +481,8 @@ function ServerHomePane({
                 canManageChannels={canManageChannels}
                 onSelectChannel={onSelectChannel}
                 onCreateClick={onCreateClick}
+                onRenameClick={onRenameClick}
+                onDeleteClick={onDeleteClick} 
               />
 
               <ChannelCardSection
@@ -468,6 +493,8 @@ function ServerHomePane({
                 canManageChannels={canManageChannels}
                 onSelectChannel={onSelectChannel}
                 onCreateClick={onCreateClick}
+                onRenameClick={onRenameClick}
+                onDeleteClick={onDeleteClick} 
               />
             </>
           )}
@@ -507,6 +534,8 @@ interface ChannelCardSectionProps {
   canManageChannels: boolean;
   onSelectChannel: (channel: Channel) => void;
   onCreateClick: (type: ChannelTypeValue) => void;
+  onRenameClick: (channel: Channel) => void;
+  onDeleteClick: (channel: Channel) => void;
 }
 
 function ChannelCardSection({
@@ -517,6 +546,8 @@ function ChannelCardSection({
   canManageChannels,
   onSelectChannel,
   onCreateClick,
+  onRenameClick,
+  onDeleteClick,
 }: ChannelCardSectionProps) {
   const Icon = type === ChannelType.TEXT ? Hash : Volume2;
   const CreateIcon = type === ChannelType.TEXT ? Plus : Volume2;
@@ -567,10 +598,36 @@ function ChannelCardSection({
                 onClick={() => onSelectChannel(channel)}
                 className="group relative flex h-36 min-h-36 items-center justify-center rounded-xl border border-white/12 bg-[linear-gradient(145deg,rgba(255,255,255,0.075),rgba(255,255,255,0.025))] px-4 text-center transition hover:border-indigo-400/50 hover:bg-white/[0.09]"
               >
-                <span className="absolute right-3 top-3 flex items-center gap-2 text-white/80 opacity-90">
-                  <Users size={15} />
-                  <Settings size={14} />
+                                <span className="absolute right-3 top-3 z-10 flex items-center gap-1 text-white/80 opacity-90">
+                  <Users size={15} className={canManageChannels ? "mr-1" : ""} />
+                  {canManageChannels && (
+                    <>
+                      <div
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          onRenameClick(channel);
+                        }}
+                        className="cursor-pointer rounded p-1 transition-colors hover:bg-white/10 hover:text-white"
+                        title="Edit Channel"
+                      >
+                        <Settings size={14} />
+                      </div>
+                      <div
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          onDeleteClick(channel);
+                        }}
+                        className="cursor-pointer rounded p-1 text-white/80 transition-colors hover:bg-red-500/15 hover:text-red-400"
+                        title="Delete Channel"
+                      >
+                        <Trash2 size={14} />
+                      </div>
+                    </>
+                  )}
                 </span>
+
 
                 <span className="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04] text-white/45 opacity-0 transition group-hover:opacity-100">
                   <Icon size={16} />

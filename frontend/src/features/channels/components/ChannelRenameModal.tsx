@@ -20,6 +20,16 @@ export default function ChannelRenameModal({
   onRename,
 }: Props) {
   const [name, setName] = useState(channel?.name ?? "");
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  const [prevChannelId, setPrevChannelId] = useState(channel?.id);
+
+  if(isOpen !== prevIsOpen || channel?.id !== prevChannelId) {
+    setPrevIsOpen(isOpen);
+    setPrevChannelId(channel?.id);
+    if(isOpen){
+      setName(channel?.name ?? "");
+    }
+  }
 
   if (!channel) return null;
 
