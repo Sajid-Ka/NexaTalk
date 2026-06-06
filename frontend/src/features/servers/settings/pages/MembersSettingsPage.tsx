@@ -10,6 +10,8 @@ import SettingsSection from "../../../../shared/ui/settings/SettingsSection";
 import ConfirmModal from "../../../../shared/ui/modals/ConfirmModal";
 import { ServerMemberRole } from "../../../../shared/constants/server.const";
 import { useAuth } from "../../../auth/context/useAuth";
+import TransferOwnershipModal from "../../../../shared/ui/modals/TransferOwnershipModal";
+import { transferOwnershipApi } from "../api/serverSettingsApi";
 import {
   getServerMembersApi,
   updateMemberRoleApi,
@@ -61,6 +63,12 @@ export default function MembersSettingsPage() {
     isOpen: false,
     member: null,
   });
+
+  const [transferModal, setTransferModal] = useState<{
+    isOpen: boolean;
+    member: ServerSettingsMember | null;
+  }>({ isOpen: false, member: null });
+
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -196,6 +204,35 @@ export default function MembersSettingsPage() {
     }
   };
 
+  const confirmTransferOwnership = async () => {
+    if (!serverId || !transferModal.member) return;
+
+    try {
+      setActionLoading(transferModal.member.id);
+      await transferOwnershipApi(serverId, transferModal.member.userId);
+
+      setMembers((prev) =>
+        prev.map((m) => {
+          if (m.userId === transferModal.member?.userId) {
+            return { ...m, role: ServerMemberRole.OWNER };
+          }
+          if (m.userId === user?.id) {
+            return { ...m, role: ServerMemberRole.ADMIN }; // Demote self to Admin
+          }
+          return m;
+        })
+      );
+
+      toast.success(`Ownership transferred to ${transferModal.member.username}`);
+      setTransferModal({ isOpen: false, member: null });
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Failed to transfer ownership"));
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+
   const handleKickMember = async () => {
     if (!serverId || !kickModal.member) return;
 
@@ -290,6 +327,7 @@ export default function MembersSettingsPage() {
             actionLoading={actionLoading !== null}
             onPromote={handlePromoteToAdmin}
             onDemote={handleDemoteToMember}
+            onTransferOwnership={(member) => setTransferModal({ isOpen: true, member })}
             onKick={(member) => setKickModal({ isOpen: true, member })}
           />
         )}
@@ -325,6 +363,15 @@ export default function MembersSettingsPage() {
         destructive
         loading={actionLoading === demoteModal.member?.id}
       />
+
+      <TransferOwnershipModal
+        isOpen={transferModal.isOpen}
+        username={transferModal.member?.username || ""}
+        onClose={() => setTransferModal({ isOpen: false, member: null })}
+        onConfirm={confirmTransferOwnership}
+        loading={actionLoading === transferModal.member?.id}
+      />
+
 
       <ConfirmModal
         isOpen={kickModal.isOpen}

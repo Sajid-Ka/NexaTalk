@@ -24,6 +24,7 @@ export const getMemberColumns = (
   loading: boolean,
   onPromote: (member: ServerSettingsMember) => void,
   onDemote: (member: ServerSettingsMember) => void,
+  onTransferOwnership: (member: ServerSettingsMember) => void,
   onKick: (member: ServerSettingsMember) => void,
 ): Column<ServerSettingsMember>[] => [
   {
@@ -78,6 +79,7 @@ export const getMemberColumns = (
         loading={loading}
         onPromote={onPromote}
         onDemote={onDemote}
+        onTransferOwnership={onTransferOwnership}
         onKick={onKick}
       />
     ),

@@ -29,6 +29,7 @@ router.patch(
   validate(updateMemberRoleSchema),
   controller.updateMemberRole,
 );
+router.post("/:serverId/members/:memberId/transfer-ownership", controller.transferOwnership);
 router.delete("/:serverId/members/:memberId", controller.kickMember);
 
 export default router;

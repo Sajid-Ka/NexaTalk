@@ -10,6 +10,7 @@ interface MembersActionProps {
   loading: boolean;
   onPromote: (member: ServerSettingsMember) => void;
   onDemote: (member: ServerSettingsMember) => void;
+  onTransferOwnership: (member: ServerSettingsMember) => void;
   onKick: (member: ServerSettingsMember) => void;
 }
 
@@ -19,6 +20,7 @@ export default function MembersAction({
   loading,
   onPromote,
   onDemote,
+  onTransferOwnership,
   onKick,
 }: MembersActionProps) {
   const isOwner = currentUserRole === ServerMemberRole.OWNER;
@@ -27,6 +29,7 @@ export default function MembersAction({
 
   const canPromote = isOwner && member.role === ServerMemberRole.MEMBER;
   const canDemote = isOwner && member.role === ServerMemberRole.ADMIN;
+  const canTransferOwnership = isOwner && !isTargetOwner;
 
   const canKick =
     !isTargetOwner &&
@@ -56,6 +59,17 @@ export default function MembersAction({
           onClick={() => onDemote(member)}
         >
           Demote
+        </Button>
+      )}
+
+      {canTransferOwnership && (
+        <Button
+          size="sm"
+          variant="destructive"
+          isLoading={loading}
+          onClick={() => onTransferOwnership(member)}
+        >
+          Transfer Ownership
         </Button>
       )}
 

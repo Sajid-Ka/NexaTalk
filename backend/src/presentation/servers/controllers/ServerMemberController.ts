@@ -9,6 +9,7 @@ import { IGetServerMembersUsecase } from "../../../application/servers/members/i
 import { IUpdateMemberRoleUsecase } from "../../../application/servers/members/interfaces/IUpdateMemberRoleUsecase";
 import { IKickMemberUsecase } from "../../../application/servers/members/interfaces/IKickMemberUsecase";
 import { UpdateMemberRoleRequest } from "../../../application/servers/members/dtos/requests/UpdateMemberRoleRequest";
+import { ITransferOwnershipUsecase } from "../../../application/servers/members/interfaces/ITransferOwnershipUsecase";
 
 @injectable()
 export class ServerMemberController {
@@ -20,6 +21,8 @@ export class ServerMemberController {
     @inject(SERVERS_TYPES.UpdateMemberRole)
     private readonly _updateMemberRole: IUpdateMemberRoleUsecase,
     @inject(SERVERS_TYPES.KickMember) private readonly _kickMember: IKickMemberUsecase,
+    @inject(SERVERS_TYPES.TransferOwnership)
+    private readonly _transferOwnership: ITransferOwnershipUsecase,
   ) {}
 
   joinServer = async (req: AuthenticatedRequest, res: Response) => {
@@ -53,6 +56,15 @@ export class ServerMemberController {
     );
 
     res.json(successResponse(null, "Member role updated successfully"));
+  };
+
+  transferOwnership = async (req: AuthenticatedRequest, res: Response) => {
+    await this._transferOwnership.execute(
+      req.params.serverId,
+      req.user!.userId,
+      req.params.memberId,
+    );
+    res.json(successResponse(null, "Ownership transferred successfully"));
   };
 
   kickMember = async (req: AuthenticatedRequest, res: Response) => {

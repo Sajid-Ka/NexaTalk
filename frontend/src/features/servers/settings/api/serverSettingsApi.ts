@@ -34,6 +34,9 @@ export const getServerMembersApi = (serverId: string) =>
 export const updateMemberRoleApi = (serverId: string, memberId: string, role: string) =>
   api.patch(`/servers/${serverId}/members/${memberId}/role`, { role });
 
+export const transferOwnershipApi = (serverId: string, memberId: string) =>
+  api.post(`/servers/${serverId}/members/${memberId}/transfer-ownership`);
+
 export const kickMemberApi = (serverId: string, memberId: string) =>
   api.delete(`/servers/${serverId}/members/${memberId}`);
 

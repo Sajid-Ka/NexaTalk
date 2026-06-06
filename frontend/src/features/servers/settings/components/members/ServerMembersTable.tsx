@@ -10,6 +10,7 @@ interface ServerMembersTableProps {
   actionLoading?: boolean;
   onPromote: (member: ServerSettingsMember) => void;
   onDemote: (member: ServerSettingsMember) => void;
+  onTransferOwnership: (member: ServerSettingsMember) => void;
   onKick: (member: ServerSettingsMember) => void;
 }
 
@@ -20,6 +21,7 @@ export default function ServerMembersTable({
   actionLoading = false,
   onPromote,
   onDemote,
+  onTransferOwnership,
   onKick,
 }: ServerMembersTableProps) {
   const columns = getMemberColumns(
@@ -27,6 +29,7 @@ export default function ServerMembersTable({
     actionLoading,
     onPromote,
     onDemote,
+    onTransferOwnership,
     onKick,
   );
 
