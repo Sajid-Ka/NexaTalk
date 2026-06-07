@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { AlertTriangle, Trash2 } from "lucide-react";
+import { AlertTriangle, Trash2, LogOut } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import Button from "../../../../shared/ui/Button";
 import Input from "../../../../shared/ui/Input";
@@ -10,10 +10,12 @@ import SettingsPageContainer from "../../../../shared/ui/settings/SettingsPageCo
 import SettingsPageHeader from "../../../../shared/ui/settings/SettingsPageHeader";
 import SettingsSection from "../../../../shared/ui/settings/SettingsSection";
 import { AppRoute } from "../../../../shared/constants/app-route.const";
+import { ServerMemberRole } from "../../../../shared/constants/server.const";
 import { useAppDispatch, useAppSelector } from "../../../../app/store";
 import { removeServerFromState } from "../../core/store/serverSlice";
-import { deleteServerApi } from "../api/serverSettingsApi";
+import { deleteServerApi, leaveServerApi } from "../api/serverSettingsApi";
 import { useAuth } from "../../../auth/context/useAuth";
+import ConfirmModal from "../../../../shared/ui/modals/ConfirmModal";
 
 const getErrorMessage = (error: unknown, fallback: string) => {
   if (axios.isAxiosError(error)) {
@@ -48,6 +50,9 @@ export default function DangerZonePage() {
 
   const canDelete = serverName.length > 0 && confirmationText === serverName;
 
+  const [leaveModalOpen, setLeaveModalOpen] = useState(false);
+  const [leaving, setLeaving] = useState(false);
+
   const handleDeleteServer = async () => {
     if (!serverId || !canDelete) return;
 
@@ -68,6 +73,23 @@ export default function DangerZonePage() {
     }
   };
 
+  const handleLeaveServer = async () => {
+    if (!serverId) return;
+
+    try {
+      setLeaving(true);
+      await leaveServerApi(serverId);
+      dispatch(removeServerFromState(serverId));
+      toast.success("You left the server.");
+      navigate(AppRoute.HOME_PAGE, { replace: true });
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Failed to leave server"));
+    } finally {
+      setLeaving(false);
+      setLeaveModalOpen(false);
+    }
+  };
+
   return (
     <SettingsPageContainer>
       <SettingsPageHeader
@@ -75,39 +97,80 @@ export default function DangerZonePage() {
         description="Permanent actions for this server. These changes cannot be undone."
       />
 
+      {currentServer?.userRole !== ServerMemberRole.MEMBER && (
+        <SettingsSection
+          title="Delete Server"
+          description="Delete this server, remove its invites, and make it unavailable to members."
+          danger
+        >
+          <div className="rounded-2xl border border-red-500/20 bg-red-500/[0.04] p-5">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+              <div className="flex gap-4">
+                <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-red-500/10 text-red-300">
+                  <AlertTriangle size={22} />
+                </div>
+
+                <div>
+                  <p className="font-bold text-red-200">
+                    Delete this server permanently
+                  </p>
+
+                  <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
+                    This will delete the server and revoke all active invite links.
+                    Only the server owner can perform this action.
+                  </p>
+                </div>
+              </div>
+
+              <Button
+                type="button"
+                variant="destructive"
+                className="gap-2 whitespace-nowrap"
+                disabled={!isOwner}
+                onClick={() => setDeleteModalOpen(true)}
+              >
+                <Trash2 size={16} className="shrink-0" />
+                <span>Delete Server</span>
+              </Button>
+            </div>
+          </div>
+        </SettingsSection>
+      )}
+
       <SettingsSection
-        title="Delete Server"
-        description="Delete this server, remove its invites, and make it unavailable to members."
-        danger
+        title="Leave Server"
+        description="Leave this server and remove it from your server list."
       >
-        <div className="rounded-2xl border border-red-500/20 bg-red-500/[0.04] p-5">
+        <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="flex gap-4">
-              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-red-500/10 text-red-300">
-                <AlertTriangle size={22} />
+              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white/5 text-slate-300">
+                <LogOut size={22} />
               </div>
 
               <div>
-                <p className="font-bold text-red-200">
-                  Delete this server permanently
-                </p>
-
+                <p className="font-bold text-white">Leave this server</p>
                 <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
-                  This will delete the server and revoke all active invite links.
-                  Only the server owner can perform this action.
+                  You will no longer have access to this server's channels or members.
+                  You can rejoin if you receive a new invite.
                 </p>
+                {isOwner && (
+                  <p className="mt-2 text-sm font-medium text-amber-500">
+                    You must transfer ownership before leaving this server.
+                  </p>
+                )}
               </div>
             </div>
 
             <Button
               type="button"
-              variant="destructive"
+              variant="secondary"
               className="gap-2 whitespace-nowrap"
-              disabled={!isOwner}
-              onClick={() => setDeleteModalOpen(true)}
+              disabled={isOwner}
+              onClick={() => setLeaveModalOpen(true)}
             >
-              <Trash2 size={16} className="shrink-0" />
-              <span>Delete Server</span>
+              <LogOut size={16} className="shrink-0" />
+              <span>Leave Server</span>
             </Button>
           </div>
         </div>
@@ -214,6 +277,17 @@ export default function DangerZonePage() {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={leaveModalOpen}
+        onClose={() => setLeaveModalOpen(false)}
+        onConfirm={handleLeaveServer}
+        title="Leave Server?"
+        description="Are you sure you want to leave this server?"
+        confirmText="Leave Server"
+        destructive
+        loading={leaving}
+      />
     </SettingsPageContainer>
   );
 }

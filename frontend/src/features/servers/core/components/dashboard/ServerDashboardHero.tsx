@@ -2,7 +2,7 @@ import { Lock, Settings, Share2, Sparkles, Users, Wifi } from "lucide-react";
 import type { Server } from "../../types";
 import Button from "../../../../../shared/ui/Button";
 import Badge from "../../../../../shared/ui/Badge";
-import { useAuth } from "../../../../auth/context/useAuth";
+// import { useAuth } from "../../../../auth/context/useAuth";
 import { useNavigate } from "react-router-dom";
 
 interface ServerDashboardHeroProps {
@@ -53,9 +53,9 @@ export default function ServerDashboardHero({
   const fallbackInitial = server.name.charAt(0).toUpperCase();
   const tags = server.tags ?? [];
 
-  const { user } = useAuth();
+  // const { user } = useAuth();
 
-  const isOwner = user?.id === server.ownerId;
+  // const isOwner = user?.id === server.ownerId;
 
   return (
     <section className="relative overflow-hidden border-b border-white/10 bg-[#070A12]">
@@ -68,18 +68,16 @@ export default function ServerDashboardHero({
           <Share2 size={15} />
           Invite
         </Button>
-        {isOwner && (
-          <Button
-            onClick={() => navigate(`/servers/${server.id}/settings`)}
-            type="button"
-            size="sm"
-            variant="outline"
-            className="gap-2 border-white/15 bg-[#0B1020]/70 text-white/80 backdrop-blur-xl hover:bg-white/10"
-          >
-            <Settings size={15} />
-            Settings
-          </Button>
-        )}
+        <Button
+          onClick={() => navigate(`/servers/${server.id}/settings`)}
+          type="button"
+          size="sm"
+          variant="outline"
+          className="gap-2 border-white/15 bg-[#0B1020]/70 text-white/80 backdrop-blur-xl hover:bg-white/10"
+        >
+          <Settings size={15} />
+          Settings
+        </Button>
       </div>
 
       <div className="relative h-[380px] overflow-hidden sm:h-[360px]">

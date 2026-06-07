@@ -409,15 +409,13 @@ function ServerHomePane({
             <NotificationDropdown />
 
             {/* Settings Button */}
-            {canManageChannels && (
-              <button
-                onClick={onSettingsClick}
-                className="inline-flex h-9 items-center gap-2 rounded-lg border border-white/15 px-4 text-sm font-semibold text-white/85 hover:bg-white/10"
-              >
-                <Settings size={15} />
-                Settings
-              </button>
-            )}
+            <button
+              onClick={onSettingsClick}
+              className="inline-flex h-9 items-center gap-2 rounded-lg border border-white/15 px-4 text-sm font-semibold text-white/85 hover:bg-white/10"
+            >
+              <Settings size={15} />
+              Settings
+            </button>
           </div>
 
 

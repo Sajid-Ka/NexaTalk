@@ -52,6 +52,9 @@ export const revokeInviteApi = (serverId: string, inviteId: string) =>
 export const deleteServerApi = (serverId: string) =>
   api.delete(`/servers/${serverId}`);
 
+export const leaveServerApi = (serverId: string) =>
+  api.post(`/servers/${serverId}/leave`);
+
 export const getServerBansApi = (serverId: string) =>
   api.get(`/servers/${serverId}/bans`);
 

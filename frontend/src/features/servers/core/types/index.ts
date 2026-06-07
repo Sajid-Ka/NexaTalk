@@ -26,6 +26,7 @@ export interface Server {
   ownerName?: string;
   tags: string[];
   members?: ServerMember[];
+  userRole?: ServerMemberRole;
   createdAt: string;
   updatedAt: string;
 }

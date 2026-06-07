@@ -50,17 +50,22 @@ export class GetServer implements IGetServerUsecase {
       }),
     );
 
-    // Check if private server requires membership
+    let userRole;
     if (server.isPrivate() && userId) {
-      const isMember = await this._memberRepo.isMember(serverId, userId);
-      if (!isMember) {
+      const currentMember = members.find((m) => m.userId === userId);
+      if (!currentMember) {
         throw new NotMemberError();
       }
+      userRole = currentMember.role;
+    } else if (userId) {
+      const currentMember = members.find((m) => m.userId === userId);
+      userRole = currentMember?.role;
     }
 
     return ServerMapper.toResponse(
       server,
       memberResponses.filter(Boolean) as ServerMemberResponse[],
+      userRole,
     );
   }
 }

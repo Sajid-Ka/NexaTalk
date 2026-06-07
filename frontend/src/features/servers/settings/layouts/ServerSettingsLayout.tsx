@@ -7,11 +7,15 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import UserStatusFooter from "../../../home/components/UserStatusFooter";
-import { useParams } from "react-router-dom";
+import { useParams, Navigate, useLocation } from "react-router-dom";
 import SettingsLayout from "../../../../shared/layouts/SettingsLayout";
+import { useAppSelector } from "../../../../app/store";
+import { ServerMemberRole } from "../../../../shared/constants/server.const";
 
 export default function ServerSettingsLayout() {
   const { serverId } = useParams();
+  const { pathname } = useLocation();
+  const { currentServer } = useAppSelector((state) => state.servers);
 
   const items = [
     {
@@ -47,10 +51,21 @@ export default function ServerSettingsLayout() {
     },
   ];
 
+  const filteredItems = items.filter((item) => {
+    if (currentServer?.userRole === ServerMemberRole.MEMBER) {
+      return item.label === "Danger Zone";
+    }
+    return true;
+  });
+
+  if (currentServer?.userRole === ServerMemberRole.MEMBER && !pathname.endsWith('/danger')) {
+    return <Navigate to={`/servers/${serverId}/settings/danger`} replace />;
+  }
+
   return (
     <SettingsLayout
       title="Server Settings"
-      items={items}
+      items={filteredItems}
       backTo={`/servers/${serverId}`}
       sidebarFooter={<UserStatusFooter />}
     />

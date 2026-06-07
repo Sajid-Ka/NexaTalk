@@ -25,6 +25,7 @@ export interface ServerResponse {
   ownerName?: string;
   tags: string[];
   members?: ServerMemberResponse[];
+  userRole?: ServerMemberRole;
   createdAt: Date;
   updatedAt: Date;
 }
