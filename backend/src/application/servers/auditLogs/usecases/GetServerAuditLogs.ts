@@ -30,30 +30,31 @@ export class GetServerAuditLogs implements IGetServerAuditLogsUsecase {
     offset: number = 0,
   ): Promise<ServerAuditLogResponse[]> {
     const server = await this._serverRepo.findById(serverId);
-
-    if (!server) {
-      throw new ServerNotFoundError();
-    }
+    if (!server) throw new ServerNotFoundError();
 
     const currentMember = await this._memberRepo.findByServerAndUser(serverId, currentUserId);
-
-    if (!currentMember) {
-      throw new NotMemberError();
-    }
+    if (!currentMember) throw new NotMemberError();
 
     const canViewAuditLogs =
       currentMember.role === ServerMemberRole.OWNER ||
       currentMember.role === ServerMemberRole.ADMIN;
 
-    if (!canViewAuditLogs) {
-      throw new InsufficientPermissionsError();
-    }
+    if (!canViewAuditLogs) throw new InsufficientPermissionsError();
 
     const logs = await this._auditLogRepo.findByServer(serverId, limit, offset);
 
     return Promise.all(
       logs.map(async (log) => {
         const actor = await this._userRepo.findById(log.actorId);
+
+        let targetUsername: string | null = null;
+
+        if (log.targetId && !log.action.startsWith("CHANNEL")) {
+          const target = await this._userRepo.findById(log.targetId);
+          targetUsername = target?.username ?? null;
+        } else if (log.targetId && log.action.startsWith("CHANNEL")) {
+          targetUsername = (log.metadata?.targetName as string) ?? log.targetId;
+        }
 
         return {
           id: log.id,
@@ -62,7 +63,8 @@ export class GetServerAuditLogs implements IGetServerAuditLogsUsecase {
           actorUsername: actor?.username ?? "Unknown User",
           action: log.action,
           targetId: log.targetId,
-          metadata: log.metadata,
+          targetUsername,
+          details: log.metadata ?? {},
           createdAt: log.createdAt,
         };
       }),

@@ -12,17 +12,12 @@ import {
 } from "../../../notifications/api/notificationApi";
 import type { ServerMember } from "../types";
 import { AxiosError } from "axios";
+import Avatar from "../../../../shared/ui/Avatar";
 
 interface ApiErrorResponse {
   error?: { code?: string; message?: string };
   message?: string;
 }
-
-const getImageUrl = (url?: string) => {
-  if (!url) return "";
-  if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("blob:")) return url;
-  return `${import.meta.env.VITE_API_URL}${url}`;
-};
 
 interface InviteFriendsModalProps {
   isOpen: boolean;
@@ -162,10 +157,12 @@ export default function InviteFriendsModal({ isOpen, onClose, serverId }: Invite
                     className="flex items-center justify-between p-3 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/5"
                   >
                     <div className="flex items-center gap-3">
-                      <img
-                        src={getImageUrl(friend.friend.avatar)}
+                      <Avatar
+                        src={friend.friend.avatar}
                         alt={friend.friend.username}
-                        className="w-10 h-10 rounded-full object-cover bg-white/5"
+                        fallback={friend.friend.username}
+                        status={friend.friend.status as "online" | "offline" | "idle" | "dnd" | "streaming"}
+                        size="md"
                       />
                       <div>
                         <div className="font-semibold text-white text-sm">

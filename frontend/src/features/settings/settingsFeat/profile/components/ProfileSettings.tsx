@@ -93,6 +93,7 @@ export default function ProfileSettings() {
       const avatarUrl = await uploadAvatarApi(file);
       console.log("Upload success, avatar URL:", avatarUrl);
       setFormData((prev) => ({ ...prev, avatar: avatarUrl }));
+      window.dispatchEvent(new Event("profileUpdated"));
       toast.success("Avatar uploaded successfully");
     } catch (err) {
       console.error("Upload error details:", err);
@@ -119,6 +120,7 @@ export default function ProfileSettings() {
     try {
       await deleteAvatarApi();
       setFormData((prev) => ({ ...prev, avatar: "" }));
+      window.dispatchEvent(new Event("profileUpdated"));
       toast.success("Avatar removed successfully");
     } catch {
       toast.error("Failed to remove avatar");
@@ -153,6 +155,7 @@ export default function ProfileSettings() {
         isProfilePublic: formData.publicProfile,
         showOnlineStatus: formData.showOnlineStatus
       });
+      window.dispatchEvent(new Event("profileUpdated"));
       toast.success("Profile updated successfully");
     } catch (err) {
       if (err instanceof AxiosError) {

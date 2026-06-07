@@ -36,6 +36,7 @@ export interface ServerAuditLog {
   actorUsername: string;
   action: string;
   targetId: string | null;
-  metadata: Record<string, unknown>;
+  targetUsername: string | null;
+  details: Record<string, unknown>;
   createdAt: string;
 }

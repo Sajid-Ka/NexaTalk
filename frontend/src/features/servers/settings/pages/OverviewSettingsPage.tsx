@@ -3,7 +3,6 @@ import {
   Lock,
   Upload,
   Save,
-  Loader2,
   X
 } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
@@ -60,7 +59,11 @@ export default function OverviewSettingsPage() {
 
   const iconInputRef = useRef<HTMLInputElement>(null);
   const bannerInputRef = useRef<HTMLInputElement>(null);
-  const [uploadingType, setUploadingType] = useState<"icon" | "banner" | null>(null);
+
+  const [iconFile, setIconFile] = useState<File | null>(null);
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
+  const [iconPreview, setIconPreview] = useState<string | null>(null);
+  const [bannerPreview, setBannerPreview] = useState<string | null>(null);
 
   // Check if current user is the owner
   const isOwner = currentServer?.ownerId === user?.id;
@@ -80,7 +83,13 @@ export default function OverviewSettingsPage() {
     setDescription(currentServer.description || "");
     setPrivacy(currentServer.privacy || ServerPrivacy.PRIVATE);
     setTags(currentServer.tags || []);
+
+    setIconFile(null);
+    setBannerFile(null);
+    setIconPreview(null);
+    setBannerPreview(null);
   }, [currentServer]);
+
 
   const validateImage = (file: File) => {
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"];
@@ -98,7 +107,7 @@ export default function OverviewSettingsPage() {
     return true;
   };
 
-  const handleServerImageUpload = async (
+  const handleServerImageUpload = (
     event: React.ChangeEvent<HTMLInputElement>,
     type: "icon" | "banner",
   ) => {
@@ -107,19 +116,19 @@ export default function OverviewSettingsPage() {
 
     if (!validateImage(file)) return;
 
-    setUploadingType(type);
+    const previewUrl = URL.createObjectURL(file);
 
-    try {
-      const updatedServer = await uploadServerImageApi(serverId, file, type);
-      dispatch(setCurrentServer(updatedServer));
-      toast.success(type === "icon" ? "Server icon uploaded" : "Server banner uploaded");
-    } catch {
-      toast.error(type === "icon" ? "Failed to upload server icon" : "Failed to upload server banner");
-    } finally {
-      setUploadingType(null);
-      event.target.value = "";
+    if (type === "icon") {
+      setIconFile(file);
+      setIconPreview(previewUrl);
+    } else {
+      setBannerFile(file);
+      setBannerPreview(previewUrl);
     }
+
+    event.target.value = "";
   };
+
 
   const validateForm = () => {
     const nextErrors: typeof errors = {};
@@ -154,11 +163,13 @@ export default function OverviewSettingsPage() {
     return (
       name.trim() !== (currentServer.name || "").trim() ||
       description.trim() !== (currentServer.description || "").trim() ||
-      // Only track privacy changes if the user is the owner
       (isOwner && privacy !== currentServer.privacy) ||
-      JSON.stringify(nextTags) !== JSON.stringify(currentTags)
+      JSON.stringify(nextTags) !== JSON.stringify(currentTags) ||
+      iconFile !== null ||
+      bannerFile !== null
     );
   };
+
 
   const handleSave = async () => {
     if (!serverId) return;
@@ -178,24 +189,66 @@ export default function OverviewSettingsPage() {
     setSaving(true);
 
     try {
-      const payload = {
-        name: name.trim(),
-        description: description.trim(),
-        tags: normalizeTags(tags),
-        ...(isOwner && { privacy }),
-      };
-      const response = await updateServerApi(serverId, payload);
+      let latestServerData = currentServer;
+      let iconChanged = false;
+      let bannerChanged = false;
 
+      // 1. Upload Icon if changed
+      if (iconFile) {
+        latestServerData = await uploadServerImageApi(serverId, iconFile, "icon");
+        iconChanged = true;
+      }
 
-      dispatch(setCurrentServer(response.data.data));
+      // 2. Upload Banner if changed
+      if (bannerFile) {
+        latestServerData = await uploadServerImageApi(serverId, bannerFile, "banner");
+        bannerChanged = true;
+      }
+
+      // 3. Update Text Details if changed
+      const currentTags = normalizeTags(currentServer.tags);
+      const nextTags = normalizeTags(tags);
+      const isTextOrPrivacyChanged = 
+        name.trim() !== (currentServer.name || "").trim() ||
+        description.trim() !== (currentServer.description || "").trim() ||
+        (isOwner && privacy !== currentServer.privacy) ||
+        JSON.stringify(nextTags) !== JSON.stringify(currentTags);
+
+      if (isTextOrPrivacyChanged) {
+        const payload = {
+          name: name.trim(),
+          description: description.trim(),
+          tags: nextTags,
+          ...(isOwner && { privacy }),
+        };
+        const response = await updateServerApi(serverId, payload);
+        latestServerData = response.data.data;
+      }
+
+      // Update global state
+      dispatch(setCurrentServer(latestServerData));
       dispatch(fetchUserServers());
-      toast.success("Server updated successfully");
+
+      // Show success alert
+      if (iconChanged || bannerChanged) {
+        toast.success("Server details and images updated successfully");
+      } else {
+        toast.success("Server details updated successfully");
+      }
+
+      // Clear the local files and previews
+      setIconFile(null);
+      setBannerFile(null);
+      setIconPreview(null);
+      setBannerPreview(null);
+
     } catch {
-      toast.error("Failed to update server");
+      toast.error("Failed to save changes");
     } finally {
       setSaving(false);
     }
   };
+
 
   const handleAddTag = () => {
     const nextTag = tagInput.trim().replace(/^#/, "").toLowerCase();
@@ -272,8 +325,14 @@ export default function OverviewSettingsPage() {
               onChange={(event) => handleServerImageUpload(event, "icon")}
             />
 
-            <div className="grid h-24 w-24 place-items-center overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-500 to-cyan-400 text-3xl font-black text-white">
-              {currentServer?.icon ? (
+          <div className="grid h-24 w-24 place-items-center overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-500 to-cyan-400 text-3xl font-black text-white">
+              {iconPreview ? (
+                <img
+                  src={iconPreview}
+                  alt="Icon Preview"
+                  className="h-full w-full object-cover"
+                />
+              ) : currentServer?.icon ? (
                 <img
                   src={getImageUrl(currentServer.icon)}
                   alt={currentServer.name}
@@ -283,20 +342,15 @@ export default function OverviewSettingsPage() {
                 currentServer?.name?.[0]?.toUpperCase() || "N"
               )}
             </div>
-
             <Button
               type="button"
               variant="secondary"
               className="gap-2"
               onClick={() => iconInputRef.current?.click()}
-              disabled={uploadingType !== null}
+              disabled={saving}
             >
-              {uploadingType === "icon" ? (
-                <Loader2 size={16} className="animate-spin" />
-              ) : (
-                <Upload size={16} />
-              )}
-              Upload Icon
+              <Upload size={16} />
+              {iconPreview ? "Change Icon" : "Upload Icon"}
             </Button>
           </div>
 
@@ -314,14 +368,20 @@ export default function OverviewSettingsPage() {
               onChange={(event) => handleServerImageUpload(event, "banner")}
             />
 
-            <div className="h-32 overflow-hidden bg-[radial-gradient(circle_at_20%_20%,rgba(99,102,241,0.45),transparent_32%),radial-gradient(circle_at_74%_28%,rgba(20,184,166,0.32),transparent_30%),linear-gradient(135deg,#312E81_0%,#0B1220_46%,#042F2E_100%)]">
-              {currentServer?.banner && (
+          <div className="h-32 overflow-hidden bg-[radial-gradient(circle_at_20%_20%,rgba(99,102,241,0.45),transparent_32%),radial-gradient(circle_at_74%_28%,rgba(20,184,166,0.32),transparent_30%),linear-gradient(135deg,#312E81_0%,#0B1220_46%,#042F2E_100%)]">
+              {bannerPreview ? (
+                <img
+                  src={bannerPreview}
+                  alt="Banner Preview"
+                  className="h-full w-full object-cover"
+                />
+              ) : currentServer?.banner ? (
                 <img
                   src={getImageUrl(currentServer.banner)}
                   alt={`${currentServer.name} banner`}
                   className="h-full w-full object-cover"
                 />
-              )}
+              ) : null}
             </div>
 
             <Button
@@ -329,15 +389,12 @@ export default function OverviewSettingsPage() {
               variant="secondary"
               className="gap-2"
               onClick={() => bannerInputRef.current?.click()}
-              disabled={uploadingType !== null}
+              disabled={saving}
             >
-              {uploadingType === "banner" ? (
-                <Loader2 size={16} className="animate-spin" />
-              ) : (
-                <Upload size={16} />
-              )}
-              Change Banner
+              <Upload size={16} />
+              {bannerPreview ? "Change Banner" : "Upload Banner"}
             </Button>
+
           </div>
         </SettingsGrid>
 

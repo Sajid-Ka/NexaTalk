@@ -9,6 +9,7 @@ import { InsufficientPermissionsError } from "../../../../domain/features/server
 import { ServerMemberRole } from "../../../../shared/constants/server.const";
 import { IKickMemberUsecase } from "../interfaces/IKickMemberUsecase";
 import { IServerAuditLogRepository } from "../../../../domain/features/servers/repositories/IServerAuditLogRepository";
+import { AuditLogAction } from "../../../../shared/constants/auditLog.const";
 import { ServerAuditLog } from "../../../../domain/features/servers/entities/ServerAuditLog";
 
 @injectable()
@@ -64,7 +65,7 @@ export class KickMember implements IKickMemberUsecase {
       new ServerAuditLog({
         serverId,
         actorId: currentUserId,
-        action: "ACTION_NAME",
+        action: AuditLogAction.MEMBER_KICKED,
         targetId: targetUserId,
         metadata: {},
       }),

@@ -1,44 +1,55 @@
 import { cn } from "../utils/cn";
-import { useRef, } from "react";
+import { useRef, useState } from "react";
+import { 
+  AvatarSize, 
+  AvatarStatus,
+  AVATAR_SIZE_CLASSES,
+  AVATAR_STATUS_COLORS,
+  AVATAR_STATUS_INDICATOR_SIZES
+} from "../constants/avatar.const";
 
 interface AvatarProps {
   src?: string;
   alt?: string;
   fallback: string;
-  status?: "online" | "offline" | "idle" | "dnd" | "streaming";
-  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  status?: AvatarStatus;
+  size?: AvatarSize;
   className?: string;
   userId?: string;
   onProfileClick?: (userId: string, element: HTMLElement) => void;
 }
+
+const getImageUrl = (url?: string) => {
+  if (!url) return "";
+  if (
+    url.startsWith("http://") || 
+    url.startsWith("https://") || 
+    url.startsWith("blob:") || 
+    url.startsWith("data:")
+  ) {
+    return url;
+  }
+
+  const apiBaseUrl = import.meta.env.VITE_API_URL || window.location.origin;
+  const apiOrigin = new URL(apiBaseUrl, window.location.origin).origin;
+
+  return url.startsWith("/") ? `${apiOrigin}${url}` : `${apiOrigin}/${url}`;
+};
 
 export default function Avatar({
   src,
   alt,
   fallback,
   status,
-  size = "md",
+  size = AvatarSize.MD,
   className,
   userId,
   onProfileClick
 }: AvatarProps) {
   const avatarRef = useRef<HTMLDivElement>(null);
 
-  const sizeClasses = {
-    xs: "h-6 w-6 text-[10px]",
-    sm: "h-8 w-8 text-xs",
-    md: "h-10 w-10 text-sm",
-    lg: "h-12 w-12 text-base",
-    xl: "h-20 w-20 text-xl",
-  };
 
-  const statusColors = {
-    online: "bg-green-500",
-    offline: "bg-gray-500",
-    idle: "bg-yellow-500",
-    dnd: "bg-red-500",
-    streaming: "bg-purple-500",
-  };
+  const [errorSrc, setErrorSrc] = useState<string | null>(null);
 
   const handleClick = (e: React.MouseEvent) => {
     if (userId && onProfileClick) {
@@ -47,12 +58,15 @@ export default function Avatar({
     }
   };
 
+  const finalSrc = src ? getImageUrl(src) : "";
+  const hasError = errorSrc === finalSrc;
+
   return (
     <div 
       ref={avatarRef}
       className={cn(
         "relative inline-flex items-center justify-center shrink-0 cursor-pointer",
-        sizeClasses[size],
+        AVATAR_SIZE_CLASSES[size],
         className
       )} 
       onClick={handleClick}
@@ -60,8 +74,13 @@ export default function Avatar({
       <div
         className="flex items-center justify-center rounded-full bg-white/10 overflow-hidden text-white font-medium h-full w-full"
       >
-        {src ? (
-          <img src={src} alt={alt || fallback} className="h-full w-full object-cover" />
+        {finalSrc && !hasError ? (
+          <img 
+            src={finalSrc} 
+            alt={alt || fallback} 
+            className="h-full w-full object-cover" 
+            onError={() => setErrorSrc(finalSrc)}
+          />
         ) : (
           <span>{fallback.substring(0, 2).toUpperCase()}</span>
         )}
@@ -70,8 +89,8 @@ export default function Avatar({
         <span
           className={cn(
             "absolute bottom-0 right-0 block rounded-full ring-2 ring-[#0F121D]",
-            statusColors[status],
-            size === "xs" ? "h-1.5 w-1.5" : size === "sm" ? "h-2 w-2" : "h-3 w-3"
+            AVATAR_STATUS_COLORS[status],
+            AVATAR_STATUS_INDICATOR_SIZES[size]
           )}
         />
       )}

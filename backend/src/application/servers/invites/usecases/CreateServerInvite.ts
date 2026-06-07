@@ -13,6 +13,7 @@ import { NotFoundError } from "../../../../domain/core/errors/NotFoundError";
 import { ForbiddenError } from "../../../../domain/core/errors/ForbiddenError";
 import { env } from "../../../../shared/config/env";
 import { IServerAuditLogRepository } from "../../../../domain/features/servers/repositories/IServerAuditLogRepository";
+import { AuditLogAction } from "../../../../shared/constants/auditLog.const";
 import { ServerAuditLog } from "../../../../domain/features/servers/entities/ServerAuditLog";
 
 @injectable()
@@ -64,16 +65,23 @@ export class CreateServerInvite implements ICreateServerInviteUsecase {
 
     this._logger.info("Server invite created", { serverId, code });
 
+    const expiresFormatted = createdInvite.expiresAt
+      ? new Date(createdInvite.expiresAt).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })
+      : "Never";
     await this._auditLogRepo.create(
       new ServerAuditLog({
         serverId,
         actorId: userId,
-        action: "INVITE_CREATED",
+        action: AuditLogAction.INVITE_CREATED,
         targetId: createdInvite.id,
         metadata: {
-          code: createdInvite.code,
-          maxUses: createdInvite.maxUses,
-          expiresAt: createdInvite.expiresAt,
+          "Invite Code": createdInvite.code,
+          "Max Uses": createdInvite.maxUses || "Unlimited",
+          Expires: expiresFormatted,
         },
       }),
     );

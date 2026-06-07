@@ -70,8 +70,14 @@ export default function UserStatusFooter() {
 
     fetchProfile();
 
+    const handleProfileUpdate = () => {
+      fetchProfile();
+    };
+    window.addEventListener("profileUpdated", handleProfileUpdate);
+
     return () => {
       isMounted = false;
+      window.removeEventListener("profileUpdated", handleProfileUpdate);
     };
   }, [user?.id, user?.username]);
 
