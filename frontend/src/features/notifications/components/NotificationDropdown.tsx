@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Bell, User } from "lucide-react";
+import { Bell } from "lucide-react";
 import toast from "react-hot-toast";
 import { getPendingRequestsApi, respondFriendRequestApi } from "../../friends/api/friendApi";
 import type { Friend } from "../../friends/api/friendApi";
@@ -7,12 +7,8 @@ import { getPendingServerInvitesApi, respondToDirectInviteApi } from "../api/not
 import type { ServerDirectInvite } from "../api/notificationApi";
 import { FriendshipStatus } from "../../../shared/constants/friend.const";
 import { DirectInviteStatus } from "../../../shared/constants/server.const";
-
-const getImageUrl = (url?: string) => {
-  if (!url) return "";
-  if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("blob:")) return url;
-  return `${import.meta.env.VITE_API_URL}${url}`;
-};
+import Avatar from "../../../shared/ui/Avatar";
+import { AvatarSize } from "../../../shared/constants/avatar.const";
 
 export default function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -127,13 +123,12 @@ export default function NotificationDropdown() {
                 {friendRequests.map((req) => (
                   <div key={req.id} className="flex flex-col p-3 rounded-lg bg-white/5 border border-white/5">
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="w-8 h-8 rounded-full bg-[#1A1F30] flex items-center justify-center shrink-0">
-                        {req.friend.avatar ? (
-                          <img src={getImageUrl(req.friend.avatar)} alt="avatar" className="w-full h-full rounded-full object-cover" />
-                        ) : (
-                          <User size={14} className="text-white/50" />
-                        )}
-                      </div>
+                        <Avatar 
+                          src={req.friend.avatar}
+                          alt={req.friend.username}
+                          fallback={req.friend.username}
+                          size={AvatarSize.SM}
+                        />
                       <div className="text-sm text-white/90">
                         <span className="font-semibold text-white">{req.friend.username}</span> sent you a friend request.
                       </div>
@@ -149,13 +144,12 @@ export default function NotificationDropdown() {
                 {serverInvites.map((invite) => (
                   <div key={invite.id} className="flex flex-col p-3 rounded-lg bg-white/5 border border-white/5">
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
-                        {invite.serverId.icon ? (
-                          <img src={getImageUrl(invite.serverId.icon)} alt="server" className="w-full h-full rounded-full object-cover" />
-                        ) : (
-                          <Bell size={14} className="text-emerald-400" />
-                        )}
-                      </div>
+                      <Avatar
+                        src={invite.serverId.icon}
+                        alt={invite.serverId.name}
+                        fallback={invite.serverId.name}
+                        size={AvatarSize.SM}
+                      />
                       <div className="text-sm text-white/90">
                         <span className="font-semibold text-white">{invite.senderId.username}</span> invited you to join <span className="font-semibold text-white">{invite.serverId.name}</span>.
                       </div>
