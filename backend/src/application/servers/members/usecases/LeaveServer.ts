@@ -2,6 +2,7 @@ import { inject, injectable } from "inversify";
 import { SERVERS_TYPES } from "../../../../main/di/modules/servers/servers.types";
 import { IServerRepository } from "../../../../domain/features/servers/repositories/IServerRepository";
 import { IServerMemberRepository } from "../../../../domain/features/servers/repositories/IServerMemberRepository";
+import { IServerMembershipCleanupService } from "../interfaces/IServerMembershipCleanupService";
 import { ILeaveServerUsecase } from "../interfaces/ILeaveServerUsecase";
 import { ILogger } from "../../../../domain/core/common/services/ILogger";
 import { COMMON_TYPES } from "../../../../main/di/modules/common/common.types";
@@ -19,6 +20,8 @@ export class LeaveServer implements ILeaveServerUsecase {
     private readonly _memberRepo: IServerMemberRepository,
     @inject(SERVERS_TYPES.ServerAuditLogRepository)
     private readonly _auditLogRepo: IServerAuditLogRepository,
+    @inject(SERVERS_TYPES.ServerMembershipCleanupService)
+    private readonly _membershipCleanupService: IServerMembershipCleanupService,
     @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
   ) {}
 
@@ -41,8 +44,7 @@ export class LeaveServer implements ILeaveServerUsecase {
       throw new CannotRemoveOwnerError();
     }
 
-    await this._memberRepo.delete(member.id);
-    await this._serverRepo.decrementMemberCount(serverId);
+    await this._membershipCleanupService.removeMemberAndDecrementCount(serverId, userId);
 
     await this._auditLogRepo.create(
       new ServerAuditLog({

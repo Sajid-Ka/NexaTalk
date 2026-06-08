@@ -2,6 +2,7 @@ import { inject, injectable } from "inversify";
 import { SERVERS_TYPES } from "../../../../main/di/modules/servers/servers.types";
 import { IServerRepository } from "../../../../domain/features/servers/repositories/IServerRepository";
 import { IServerMemberRepository } from "../../../../domain/features/servers/repositories/IServerMemberRepository";
+import { IServerMembershipCleanupService } from "../interfaces/IServerMembershipCleanupService";
 import { ServerNotFoundError } from "../../../../domain/features/servers/errors/ServerNotFoundError";
 import { NotMemberError } from "../../../../domain/features/servers/errors/NotMemberError";
 import { CannotRemoveOwnerError } from "../../../../domain/features/servers/errors/CannotRemoveOwnerError";
@@ -20,6 +21,8 @@ export class KickMember implements IKickMemberUsecase {
     private readonly _memberRepo: IServerMemberRepository,
     @inject(SERVERS_TYPES.ServerAuditLogRepository)
     private readonly _auditLogRepo: IServerAuditLogRepository,
+    @inject(SERVERS_TYPES.ServerMembershipCleanupService)
+    private readonly _membershipCleanupService: IServerMembershipCleanupService,
   ) {}
 
   async execute(serverId: string, currentUserId: string, targetUserId: string): Promise<void> {
@@ -57,9 +60,7 @@ export class KickMember implements IKickMemberUsecase {
       throw new InsufficientPermissionsError();
     }
 
-    await this._memberRepo.removeMember(serverId, targetUserId);
-
-    await this._serverRepo.decrementMemberCount(serverId);
+    await this._membershipCleanupService.removeMemberAndDecrementCount(serverId, targetUserId);
 
     await this._auditLogRepo.create(
       new ServerAuditLog({

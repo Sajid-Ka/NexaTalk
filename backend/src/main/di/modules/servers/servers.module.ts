@@ -51,6 +51,8 @@ import { IGetSentDirectInvitesUsecase } from "../../../../application/servers/in
 import { GetSentDirectInvitesUsecase } from "../../../../application/servers/invites/usecases/GetSentDirectInvitesUsecase";
 import { TransferOwnership } from "../../../../application/servers/members/usecases/TransferOwnership";
 import { ITransferOwnershipUsecase } from "../../../../application/servers/members/interfaces/ITransferOwnershipUsecase";
+import { ServerMembershipCleanupService } from "../../../../application/servers/members/services/ServerMembershipCleanupService";
+import { IServerMembershipCleanupService } from "../../../../application/servers/members/interfaces/IServerMembershipCleanupService";
 
 // Controllers
 import { ServerCoreController } from "../../../../presentation/servers/controllers/ServerCoreController";
@@ -95,6 +97,9 @@ export function loadServersModule(container: Container) {
   container.bind<IGetServerMembersUsecase>(SERVERS_TYPES.GetServerMembers).to(GetServerMembers);
   container.bind<IUpdateMemberRoleUsecase>(SERVERS_TYPES.UpdateMemberRole).to(UpdateMemberRole);
   container.bind<ITransferOwnershipUsecase>(SERVERS_TYPES.TransferOwnership).to(TransferOwnership);
+  container
+    .bind<IServerMembershipCleanupService>(SERVERS_TYPES.ServerMembershipCleanupService)
+    .to(ServerMembershipCleanupService);
   //invites
   container.bind(SERVERS_TYPES.CreateServerInvite).to(CreateServerInvite);
   container.bind(SERVERS_TYPES.JoinServerByInvite).to(JoinServerByInvite);

@@ -23,6 +23,7 @@ export const SERVERS_TYPES = {
   KickMember: Symbol.for("KickMember"),
   UpdateMemberRole: Symbol.for("UpdateMemberRole"),
   TransferOwnership: Symbol.for("TransferOwnership"),
+  ServerMembershipCleanupService: Symbol.for("ServerMembershipCleanupService"),
 
   //invites
   CreateServerInvite: Symbol.for("CreateServerInvite"),

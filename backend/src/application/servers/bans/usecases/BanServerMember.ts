@@ -3,6 +3,7 @@ import { SERVERS_TYPES } from "../../../../main/di/modules/servers/servers.types
 import { AUTH_TYPES } from "../../../../main/di/modules/auth/auth.types";
 import { IServerRepository } from "../../../../domain/features/servers/repositories/IServerRepository";
 import { IServerMemberRepository } from "../../../../domain/features/servers/repositories/IServerMemberRepository";
+import { IServerMembershipCleanupService } from "../../members/interfaces/IServerMembershipCleanupService";
 import { IServerBanRepository } from "../../../../domain/features/servers/repositories/IServerBanRepository";
 import { IUserRepository } from "../../../../domain/features/auth/repositories/IUserRepository";
 import { ServerBan } from "../../../../domain/features/servers/entities/ServerBan";
@@ -26,6 +27,8 @@ export class BanServerMember implements IBanServerMemberUsecase {
     private readonly _memberRepo: IServerMemberRepository,
     @inject(SERVERS_TYPES.ServerBanRepository) private readonly _banRepo: IServerBanRepository,
     @inject(AUTH_TYPES.UserRepository) private readonly _userRepo: IUserRepository,
+    @inject(SERVERS_TYPES.ServerMembershipCleanupService)
+    private readonly _membershipCleanupService: IServerMembershipCleanupService,
     @inject(SERVERS_TYPES.ServerAuditLogRepository)
     private readonly _auditLogRepo: IServerAuditLogRepository,
   ) {}
@@ -97,8 +100,7 @@ export class BanServerMember implements IBanServerMemberUsecase {
     const createdBan = await this._banRepo.create(ban);
 
     if (targetMember) {
-      await this._memberRepo.removeMember(serverId, targetUserId);
-      await this._serverRepo.decrementMemberCount(serverId);
+      await this._membershipCleanupService.removeMemberAndDecrementCount(serverId, targetUserId);
     }
 
     await this._auditLogRepo.create(
