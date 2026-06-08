@@ -38,7 +38,14 @@ export function errorInterceptor(
       });
     }
 
-    return res.status(err.statusCode).json(errorResponse(err.code ?? err.name, err.message));
+    let details: unknown = undefined;
+    if (err && typeof err === "object" && "details" in err) {
+      details = (err as { details?: unknown }).details;
+    }
+
+    return res
+      .status(err.statusCode)
+      .json(errorResponse(err.code ?? err.name, err.message, details));
   }
 
   return res

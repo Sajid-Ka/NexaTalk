@@ -24,7 +24,7 @@ export class UserStatusService implements IUserStatusService {
     }
 
     if (user.sessionVersion !== sessionVersion) {
-      throw new UnauthorizedError("Session has expired or been revoked");
+      throw new UnauthorizedError("Session expired");
     }
   }
 }

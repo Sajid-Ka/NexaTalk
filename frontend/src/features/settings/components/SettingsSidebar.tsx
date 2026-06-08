@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../auth/context/useAuth";
 import {
     User,
@@ -41,8 +41,8 @@ export default function SettingsSidebar() {
         }
     }
 
-    // For now, we only have the profile settings page
-    const activeItem = "profile";
+    const location = useLocation();
+    const activeItem = location.pathname.split("/").pop() || "profile";
 
     return (
         <aside className="w-[280px] h-screen bg-[#090B11] border-r border-white/5 flex flex-col shrink-0">
@@ -64,6 +64,7 @@ export default function SettingsSidebar() {
                 {sidebarItems.map((item) => (
                     <button
                         key={item.id}
+                        onClick={() => navigate(`/settings/${item.id}`)}
                         className={cn(
                             "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group",
                             activeItem === item.id

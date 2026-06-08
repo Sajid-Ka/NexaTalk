@@ -1,5 +1,5 @@
-import { SettingsSidebar } from "../settingsFeat/profile/components";
-import { ProfilePage } from "../settingsFeat/profile/pages";
+import { Outlet } from "react-router-dom";
+import SettingsSidebar from "../components/SettingsSidebar";
 
 export default function SettingsPage() {
     return (
@@ -9,7 +9,7 @@ export default function SettingsPage() {
                 <div className="max-w-5xl mx-auto py-12 px-8">
 
                     <>
-                        <ProfilePage />
+                        <Outlet />
                     </>
                 </div>
             </main>
