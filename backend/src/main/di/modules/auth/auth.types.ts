@@ -22,6 +22,7 @@ export const AUTH_TYPES = {
   VerifyEmail: Symbol.for("VerifyEmail"),
   RequestPasswordReset: Symbol.for("RequestPasswordReset"),
   ResetPassword: Symbol.for("ResetPassword"),
+  RequestEmailChange: Symbol.for("RequestEmailChange"),
 
   AuthController: Symbol.for("AuthController"),
   SessionController: Symbol.for("SessionController"),

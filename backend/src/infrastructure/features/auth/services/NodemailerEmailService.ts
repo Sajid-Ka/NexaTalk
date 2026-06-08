@@ -64,4 +64,33 @@ export class NodemailerEmailService {
       `,
     });
   }
+
+  async sendEmailChangeVerification(newEmail: string, link: string): Promise<void> {
+    await this._transporter.sendMail({
+      from: `"NexaTalk Security" <${this._emailUser}>`,
+      to: newEmail,
+      subject: "Verify Your New Email Address",
+      html: `
+        <div style="font-family: Arial; padding: 20px;">
+          <h2>Security Alert: Email Change Request</h2>
+          <p>We received a request to change your NexaTalk account email to this address.</p>
+          <p>Please click the link below to verify this email address and complete the change. If you did not request this, you can safely ignore this email.</p>
+          <a href="${link}" 
+            style="
+              background: #3B82F6;
+              color: white;
+              padding: 10px 15px;
+              text-decoration: none;
+              border-radius: 6px;
+              display: inline-block;
+            ">
+            Verify New Email
+          </a>
+          <p style="margin-top: 20px; font-size: 12px; color: gray;">
+            This link will expire soon. For security reasons, you will be required to log in again after verifying.
+          </p>
+        </div>
+      `,
+    });
+  }
 }

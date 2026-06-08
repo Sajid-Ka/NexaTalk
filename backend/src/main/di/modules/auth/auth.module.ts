@@ -24,6 +24,7 @@ import { RequestVerificationEmail } from "../../../../application/auth/usecases/
 import { VerifyEmail } from "../../../../application/auth/usecases/VerifyEmail";
 import { RequestPasswordReset } from "../../../../application/auth/usecases/RequestPasswordReset";
 import { ResetPassword } from "../../../../application/auth/usecases/ResetPassword";
+import { RequestEmailChange } from "../../../../application/auth/usecases/RequestEmailChange";
 
 import { AuthController } from "../../../../presentation/auth/controllers/AuthController";
 import { SessionController } from "../../../../presentation/auth/controllers/SessionController";
@@ -62,6 +63,7 @@ export function loadAuthModule(container: Container) {
   container.bind(AUTH_TYPES.VerifyEmail).to(VerifyEmail);
   container.bind(AUTH_TYPES.RequestPasswordReset).to(RequestPasswordReset);
   container.bind(AUTH_TYPES.ResetPassword).to(ResetPassword);
+  container.bind(AUTH_TYPES.RequestEmailChange).to(RequestEmailChange);
 
   container.bind(AUTH_TYPES.AuthController).to(AuthController);
   container.bind(AUTH_TYPES.SessionController).to(SessionController);

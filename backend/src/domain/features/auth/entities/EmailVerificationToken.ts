@@ -1,6 +1,7 @@
 export interface EmailVerificationTokenProps {
   id?: string;
   userId: string;
+  newEmail?: string;
   tokenHash: string;
   expiresAt: Date;
   used?: boolean;
@@ -10,6 +11,7 @@ export interface EmailVerificationTokenProps {
 export class EmailVerificationToken {
   public readonly id?: string;
   public readonly userId: string;
+  public readonly newEmail?: string;
   public readonly tokenHash: string;
   public readonly expiresAt: Date;
   public readonly used: boolean;
@@ -18,6 +20,7 @@ export class EmailVerificationToken {
   constructor(props: EmailVerificationTokenProps) {
     this.id = props.id;
     this.userId = props.userId;
+    this.newEmail = props.newEmail;
     this.tokenHash = props.tokenHash;
     this.expiresAt = props.expiresAt;
     this.used = props.used ?? false;

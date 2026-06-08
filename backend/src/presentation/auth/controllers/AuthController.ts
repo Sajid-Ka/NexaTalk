@@ -47,9 +47,9 @@ export class AuthController {
       return res.status(400).json(errorResponse("TOKEN_MISSING", ErrorMessage.TOKEN_MISSING));
     }
 
-    await this._verifyEmailUsecase.execute(token);
+    const result = await this._verifyEmailUsecase.execute(token);
 
-    return res.status(200).json(successResponse(null, AuthMessage.EMAIL_VERIFIED));
+    return res.status(200).json(successResponse(null, result.message));
   };
 
   requestVerificationEmail = async (req: AuthenticatedRequest, res: Response) => {

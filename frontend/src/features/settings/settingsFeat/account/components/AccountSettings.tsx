@@ -20,7 +20,7 @@ import {
   changeEmailSchema,
 } from "../validators/accountSchema";
 import type { ChangeEmailFormData, ChangePasswordFormData } from "../validators/accountSchema";
-import { changePasswordApi, changeEmailApi, deleteAccountApi } from "../api/accountApi";
+import { changePasswordApi, requestEmailChangeApi, deleteAccountApi } from "../api/accountApi";
 
 const getErrorMessage = (error: unknown, fallback: string) => {
   if (axios.isAxiosError(error)) {
@@ -121,14 +121,17 @@ export default function AccountSettings() {
 
   const onEmailSubmit = async (data: ChangeEmailFormData) => {
     try {
-      await changeEmailApi(data);
-      toast.success("Email updated successfully");
+      await requestEmailChangeApi({
+        newEmail: data.newEmail,
+        currentPassword: data.passwordConfirmation,
+      });
+      toast.success("Verification email sent. Please check your inbox.");
       resetEmailForm();
     } catch (error) {
-      const message = getErrorMessage(error, "Failed to update email");
-      if (message === "Incorrect password") {
+      const message = getErrorMessage(error, "Failed to request email change");
+      if (message === "Current password is incorrect.") {
         setEmailError("passwordConfirmation", { type: "manual", message });
-      } else if (message === "Email is already in use") {
+      } else if (message === "This email is already in use.") {
         setEmailError("newEmail", { type: "manual", message });
       } else {
         toast.error(message);

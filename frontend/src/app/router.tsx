@@ -96,11 +96,7 @@ export default function AppRouter() {
             </Route>
             <Route
                 path={AppRoute.VERIFY_EMAIL}
-                element={
-                    <PublicRoute>
-                        <VerifyEmailPage />
-                    </PublicRoute>
-                }
+                element={<VerifyEmailPage />}
             />
             <Route
                 path={AppRoute.CHECK_EMAIL}

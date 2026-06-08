@@ -11,6 +11,7 @@ export class EmailVerificationTokenMapper implements IMapper<
     return new EmailVerificationToken({
       id: doc._id.toString(),
       userId: doc.userId,
+      newEmail: doc.newEmail,
       tokenHash: doc.tokenHash,
       expiresAt: doc.expiresAt,
       used: doc.used,
@@ -23,6 +24,7 @@ export class EmailVerificationTokenMapper implements IMapper<
   ): Omit<IEmailVerificationTokenPersistence, OmittedDatabaseFields> {
     return {
       userId: entity.userId,
+      newEmail: entity.newEmail,
       tokenHash: entity.tokenHash,
       expiresAt: entity.expiresAt,
       used: entity.used,
