@@ -28,13 +28,25 @@ export class RegisterUser implements IRegisterUserUsecase {
   ) {}
 
   async execute(dto: RegisterUserRequest): Promise<RegisterUserResponse> {
-    const emailExists = await this._userRepo.findByEmail(dto.email);
+    const emailExists = await this._userRepo.findByEmailIncludingDeleted(dto.email);
     if (emailExists) {
+      if (emailExists.deletedAt) {
+        throw new ConflictError(
+          "EMAIL_DELETED",
+          "This email is associated with a deleted account and cannot be used for registration.",
+        );
+      }
       throw new ConflictError("EMAIL_ALREADY_REGISTERED", "Email already registered");
     }
 
-    const usernameExists = await this._userRepo.findByUsername(dto.username);
+    const usernameExists = await this._userRepo.findByUsernameIncludingDeleted(dto.username);
     if (usernameExists) {
+      if (usernameExists.deletedAt) {
+        throw new ConflictError(
+          "USERNAME_DELETED",
+          "This username is associated with a deleted account and cannot be used for registration.",
+        );
+      }
       throw new ConflictError("USERNAME_ALREADY_TAKEN", "Username already taken");
     }
 

@@ -42,6 +42,18 @@ export default function SignupForm() {
                     return;
                 }
 
+                if (code === "USERNAME_DELETED") {
+                    setError("username", { message });
+                    toast.error(message);
+                    return;
+                }
+
+                if (code === "EMAIL_DELETED") {
+                    setError("email", { message });
+                    toast.error(message);
+                    return;
+                }
+
                 if (code === "EMAIL_ALREADY_REGISTERED") {
                     setError("email", { message: "This email is already registered." });
                     toast.error("This email is already registered. Please log in instead.");

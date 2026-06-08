@@ -82,24 +82,20 @@ export class UserRepository
     return doc ? this.mapper.toDomain(doc) : null;
   }
 
+  async findByUsernameIncludingDeleted(username: string): Promise<User | null> {
+    const escapedUsername = username.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    const doc = await this.model
+      .findOne({
+        username: new RegExp(`^${escapedUsername}$`, "i"),
+      })
+      .lean();
+
+    return doc ? this.mapper.toDomain(doc) : null;
+  }
+
   //Handle soft deleted users when they try to register again
   async create(entity: User, transaction?: TransactionContext): Promise<User> {
-    const existingDeletedUser = await this.model
-      .findOne({
-        email: entity.email,
-        deletedAt: { $ne: null },
-      })
-      .session(toMongoSession(transaction) ?? null);
-
-    //Give them a fresh start
-    if (existingDeletedUser) {
-      // Log for audit (optional) usig logger
-
-      const persistence = this.mapper.toPersistence(entity);
-      const created = await this.createRaw(persistence, transaction);
-      return this.mapper.toDomain(created);
-    }
-
     // Check if email already exists and is NOT deleted (active user)
     const existingActiveUser = await this.model
       .findOne({
@@ -109,7 +105,7 @@ export class UserRepository
       .session(toMongoSession(transaction) ?? null);
 
     if (existingActiveUser) {
-      throw new ConflictError();
+      throw new ConflictError("EMAIL_ALREADY_REGISTERED", "Email already registered");
     }
 
     const existingUsername = await this.model
@@ -123,7 +119,8 @@ export class UserRepository
       throw new ConflictError("USERNAME_ALREADY_TAKEN", "Username already taken");
     }
 
-    // No existing user found, create new one
+    // No existing active user found, create new one
+    // Note: Soft deleted users with the same email/username won't conflict due to our partial indexes and queries
     const persistence = this.mapper.toPersistence(entity);
     const created = await this.createRaw(persistence, transaction);
     return this.mapper.toDomain(created);
