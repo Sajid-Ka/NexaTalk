@@ -3,6 +3,7 @@ import { Schema, model, Types } from "mongoose";
 export interface IEmailVerificationTokenPersistence {
   _id: Types.ObjectId;
   userId: string;
+  newEmail?: string;
   tokenHash: string;
   expiresAt: Date;
   used: boolean;
@@ -12,6 +13,7 @@ export interface IEmailVerificationTokenPersistence {
 const EmailVerificationTokenSchema = new Schema<IEmailVerificationTokenPersistence>(
   {
     userId: { type: String, required: true },
+    newEmail: { type: String, required: false },
     tokenHash: { type: String, required: true, unique: true },
     expiresAt: { type: Date, required: true },
     used: { type: Boolean, required: true, default: false },

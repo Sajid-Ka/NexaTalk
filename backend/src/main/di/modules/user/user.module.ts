@@ -22,7 +22,6 @@ import { SearchUsers } from "../../../../application/user/usecases/SearchUsers";
 
 // Account
 import { ChangePassword } from "../../../../application/user/usecases/ChangePassword";
-import { ChangeEmail } from "../../../../application/user/usecases/ChangeEmail";
 import { DeleteAccount } from "../../../../application/user/usecases/DeleteAccount";
 import { AccountController } from "../../../../presentation/user/controllers/AccountController";
 
@@ -47,7 +46,6 @@ export function loadUserModule(container: Container) {
 
   // Account
   container.bind(USER_TYPES.ChangePassword).to(ChangePassword);
-  container.bind(USER_TYPES.ChangeEmail).to(ChangeEmail);
   container.bind(USER_TYPES.DeleteAccount).to(DeleteAccount);
   container.bind(USER_TYPES.AccountController).to(AccountController);
 }

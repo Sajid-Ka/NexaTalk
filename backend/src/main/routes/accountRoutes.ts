@@ -7,10 +7,7 @@ import { AUTH_TYPES } from "../di/modules/auth/auth.types";
 import { ITokenService } from "../../domain/features/auth/services/ITokenService";
 import { IUserStatusService } from "../../domain/features/auth/services/IUserStatusService";
 import { validate } from "../../presentation/validators.ts/validate";
-import {
-  changePasswordSchema,
-  changeEmailSchema,
-} from "../../presentation/user/validators/accountValidator";
+import { changePasswordSchema } from "../../presentation/user/validators/accountValidator";
 
 const router = Router();
 
@@ -23,7 +20,7 @@ const authMiddleware = createAuthMiddleware(tokenService, userStatusService);
 router.use(authMiddleware);
 
 router.put("/me/password", validate(changePasswordSchema), controller.changePassword);
-router.put("/me/email", validate(changeEmailSchema), controller.changeEmail);
+router.post("/me/request-email-change", controller.requestEmailChange);
 router.delete("/me", controller.deleteAccount);
 
 export default router;

@@ -19,7 +19,6 @@ export const USER_TYPES = {
 
   // Account
   ChangePassword: Symbol.for("ChangePassword"),
-  ChangeEmail: Symbol.for("ChangeEmail"),
   DeleteAccount: Symbol.for("DeleteAccount"),
   AccountController: Symbol.for("AccountController"),
 };
