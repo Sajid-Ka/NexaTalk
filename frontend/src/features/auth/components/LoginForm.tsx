@@ -11,6 +11,7 @@ import { useState } from "react";
 import { UserRole } from "../../../shared/constants/user.const";
 import toast from "react-hot-toast";
 import { resendVerificationEmailApi } from "../api/authApi";
+import GoogleAuthButton from "./GoogleAuthButton";
 
 export default function LoginForm() {
     const navigate = useNavigate();
@@ -34,8 +35,6 @@ export default function LoginForm() {
             setServerError(null);
 
             const user = await login(data);
-
-            console.log("Logged in user", user);
 
             if(user?.globalRole === UserRole.ADMIN) navigate("/admin", {replace : true})
             else navigate("/home", {replace : true})
@@ -112,6 +111,14 @@ export default function LoginForm() {
         <Card className="p-8 bg-[#0F121D] border border-white/5 shadow-2xl backdrop-blur-sm">
             <form onSubmit={handleSubmit(onSubmit)}>
                 <LoginFields register={register} errors={errors} />
+
+                <GoogleAuthButton actionText="Sign in with Google" />
+
+                <div className="flex items-center my-4">
+                    <div className="flex-1 border-t border-white/10"></div>
+                    <span className="px-3 text-white/40 text-sm">Or</span>
+                    <div className="flex-1 border-t border-white/10"></div>
+                </div>
 
                 {serverError && (
                     <div className="mt-4 space-y-2">

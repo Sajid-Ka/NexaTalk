@@ -11,6 +11,7 @@ import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 import { TimeUtil } from "../../../shared/utils/time/time.util";
 import { CACHE_KEYS } from "../../../shared/constants/cacheKeys";
 import { ILogger } from "../../../domain/core/common/services/ILogger";
+import { AuthProviderNotEnabledError } from "../../../domain/features/auth/errors/AuthProviderNotEnabledError";
 
 @injectable()
 export class RequestPasswordReset implements IRequestPasswordResetUsecase {
@@ -32,6 +33,10 @@ export class RequestPasswordReset implements IRequestPasswordResetUsecase {
     const user = await this._userRepo.findByEmail(email);
 
     if (!user) return;
+
+    if (user.authProviders?.password === false) {
+      throw new AuthProviderNotEnabledError("Password login is not enabled for this account.");
+    }
 
     const rawToken = this._tokenGenerator.generate();
     const tokenHash = this._tokenGenerator.hash(rawToken);

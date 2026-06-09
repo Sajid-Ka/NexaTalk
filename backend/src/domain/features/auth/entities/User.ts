@@ -27,6 +27,14 @@ export interface UserProps {
   isEmailVerified?: boolean;
   sessionVersion?: number;
   hasCompletedOnboarding?: boolean;
+
+  //in feature need to add other auths then this helpful
+  authProviders?: {
+    password: boolean;
+    google: boolean;
+  };
+
+  googleId?: string;
 }
 
 export class User {
@@ -54,17 +62,33 @@ export class User {
   public readonly sessionVersion: number;
   public readonly hasCompletedOnboarding: boolean;
 
+  public readonly authProviders: {
+    password: boolean;
+    google: boolean;
+  };
+  public readonly googleId?: string;
+
   constructor(props: UserProps) {
     if (!props.username || props.username.trim().length < 3)
       throw new BadRequestError("Username must be atleast 3 characters");
     if (!props.email || !props.email.includes("@"))
       throw new BadRequestError("Invalid email address");
-    if (!props.passwordHash) throw new BadRequestError("Invalid password hash");
+
+    const requiresPassword = props.authProviders?.password ?? true;
+    if (requiresPassword && !props.passwordHash) {
+      throw new BadRequestError("Invalid password hash");
+    }
 
     this.id = props.id!;
     this.username = props.username;
     this.email = props.email;
     this.passwordHash = props.passwordHash;
+
+    this.authProviders = props.authProviders ?? {
+      password: true,
+      google: false,
+    };
+    this.googleId = props.googleId;
 
     this.avatar = props.avatar ?? "";
     this.bio = props.bio ?? "";

@@ -5,6 +5,7 @@ import { AuthenticatedRequest } from "../../../main/types/AuthenticatedRequest";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 import { ILogger } from "../../../domain/core/common/services/ILogger";
 import { ILoginUserUsecase } from "../../../application/auth/interfaces/ILoginUserUsecase";
+import { IGoogleLoginUsecase } from "../../../application/auth/interfaces/IGoogleLoginUsecase";
 import { IRegisterUserUsecase } from "../../../application/auth/interfaces/IRegisterUserUsecase";
 import { IRefreshSessionUsecase } from "../../../application/auth/interfaces/IRefreshSessionUsecase";
 import { IRequestPasswordResetUsecase } from "../../../application/auth/interfaces/IRequestPasswordResetUsecase";
@@ -24,6 +25,7 @@ export class AuthController {
   constructor(
     @inject(AUTH_TYPES.RegisterUser) private readonly _registerUser: IRegisterUserUsecase,
     @inject(AUTH_TYPES.LoginUser) private readonly _loginUser: ILoginUserUsecase,
+    @inject(AUTH_TYPES.GoogleLogin) private readonly _googleLogin: IGoogleLoginUsecase,
     @inject(AUTH_TYPES.RefreshSession) private readonly _refreshSession: IRefreshSessionUsecase,
     @inject(AUTH_TYPES.VerifyEmail) private readonly _verifyEmailUsecase: IVerifyEmailUsecase,
     @inject(AUTH_TYPES.RequestVerificationEmail)
@@ -72,6 +74,32 @@ export class AuthController {
     );
 
     this._logger.info("Login success", { userId: result.user.id });
+
+    res.cookie(CookieName.REFRESH_TOKEN, result.refreshToken, this._cookieOptions);
+
+    return res.status(200).json(
+      successResponse(
+        {
+          accessToken: result.accessToken,
+          user: result.user,
+        },
+        AuthMessage.LOGIN_SUCCESS,
+      ),
+    );
+  };
+
+  googleLogin = async (req: AuthenticatedRequest, res: Response) => {
+    const { idToken } = req.body;
+
+    this._logger.info("Google login request");
+
+    const result = await this._googleLogin.execute(
+      { idToken },
+      req.ip ?? "unknown",
+      req.headers[HttpHeader.USER_AGENT] || "unknown",
+    );
+
+    this._logger.info("Google login success", { userId: result.user.id });
 
     res.cookie(CookieName.REFRESH_TOKEN, result.refreshToken, this._cookieOptions);
 

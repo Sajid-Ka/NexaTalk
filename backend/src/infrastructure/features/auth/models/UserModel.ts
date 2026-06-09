@@ -21,14 +21,20 @@ export interface IUserPersistence {
   deletedAt?: Date | null;
   isEmailVerified: boolean;
   sessionVersion: number;
+
   hasCompletedOnboarding?: boolean;
+  googleId?: string;
+  authProviders?: {
+    password: boolean;
+    google: boolean;
+  };
 }
 
 const userSchema = new Schema<IUserPersistence>(
   {
     username: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    passwordHash: { type: String, required: true },
+    passwordHash: { type: String, default: "" },
     avatar: { type: String, default: "" },
     bio: { type: String, default: "", maxlength: 500 },
     status: {
@@ -51,6 +57,21 @@ const userSchema = new Schema<IUserPersistence>(
     isEmailVerified: { type: Boolean, default: false },
     sessionVersion: { type: Number, default: 1 },
     hasCompletedOnboarding: { type: Boolean, default: false },
+    googleId: {
+      type: String,
+      sparse: true,
+      unique: true,
+    },
+    authProviders: {
+      password: {
+        type: Boolean,
+        default: true,
+      },
+      google: {
+        type: Boolean,
+        default: false,
+      },
+    },
   },
   { timestamps: true },
 );

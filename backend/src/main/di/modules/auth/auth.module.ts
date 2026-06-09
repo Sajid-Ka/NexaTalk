@@ -11,9 +11,12 @@ import { JwtTokenService } from "../../../../infrastructure/features/auth/servic
 import { SecureTokenGenerator } from "../../../../infrastructure/features/auth/services/SecureTokenGenerator";
 import { NodemailerEmailService } from "../../../../infrastructure/features/auth/services/NodemailerEmailService";
 import { UserStatusService } from "../../../../infrastructure/features/auth/services/UserStatusService";
+import { GoogleAuthService } from "../../../../infrastructure/features/auth/services/GoogleAuthService";
+import { AuthSessionService } from "../../../../application/auth/services/AuthSessionService";
 
 import { RegisterUser } from "../../../../application/auth/usecases/RegisterUser";
 import { LoginUser } from "../../../../application/auth/usecases/LoginUser";
+import { GoogleLoginUsecase } from "../../../../application/auth/usecases/GoogleLoginUsecase";
 import { RefreshSession } from "../../../../application/auth/usecases/RefreshSession";
 import { LogoutUser } from "../../../../application/auth/usecases/LogoutUser";
 import { LogoutAllDevice } from "../../../../application/auth/usecases/LogoutAllDevice";
@@ -50,9 +53,12 @@ export function loadAuthModule(container: Container) {
   container.bind(AUTH_TYPES.TokenGenerator).to(SecureTokenGenerator).inSingletonScope();
   container.bind(AUTH_TYPES.EmailService).to(NodemailerEmailService).inSingletonScope();
   container.bind(AUTH_TYPES.UserStatusService).to(UserStatusService).inSingletonScope();
+  container.bind(AUTH_TYPES.GoogleAuthService).to(GoogleAuthService).inSingletonScope();
+  container.bind(AUTH_TYPES.AuthSessionService).to(AuthSessionService).inSingletonScope();
 
   container.bind(AUTH_TYPES.RegisterUser).to(RegisterUser);
   container.bind(AUTH_TYPES.LoginUser).to(LoginUser);
+  container.bind(AUTH_TYPES.GoogleLogin).to(GoogleLoginUsecase);
   container.bind(AUTH_TYPES.RefreshSession).to(RefreshSession);
   container.bind(AUTH_TYPES.LogoutUser).to(LogoutUser);
   container.bind(AUTH_TYPES.LogoutAllDevice).to(LogoutAllDevice);

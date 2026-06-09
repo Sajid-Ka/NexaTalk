@@ -23,6 +23,11 @@ export class UserRepository
     return this.mapper.toDomain(doc);
   }
 
+  async findByGoogleId(googleId: string): Promise<User | null> {
+    const doc = await this.model.findOne({ googleId, deletedAt: null }).lean();
+    return doc ? this.mapper.toDomain(doc) : null;
+  }
+
   async findByEmail(email: string): Promise<User | null> {
     return this.findOne({ email, deletedAt: null } as Partial<User>);
   }

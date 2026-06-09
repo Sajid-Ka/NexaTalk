@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { checkStatusApi, loginApi, logoutApi, refreshApi } from "../api/authApi";
+import { checkStatusApi, loginApi, googleLoginApi, logoutApi, refreshApi } from "../api/authApi";
 import {
     setAccessToken as setAxiosToken,
     setRefreshHandler,
@@ -127,6 +127,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return payload.user as AuthUser;
     };
 
+    const googleLogin = async (idToken: string): Promise<AuthUser> => {
+        const res = await googleLoginApi({ idToken });
+        const payload = res.data.data;
+
+        setAccessToken(payload.accessToken);
+        setUser(payload.user as AuthUser);
+
+        return payload.user as AuthUser;
+    };
+
     const logout = async () => {
         try {
             await logoutApi();
@@ -142,6 +152,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 accessToken,
                 user,
                 login,
+                googleLogin,
                 logout,
                 isAuthenticated: !!user,
                 loading,

@@ -9,12 +9,17 @@ export interface AuthUser {
     isBlocked: boolean;
     accountStatus: UserStatus;
     hasCompletedOnboarding: boolean;
+    authProviders?: {
+        password: boolean;
+        google: boolean;
+    };
 }
 
 export interface AuthContextType {
     accessToken: string | null;
     user: AuthUser | null;
     login: (data: { email: string; password: string }) => Promise<AuthUser>;
+    googleLogin: (idToken: string) => Promise<AuthUser>;
     logout: () => Promise<void>;
     isAuthenticated: boolean;
     loading: boolean;

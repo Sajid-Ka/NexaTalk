@@ -42,6 +42,8 @@ export default function AccountSettings() {
   const [deleting, setDeleting] = useState(false);
   const [confirmationText, setConfirmationText] = useState("");
 
+  const isGoogleOnly = user?.authProviders?.password === false;
+
   const canDelete = confirmationText === "DELETE";
 
   // Password Form
@@ -169,47 +171,55 @@ export default function AccountSettings() {
         description="Update your password to keep your account secure."
       >
         <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
-          <form onSubmit={onPasswordSubmitManual} className="space-y-4">
-            <div>
-              <Input
-                type="password"
-                placeholder="Current Password"
-                {...registerPassword("currentPassword")}
-                error={passwordErrors.currentPassword?.message}
-                className="bg-white/[0.03] border-white/5 h-12"
-              />
+          {isGoogleOnly ? (
+            <div className="p-4 text-center">
+              <p className="text-slate-300">
+                Password login is not enabled for this account. You signed up using Google and can continue signing in with your Google account.
+              </p>
             </div>
-            <div>
-              <Input
-                type="password"
-                placeholder="New Password"
-                {...registerPassword("newPassword")}
-                error={passwordErrors.newPassword?.message}
-                className="bg-white/[0.03] border-white/5 h-12"
-              />
-            </div>
-            <div>
-              <Input
-                type="password"
-                placeholder="Confirm New Password"
-                {...registerPassword("confirmNewPassword")}
-                error={passwordErrors.confirmNewPassword?.message}
-                className="bg-white/[0.03] border-white/5 h-12"
-              />
-            </div>
+          ) : (
+            <form onSubmit={onPasswordSubmitManual} className="space-y-4">
+              <div>
+                <Input
+                  type="password"
+                  placeholder="Current Password"
+                  {...registerPassword("currentPassword")}
+                  error={passwordErrors.currentPassword?.message}
+                  className="bg-white/[0.03] border-white/5 h-12"
+                />
+              </div>
+              <div>
+                <Input
+                  type="password"
+                  placeholder="New Password"
+                  {...registerPassword("newPassword")}
+                  error={passwordErrors.newPassword?.message}
+                  className="bg-white/[0.03] border-white/5 h-12"
+                />
+              </div>
+              <div>
+                <Input
+                  type="password"
+                  placeholder="Confirm New Password"
+                  {...registerPassword("confirmNewPassword")}
+                  error={passwordErrors.confirmNewPassword?.message}
+                  className="bg-white/[0.03] border-white/5 h-12"
+                />
+              </div>
 
-            <div className="flex justify-end pt-2">
-              <Button
-                type="submit"
-                variant="primary"
-                isLoading={isPasswordSubmitting}
-                className="bg-indigo-600 hover:bg-indigo-700 h-10 px-6"
-              >
-                <KeyRound size={16} className="mr-2" />
-                Update Password
-              </Button>
-            </div>
-          </form>
+              <div className="flex justify-end pt-2">
+                <Button
+                  type="submit"
+                  variant="primary"
+                  isLoading={isPasswordSubmitting}
+                  className="bg-indigo-600 hover:bg-indigo-700 h-10 px-6"
+                >
+                  <KeyRound size={16} className="mr-2" />
+                  Update Password
+                </Button>
+              </div>
+            </form>
+          )}
         </div>
       </SettingsSection>
 
@@ -218,47 +228,55 @@ export default function AccountSettings() {
         description="Update the email associated with your account."
       >
         <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
-          <form onSubmit={handleEmailSubmit(onEmailSubmit)} className="space-y-4">
-            <div>
-              <Input
-                type="email"
-                placeholder="Current Email"
-                value={user?.email || ""}
-                disabled
-                className="bg-white/[0.03] border-white/5 h-12 opacity-50 cursor-not-allowed"
-              />
+          {isGoogleOnly ? (
+            <div className="p-4 text-center">
+              <p className="text-slate-300">
+                Email changes are not available for Google accounts. To change your email address, update it in your Google account settings.
+              </p>
             </div>
-            <div>
-              <Input
-                type="email"
-                placeholder="New Email"
-                {...registerEmail("newEmail")}
-                error={emailErrors.newEmail?.message}
-                className="bg-white/[0.03] border-white/5 h-12"
-              />
-            </div>
-            <div>
-              <Input
-                type="password"
-                placeholder="Current Password"
-                {...registerEmail("passwordConfirmation")}
-                error={emailErrors.passwordConfirmation?.message}
-                className="bg-white/[0.03] border-white/5 h-12"
-              />
-            </div>
+          ) : (
+            <form onSubmit={handleEmailSubmit(onEmailSubmit)} className="space-y-4">
+              <div>
+                <Input
+                  type="email"
+                  placeholder="Current Email"
+                  value={user?.email || ""}
+                  disabled
+                  className="bg-white/[0.03] border-white/5 h-12 opacity-50 cursor-not-allowed"
+                />
+              </div>
+              <div>
+                <Input
+                  type="email"
+                  placeholder="New Email"
+                  {...registerEmail("newEmail")}
+                  error={emailErrors.newEmail?.message}
+                  className="bg-white/[0.03] border-white/5 h-12"
+                />
+              </div>
+              <div>
+                <Input
+                  type="password"
+                  placeholder="Current Password"
+                  {...registerEmail("passwordConfirmation")}
+                  error={emailErrors.passwordConfirmation?.message}
+                  className="bg-white/[0.03] border-white/5 h-12"
+                />
+              </div>
 
-            <div className="flex justify-end pt-2">
-              <Button
-                type="submit"
-                variant="primary"
-                isLoading={isSubmittingEmail}
-                className="bg-indigo-600 hover:bg-indigo-700 h-10 px-6"
-              >
-                <Mail size={16} className="mr-2" />
-                Update Email
-              </Button>
-            </div>
-          </form>
+              <div className="flex justify-end pt-2">
+                <Button
+                  type="submit"
+                  variant="primary"
+                  isLoading={isSubmittingEmail}
+                  className="bg-indigo-600 hover:bg-indigo-700 h-10 px-6"
+                >
+                  <Mail size={16} className="mr-2" />
+                  Update Email
+                </Button>
+              </div>
+            </form>
+          )}
         </div>
       </SettingsSection>
 

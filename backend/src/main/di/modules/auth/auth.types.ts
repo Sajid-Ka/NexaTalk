@@ -9,9 +9,12 @@ export const AUTH_TYPES = {
   TokenGenerator: Symbol.for("TokenGenerator"),
   EmailService: Symbol.for("EmailService"),
   UserStatusService: Symbol.for("UserStatusService"),
+  GoogleAuthService: Symbol.for("GoogleAuthService"),
+  AuthSessionService: Symbol.for("AuthSessionService"),
 
   RegisterUser: Symbol.for("RegisterUser"),
   LoginUser: Symbol.for("LoginUser"),
+  GoogleLogin: Symbol.for("GoogleLogin"),
   RefreshSession: Symbol.for("RefreshSession"),
   LogoutUser: Symbol.for("LogoutUser"),
   LogoutAllDevice: Symbol.for("LogoutAllDevice"),

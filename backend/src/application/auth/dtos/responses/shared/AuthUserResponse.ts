@@ -6,4 +6,8 @@ export interface AuthUserResponse {
   email: string;
   globalRole: GlobalRole;
   hasCompletedOnboarding: boolean;
+  authProviders?: {
+    password: boolean;
+    google: boolean;
+  };
 }

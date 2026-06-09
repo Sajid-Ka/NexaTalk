@@ -2,6 +2,7 @@ import { Router } from "express";
 import { validate } from "../../presentation/validators.ts/validate";
 import { registerSchema } from "../../presentation/auth/validators/registerValidator";
 import { loginSchema } from "../../presentation/auth/validators/loginValidator";
+import { googleLoginSchema } from "../../presentation/auth/validators/googleLoginValidator";
 import { rateLimit } from "../../infrastructure/core/http/middlewares/rateLimit.middleware";
 import { verifyEmailSchema } from "../../presentation/auth/validators/verifyEmailValidator";
 import { requestVerificationEmailSchema } from "../../presentation/auth/validators/requestVerificationEmailValidator";
@@ -45,6 +46,12 @@ router.post(
   rateLimit("login", env.RATE_LIMIT_LOGIN, env.RATE_LIMIT_WINDOW_SECONDS),
   validate(loginSchema),
   authController.login,
+);
+router.post(
+  "/google",
+  rateLimit("login", env.RATE_LIMIT_LOGIN, env.RATE_LIMIT_WINDOW_SECONDS),
+  validate(googleLoginSchema),
+  authController.googleLogin,
 );
 router.post("/refresh", authController.refresh);
 

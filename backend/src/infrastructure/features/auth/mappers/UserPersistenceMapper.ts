@@ -26,6 +26,8 @@ export class UserPersistenceMapper implements IMapper<IUserPersistence, User> {
       isEmailVerified: doc.isEmailVerified,
       sessionVersion: doc.sessionVersion,
       hasCompletedOnboarding: doc.hasCompletedOnboarding ?? false,
+      googleId: doc.googleId,
+      authProviders: doc.authProviders ?? { password: true, google: false },
     });
   }
 
@@ -47,6 +49,8 @@ export class UserPersistenceMapper implements IMapper<IUserPersistence, User> {
       isEmailVerified: user.isEmailVerified,
       sessionVersion: user.sessionVersion,
       hasCompletedOnboarding: user.hasCompletedOnboarding,
+      googleId: user.googleId,
+      authProviders: user.authProviders,
     };
   }
 
@@ -70,6 +74,8 @@ export class UserPersistenceMapper implements IMapper<IUserPersistence, User> {
     if (data.sessionVersion !== undefined) update.sessionVersion = data.sessionVersion;
     if (data.hasCompletedOnboarding !== undefined)
       update.hasCompletedOnboarding = data.hasCompletedOnboarding;
+    if (data.googleId !== undefined) update.googleId = data.googleId;
+    if (data.authProviders !== undefined) update.authProviders = data.authProviders;
     return update;
   }
 }

@@ -3,6 +3,9 @@ import { api } from "../../../shared/api/axios";
 export const loginApi = (data: { email: string; password: string }) =>
     api.post("/auth/login", data);
 
+export const googleLoginApi = (data: { idToken: string }) =>
+    api.post("/auth/google", data);
+
 export const signupApi = (data: { username: string; email: string; password: string }) =>
     api.post("/auth/signup", data);
 

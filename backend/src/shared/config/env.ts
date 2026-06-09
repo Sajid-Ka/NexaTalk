@@ -30,6 +30,8 @@ const envSchema = z.object({
 
   APP_BASE_URL: z.string().trim().url(),
 
+  GOOGLE_CLIENT_ID: z.string().trim().min(1),
+
   REDIS_HOST: z.string().default("nexatalk-redis"),
   REDIS_PORT: z.coerce.number().default(6379),
 

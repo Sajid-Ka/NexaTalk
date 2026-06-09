@@ -13,6 +13,7 @@ import { ILogger } from "../../../domain/core/common/services/ILogger";
 import { NotFoundError } from "../../../domain/core/errors/NotFoundError";
 import { BadRequestError } from "../../../domain/core/errors/BadRequestError";
 import { ConflictError } from "../../../domain/features/auth/errors/ConflictError";
+import { AuthProviderNotEnabledError } from "../../../domain/features/auth/errors/AuthProviderNotEnabledError";
 import { EmailVerificationToken } from "../../../domain/features/auth/entities/EmailVerificationToken";
 import { CACHE_KEYS } from "../../../shared/constants/cacheKeys";
 
@@ -33,6 +34,10 @@ export class RequestEmailChange implements IRequestEmailChangeUsecase {
   async execute(userId: string, dto: RequestEmailChangeDto): Promise<void> {
     const user = await this._userRepo.findById(userId);
     if (!user) throw new NotFoundError("User not found");
+
+    if (user.authProviders?.password === false) {
+      throw new AuthProviderNotEnabledError("Email changes are not available for Google accounts.");
+    }
 
     const isPasswordValid = await this._passwordHasher.compare(
       dto.currentPassword,

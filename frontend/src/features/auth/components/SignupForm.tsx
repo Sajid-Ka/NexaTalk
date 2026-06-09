@@ -8,6 +8,7 @@ import Card from "../../../shared/ui/Card";
 import SignupFields from "./SignupFields";
 import { signupApi } from "../api/authApi";
 import toast from "react-hot-toast";
+import GoogleAuthButton from "./GoogleAuthButton";
 
 export default function SignupForm() {
     const navigate = useNavigate()
@@ -23,8 +24,7 @@ export default function SignupForm() {
 
     const onSubmit = async (data: SignupFormData) => {
         try {
-            const res = await signupApi(data);
-            console.log("signup success",res)
+            await signupApi(data);
             toast.success("Account created Successfully");
 
             navigate("/check-email");
@@ -72,6 +72,14 @@ export default function SignupForm() {
         <Card className="p-8 bg-[#0F121D] border border-white/5 shadow-2xl backdrop-blur-sm">
             <form onSubmit={handleSubmit(onSubmit)}>
                 <SignupFields register={register} errors={errors} />
+
+                <GoogleAuthButton actionText="Sign up with Google" />
+
+                <div className="flex items-center my-4">
+                    <div className="flex-1 border-t border-white/10"></div>
+                    <span className="px-3 text-white/40 text-sm">Or</span>
+                    <div className="flex-1 border-t border-white/10"></div>
+                </div>
 
                 <Button
                     type="submit"

@@ -108,6 +108,7 @@ export class RefreshSession implements IRefreshSessionUsecase {
         email: user.email,
         globalRole: user.globalRole,
         hasCompletedOnboarding: user.hasCompletedOnboarding,
+        authProviders: user.authProviders,
       },
       requiresOnboarding: !user.hasCompletedOnboarding,
     };

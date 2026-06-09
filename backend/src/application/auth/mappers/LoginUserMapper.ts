@@ -12,6 +12,7 @@ export class LoginUserMapper {
         email: user.email,
         globalRole: user.globalRole,
         hasCompletedOnboarding: user.hasCompletedOnboarding,
+        authProviders: user.authProviders,
       },
       requiresOnboarding: !user.hasCompletedOnboarding,
     };

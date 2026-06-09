@@ -7,6 +7,7 @@ import { IPasswordHasher } from "../../../domain/features/auth/services/IPasswor
 import { NotFoundError } from "../../../domain/core/errors/NotFoundError";
 import { BadRequestError } from "../../../domain/core/errors/BadRequestError";
 import { ValidationError } from "../../../domain/core/errors/ValidationError";
+import { AuthProviderNotEnabledError } from "../../../domain/features/auth/errors/AuthProviderNotEnabledError";
 import { passwordValidator } from "../../../shared/baseValidators/authValidator";
 
 @injectable()
@@ -19,6 +20,10 @@ export class ChangePassword implements IChangePasswordUsecase {
   async execute(userId: string, request: ChangePasswordRequest): Promise<void> {
     const user = await this._userRepo.findById(userId);
     if (!user) throw new NotFoundError("User not found");
+
+    if (user.authProviders?.password === false) {
+      throw new AuthProviderNotEnabledError("Password login is not enabled for this account.");
+    }
 
     const isValid = await this._hasher.compare(request.currentPassword, user.passwordHash);
     if (!isValid) throw new BadRequestError("Incorrect current password");
