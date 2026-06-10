@@ -16,6 +16,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<AuthUser | null>(null);
     const [loading, setLoading] = useState(true);
 
+    const updateUser = useCallback((data: Partial<AuthUser>) => {
+        setUser((prev) => prev ? { ...prev, ...data } : null);
+    }, []);
+
     const refreshPromiseRef = useRef<Promise<string | null> | null>(null);
 
     useEffect(() => {
@@ -154,6 +158,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 login,
                 googleLogin,
                 logout,
+                updateUser,
                 isAuthenticated: !!user,
                 loading,
             }}

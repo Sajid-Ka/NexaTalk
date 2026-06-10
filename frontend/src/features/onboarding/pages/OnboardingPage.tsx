@@ -1,33 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { 
   Gamepad2, 
   Music, 
   GraduationCap, 
   Code, 
   Clapperboard, 
-  Tv, 
-  Monitor, 
+  Tv,
   Palette,
+  Trophy,
   ArrowRight
 } from 'lucide-react';
 import InterestCard from '../../../shared/ui/InterestCard';
 import Button from '../../../shared/ui/Button';
-import { getPopularInterestsApi, completeOnboardingApi } from '../api/onboardingApi';
+import { completeOnboardingApi } from '../api/onboardingApi';
 import { AppRoute } from '../../../shared/constants/app-route.const';
 import toast from 'react-hot-toast';
-import type { Interest } from '../types/onboarding.types';
 import { AxiosError } from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../auth/context/useAuth';
 
-const ICON_MAP: Record<string, React.ReactNode> = {
-  'Gaming': <Gamepad2 />,
-  'Music': <Music />,
-  'Learning': <GraduationCap />,
-  'Coding': <Code />,
-  'Movies': <Clapperboard />,
-  'Series': <Tv />,
-  'Tech': <Monitor />,
-  'Art': <Palette />,
-};
 
 interface DisplayInterest {
   name: string;
@@ -37,38 +28,23 @@ interface DisplayInterest {
 const DEFAULT_INTERESTS: DisplayInterest[] = [
   { name: 'Gaming', icon: <Gamepad2 /> },
   { name: 'Music', icon: <Music /> },
-  { name: 'Learning', icon: <GraduationCap /> },
-  { name: 'Coding', icon: <Code /> },
   { name: 'Movies', icon: <Clapperboard /> },
-  { name: 'Series', icon: <Tv /> },
-  { name: 'Tech', icon: <Monitor /> },
-  { name: 'Art', icon: <Palette /> },
+  { name: 'TV Series', icon: <Tv /> },
+  { name: 'Programming & Technology', icon: <Code /> },
+  { name: 'Sports', icon: <Trophy /> },
+  { name: 'Education & Learning', icon: <GraduationCap /> },
+  { name: 'Art & Creativity', icon: <Palette /> },
 ];
 
 const OnboardingPage = () => {
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-  const [availableInterests, setAvailableInterests] = useState<DisplayInterest[]>(DEFAULT_INTERESTS);
+  const [availableInterests] = useState<DisplayInterest[]>(DEFAULT_INTERESTS);
 
-  useEffect(() => {
-    const fetchInterests = async () => {
-      try {
-        const res = await getPopularInterestsApi(20);
-        const interests = res.data.data;
-        if (interests && interests.length > 0) {
-          const mappedInterests: DisplayInterest[] = interests.map((i: Interest) => ({
-            name: i.name,
-            icon: ICON_MAP[i.name] || <Monitor />
-          }));
-          setAvailableInterests(mappedInterests);
-        }
-      } catch (error) {
-        console.error('Failed to fetch interests', error);
-      }
-    };
+  const navigate = useNavigate();
+  const { updateUser } = useAuth();
 
-    fetchInterests();
-  }, []);
+
 
   const toggleInterest = (name: string) => {
     setSelectedInterests(prev => 
@@ -82,8 +58,9 @@ const OnboardingPage = () => {
     setLoading(true);
     try {
       await completeOnboardingApi({ interests: selectedInterests });
+      updateUser({ hasCompletedOnboarding: true });
       toast.success('Onboarding complete!');
-      window.location.href = AppRoute.HOME_PAGE;
+      navigate(AppRoute.HOME_PAGE, { replace: true });
     } catch (error) {
       const axiosError = error as AxiosError<{ error: { message: string } }>;
       toast.error(axiosError.response?.data?.error?.message || 'Failed to complete onboarding');
@@ -96,8 +73,9 @@ const OnboardingPage = () => {
     setLoading(true);
     try {
       await completeOnboardingApi({ interests: [] });
+      updateUser({ hasCompletedOnboarding: true });
       toast.success('Onboarding skipped');
-      window.location.href = AppRoute.HOME_PAGE;
+      navigate(AppRoute.HOME_PAGE, { replace: true });
     } catch {
       toast.error('Failed to skip onboarding');
     } finally {

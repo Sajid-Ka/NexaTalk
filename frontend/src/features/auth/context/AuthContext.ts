@@ -21,6 +21,7 @@ export interface AuthContextType {
     login: (data: { email: string; password: string }) => Promise<AuthUser>;
     googleLogin: (idToken: string) => Promise<AuthUser>;
     logout: () => Promise<void>;
+    updateUser: (data: Partial<AuthUser>) => void;
     isAuthenticated: boolean;
     loading: boolean;
 }
