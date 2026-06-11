@@ -113,7 +113,7 @@ export class RecommendationRepository
       {
         $match: { mutualInterestCount: { $gte: RECOMMENDATION_CONSTANTS.MIN_MATCHING_INTERESTS } },
       },
-      { $sort: { mutualInterestCount: -1 } },
+      { $sort: { mutualInterestCount: -1, _id: -1 } },
       { $limit: limit * 2 }, // Fetch some extra to account for deleted/blocked users filtered later
     ]);
 
@@ -126,6 +126,7 @@ export class RecommendationRepository
       const user = await UserModel.findOne({
         _id: res._id,
         isBlocked: false,
+        isProfilePublic: true,
         deletedAt: null,
       }).lean();
 
@@ -157,8 +158,6 @@ export class RecommendationRepository
     const { InterestModel } = await import("../../interests/models/InterestModel");
     const { ServerModel } = await import("../../servers/models/ServerModel");
     const { ServerMemberModel } = await import("../../servers/models/ServerMemberModel");
-    const { RECOMMENDATION_CONSTANTS } =
-      await import("../../../../domain/features/recommendations/constants/RecommendationConstants");
 
     const userInterests = await UserInterestModel.find({ userId }).lean();
     if (userInterests.length === 0) return [];
@@ -174,9 +173,10 @@ export class RecommendationRepository
       _id: { $nin: joinedServerIds.map((id) => new Types.ObjectId(id)) },
       privacy: "public",
       isDisabled: false,
-      memberCount: { $gte: RECOMMENDATION_CONSTANTS.MIN_SERVER_MEMBERS },
+      deletedAt: null,
+      memberCount: { $gte: 1 },
     })
-      .sort({ memberCount: -1 })
+      .sort({ memberCount: -1, _id: -1 })
       .lean();
 
     const recommendedServers: RecommendedServer[] = [];
