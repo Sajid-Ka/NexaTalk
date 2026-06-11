@@ -1,8 +1,13 @@
-import { ServerPrivacy, ServerValidation } from "../../../../shared/constants/server.const";
+import {
+  ServerPrivacy,
+  ServerValidation,
+  ServerTag,
+  SERVER_TAGS,
+} from "../../../../shared/constants/server.const";
+import { BadRequestError } from "../../../core/errors/BadRequestError";
 import { ServerNameTooShortError } from "../errors/ServerNameTooShortError";
 import { ServerNameTooLongError } from "../errors/ServerNameTooLongError";
 import { ServerDescriptionTooLongError } from "../errors/ServerDescriptionTooLongError";
-import { ServerTagsLimitExceededError } from "../errors/ServerTagsLimitExceededError";
 
 export interface ServerProps {
   id?: string;
@@ -16,7 +21,7 @@ export interface ServerProps {
   memberCount?: number;
   channelCount?: number;
   ownerName?: string;
-  tags?: string[];
+  tag: ServerTag;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date | null;
@@ -34,7 +39,7 @@ export class Server {
   public readonly memberCount: number;
   public readonly channelCount?: number;
   public readonly ownerName?: string;
-  public readonly tags: string[];
+  public readonly tag: ServerTag;
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
   public readonly deletedAt: Date | null;
@@ -49,11 +54,11 @@ export class Server {
     if (props.description && props.description.length > ServerValidation.MAX_DESCRIPTION_LENGTH) {
       throw new ServerDescriptionTooLongError();
     }
-    if (props.tags && props.tags.length > ServerValidation.MAX_TAGS) {
-      throw new ServerTagsLimitExceededError();
+    if (!props.tag || !SERVER_TAGS.includes(props.tag)) {
+      throw new BadRequestError("Invalid or missing server tag");
     }
     if (!props.ownerId) {
-      throw new Error("Owner ID is required");
+      throw new BadRequestError("Owner ID is required");
     }
 
     this.id = props.id!;
@@ -67,7 +72,7 @@ export class Server {
     this.memberCount = props.memberCount ?? 1;
     this.channelCount = props.channelCount;
     this.ownerName = props.ownerName;
-    this.tags = props.tags ?? [];
+    this.tag = props.tag;
     this.createdAt = props.createdAt ?? new Date();
     this.updatedAt = props.updatedAt ?? new Date();
     this.deletedAt = props.deletedAt ?? null;

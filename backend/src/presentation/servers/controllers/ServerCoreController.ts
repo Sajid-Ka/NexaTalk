@@ -12,7 +12,8 @@ import { IGetPublicServersUsecase } from "../../../application/servers/core/inte
 import { BadRequestError } from "../../../domain/core/errors/BadRequestError";
 import { CreateServerRequest } from "../../../application/servers/core/dtos/requests/CreateServerRequest";
 import { UpdateServerRequest } from "../../../application/servers/core/dtos/requests/UpdateServerRequest";
-import { ServerImageType } from "../../../shared/constants/server.const";
+import { ServerImageType, ServerTag } from "../../../shared/constants/server.const";
+import { z } from "zod";
 
 @injectable()
 export class ServerCoreController {
@@ -33,7 +34,7 @@ export class ServerCoreController {
       icon: req.body.icon,
       banner: req.body.banner,
       privacy: req.body.privacy,
-      tags: req.body.tags,
+      tag: req.body.tag,
     };
 
     const server = await this._createServer.execute(req.user!.userId, request);
@@ -54,7 +55,7 @@ export class ServerCoreController {
       icon: req.body.icon,
       banner: req.body.banner,
       privacy: req.body.privacy,
-      tags: req.body.tags,
+      tag: req.body.tag,
     };
 
     const server = await this._updateServer.execute(req.params.serverId, req.user!.userId, request);
@@ -98,7 +99,22 @@ export class ServerCoreController {
     const limit = Number(req.query.limit) || 20;
     const offset = Number(req.query.offset) || 0;
 
-    const servers = await this._getPublicServers.execute(limit, offset);
+    let tag: ServerTag | undefined = undefined;
+    if (req.query.tag) {
+      const parsedTag = z.nativeEnum(ServerTag).safeParse(req.query.tag);
+      if (!parsedTag.success) {
+        throw new BadRequestError("Invalid category tag provided");
+      }
+      tag = parsedTag.data;
+    }
+
+    const search = req.query.search ? String(req.query.search).trim() : undefined;
+    const normalizedSearch = search && search.length > 0 ? search : undefined;
+
+    const servers = await this._getPublicServers.execute(limit, offset, {
+      tag,
+      search: normalizedSearch,
+    });
 
     res.json(successResponse(servers, "Public servers fetched successfully"));
   };

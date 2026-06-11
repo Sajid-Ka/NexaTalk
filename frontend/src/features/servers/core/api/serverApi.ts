@@ -7,8 +7,12 @@ export const createServerApi = (data: CreateServerRequest) =>
 export const getUserServersApi = () =>
   api.get("/servers/user");
 
-export const getPublicServersApi = () =>
-  api.get("/servers/public");
+export const getPublicServersApi = (tag?: string, search?: string) => {
+  const params = new URLSearchParams();
+  if (tag && tag !== 'all') params.append('tag', tag);
+  if (search) params.append('search', search);
+  return api.get(`/servers/public?${params.toString()}`);
+};
 
 export const getServerApi = (serverId: string) =>
   api.get(`/servers/${serverId}`);

@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { ServerPrivacy, ServerValidation } from "../../../../shared/constants/server.const";
+import {
+  ServerPrivacy,
+  ServerValidation,
+  ServerTag,
+} from "../../../../shared/constants/server.const";
 
 export const updateServerSchema = z.object({
   name: z
@@ -23,17 +27,7 @@ export const updateServerSchema = z.object({
   icon: z.string().url().optional(),
   banner: z.string().url().optional(),
   privacy: z.enum([ServerPrivacy.PUBLIC, ServerPrivacy.PRIVATE]).optional(),
-  tags: z
-    .array(
-      z
-        .string()
-        .max(
-          ServerValidation.MAX_TAG_LENGTH,
-          `Tag must be at most ${ServerValidation.MAX_TAG_LENGTH} characters`,
-        ),
-    )
-    .max(ServerValidation.MAX_TAGS, `Cannot have more than ${ServerValidation.MAX_TAGS} tags`)
-    .optional(),
+  tag: z.nativeEnum(ServerTag).optional(),
 });
 
 export type UpdateServerRequest = z.infer<typeof updateServerSchema>;

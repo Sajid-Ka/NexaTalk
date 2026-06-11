@@ -9,6 +9,11 @@ import { GetRecommendations } from "../../../../application/recommendations/usec
 import { GenerateRecommendations } from "../../../../application/recommendations/usecases/GenerateRecommendations";
 
 import { RecommendationController } from "../../../../presentation/recommendations/controllers/RecommendationController";
+import { RecommendationV1Controller } from "../../../../presentation/recommendations/controllers/RecommendationV1Controller";
+import { RecommendationCacheService } from "../../../../infrastructure/features/recommendations/services/RecommendationCacheService";
+import { RecommendationService } from "../../../../application/recommendations/services/RecommendationService";
+import { GetRecommendedUsers } from "../../../../application/recommendations/usecases/GetRecommendedUsers";
+import { GetRecommendedServers } from "../../../../application/recommendations/usecases/GetRecommendedServers";
 
 export function loadRecommendationsModule(container: Container) {
   // Repositories
@@ -23,10 +28,23 @@ export function loadRecommendationsModule(container: Container) {
     .to(TensorFlowRecommendationEngine)
     .inSingletonScope();
 
+  container
+    .bind(RECOMMENDATIONS_TYPES.RecommendationCacheService)
+    .to(RecommendationCacheService)
+    .inSingletonScope();
+
+  container
+    .bind(RECOMMENDATIONS_TYPES.RecommendationService)
+    .to(RecommendationService)
+    .inSingletonScope();
+
   // Use Cases
   container.bind(RECOMMENDATIONS_TYPES.GetRecommendations).to(GetRecommendations);
   container.bind(RECOMMENDATIONS_TYPES.GenerateRecommendations).to(GenerateRecommendations);
+  container.bind(RECOMMENDATIONS_TYPES.GetRecommendedUsers).to(GetRecommendedUsers);
+  container.bind(RECOMMENDATIONS_TYPES.GetRecommendedServers).to(GetRecommendedServers);
 
   // Controllers
   container.bind(RECOMMENDATIONS_TYPES.RecommendationController).to(RecommendationController);
+  container.bind(RECOMMENDATIONS_TYPES.RecommendationV1Controller).to(RecommendationV1Controller);
 }

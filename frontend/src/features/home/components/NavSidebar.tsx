@@ -2,8 +2,13 @@ import { Users, MessageSquare, Users2 } from "lucide-react";
 import { cn } from "../../../shared/utils/cn";
 import Badge from "../../../shared/ui/Badge";
 import UserStatusFooter from "./UserStatusFooter";
+import RecommendedPeople from "./RecommendedPeople";
+import RecommendedServers from "./RecommendedServers";
+import { useNavigate } from "react-router-dom";
+import { AppRoute } from "../../../shared/constants/app-route.const";
 
 export default function NavSidebar() {
+  const navigate = useNavigate();
   const mainItems = [
     { icon: Users, label: "Friends", active: true },
     { icon: MessageSquare, label: "Direct Messages", badge: 4 },
@@ -20,20 +25,45 @@ export default function NavSidebar() {
       </div>
 
       {/* Main Nav */}
-      <div className="flex-1 py-4 px-2 space-y-0.5 overflow-y-auto no-scrollbar">
-        {mainItems.map((item) => (
-          <button
-            key={item.label}
-            className={cn(
-              "w-full px-3 py-2 flex items-center gap-3 rounded-lg transition-colors group",
-              item.active ? "bg-white/10 text-white" : "text-white/50 hover:bg-white/5 hover:text-white/80"
-            )}
-          >
-            <item.icon size={20} className={item.active ? "text-indigo-400" : "text-white/40 group-hover:text-white/60"} />
-            <span className="text-sm font-medium flex-1 text-left">{item.label}</span>
-            {item.badge && <Badge variant="primary" className="bg-indigo-600">{item.badge}</Badge>}
-          </button>
-        ))}
+      <div className="flex-1 py-4 px-2 space-y-4 overflow-y-auto no-scrollbar">
+        <div className="space-y-0.5">
+          {mainItems.map((item) => (
+            <button
+              key={item.label}
+              onClick={() => {
+                if (item.label === "Friends") {
+                  navigate(AppRoute.HOME_PAGE);
+                }
+              }}
+              className={cn(
+                "w-full px-3 py-2 flex items-center gap-3 rounded-lg transition-colors group",
+                item.active ? "bg-white/10 text-white" : "text-white/50 hover:bg-white/5 hover:text-white/80"
+              )}
+            >
+              <item.icon size={20} className={item.active ? "text-indigo-400" : "text-white/40 group-hover:text-white/60"} />
+              <span className="text-sm font-medium flex-1 text-left">{item.label}</span>
+              {item.badge && <Badge variant="primary" className="bg-indigo-600">{item.badge}</Badge>}
+            </button>
+          ))}
+        </div>
+
+        <hr className="border-white/5 mx-2" />
+
+        <div className="space-y-2">
+          <h2 className="px-3 text-[11px] font-bold text-white/30 uppercase tracking-wider">
+            Recommended People
+          </h2>
+          <RecommendedPeople />
+        </div>
+
+        <hr className="border-white/5 mx-2" />
+
+        <div className="space-y-2 pb-4">
+          <h2 className="px-3 text-[11px] font-bold text-white/30 uppercase tracking-wider">
+            Recommended Servers
+          </h2>
+          <RecommendedServers />
+        </div>
       </div>
 
       {/* User Status Footer */}

@@ -10,7 +10,9 @@ import TextArea from "../../../../shared/ui/TextArea";
 import { useAppDispatch } from "../../../../app/store";
 import { createServer } from "../store/serverSlice";
 import { cn } from "../../../../shared/utils/cn";
-import { ServerPrivacy, ServerValidation } from "../../../../shared/constants/server.const";
+import { ServerPrivacy, ServerValidation, ServerTag, SERVER_TAGS } from "../../../../shared/constants/server.const";
+import toast from "react-hot-toast";
+import { useInvalidateRecommendations } from "../../../recommendations/api/recommendationApi";
 
 const createServerSchema = z.object({
   name: z
@@ -24,6 +26,9 @@ const createServerSchema = z.object({
     .max(ServerValidation.MAX_DESCRIPTION_LENGTH, `Description must be at most ${ServerValidation.MAX_DESCRIPTION_LENGTH} characters`)
     .optional(),
   privacy: z.enum([ServerPrivacy.PRIVATE, ServerPrivacy.PUBLIC]),
+  tag: z.nativeEnum(ServerTag, {
+    error: "Please select a category tag",
+  }),
 });
 
 type CreateServerFormValues = z.infer<typeof createServerSchema>;
@@ -37,18 +42,24 @@ const CreateServerModal: React.FC<CreateServerModalProps> = ({ isOpen, onClose }
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
   const [privacy, setPrivacy] = useState<ServerPrivacy>("private");
+  const invalidateRecommendations = useInvalidateRecommendations();
 
   const {
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<CreateServerFormValues>({
     resolver: zodResolver(createServerSchema),
     defaultValues: {
       privacy: ServerPrivacy.PRIVATE,
+      tag: undefined,
     },
   });
+
+  const selectedTag = watch("tag");
 
   const onSubmit = async (data: CreateServerFormValues) => {
     setLoading(true);
@@ -59,10 +70,11 @@ const CreateServerModal: React.FC<CreateServerModalProps> = ({ isOpen, onClose }
         description: data.description?.trim(),
         privacy,
       })).unwrap();
+      invalidateRecommendations();
       reset();
       onClose();
-    } catch (error) {
-      console.error("Failed to create server:", error);
+    } catch {
+      toast.error("Failed to create server");
     } finally {
       setLoading(false);
     }
@@ -105,6 +117,29 @@ const CreateServerModal: React.FC<CreateServerModalProps> = ({ isOpen, onClose }
             placeholder="Explain what your server is about..."
             className="bg-white/5 border-white/10 focus:border-indigo-500/50 min-h-[100px]"
           />
+        </div>
+
+        {/* Category Tag Selection */}
+        <div className="space-y-2">
+          <label className="text-xs font-bold uppercase text-white/40 ml-1">Category Tag</label>
+          <div className="flex flex-wrap gap-2">
+            {SERVER_TAGS.map((t) => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => setValue("tag", t, { shouldValidate: true })}
+                className={cn(
+                  "px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 border",
+                  selectedTag === t
+                    ? "bg-indigo-600/20 border-indigo-500/50 text-indigo-300 shadow-sm shadow-indigo-500/10"
+                    : "bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:text-white"
+                )}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+          {errors.tag && <p className="text-xs text-red-400 mt-1 ml-1">{errors.tag.message}</p>}
         </div>
 
         {/* Visibility Selection */}

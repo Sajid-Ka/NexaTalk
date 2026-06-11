@@ -1,5 +1,5 @@
 import { Schema, model, Types } from "mongoose";
-import { ServerPrivacy } from "../../../../shared/constants/server.const";
+import { ServerPrivacy, ServerTag, SERVER_TAGS } from "../../../../shared/constants/server.const";
 
 export interface IServerPersistence {
   _id: Types.ObjectId;
@@ -13,7 +13,7 @@ export interface IServerPersistence {
   memberCount: number;
   channelCount?: number;
   ownerName?: string;
-  tags: string[];
+  tag: ServerTag;
   createdAt: Date;
   updatedAt: Date;
   deletedAt?: Date | null;
@@ -34,7 +34,7 @@ const serverSchema = new Schema<IServerPersistence>(
     },
     isDisabled: { type: Boolean, default: false },
     memberCount: { type: Number, default: 1 },
-    tags: [{ type: String }],
+    tag: { type: String, enum: SERVER_TAGS, required: true, index: true },
     deletedAt: { type: Date, default: null },
   },
   { timestamps: true },
@@ -43,5 +43,6 @@ const serverSchema = new Schema<IServerPersistence>(
 serverSchema.index({ name: "text" });
 serverSchema.index({ ownerId: 1, createdAt: -1 });
 serverSchema.index({ privacy: 1, memberCount: -1 });
+serverSchema.index({ tag: 1, privacy: 1 });
 
 export const ServerModel = model<IServerPersistence>("Server", serverSchema);

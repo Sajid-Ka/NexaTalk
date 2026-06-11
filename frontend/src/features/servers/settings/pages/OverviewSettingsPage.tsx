@@ -3,7 +3,6 @@ import {
   Lock,
   Upload,
   Save,
-  X
 } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
@@ -11,7 +10,7 @@ import toast from "react-hot-toast";
 import { uploadServerImageApi, updateServerApi } from "../api/serverSettingsApi";
 import { useAppDispatch, useAppSelector } from "../../../../app/store";
 import { setCurrentServer, fetchUserServers, fetchServerDetails } from "../../core/store/serverSlice";
-import { ServerPrivacy, ServerValidation } from "../../../../shared/constants/server.const";
+import { ServerPrivacy, ServerValidation, ServerTag, SERVER_TAGS, ServerTagIcons } from "../../../../shared/constants/server.const";
 import Button from "../../../../shared/ui/Button";
 import Input from "../../../../shared/ui/Input";
 import TextArea from "../../../../shared/ui/TextArea";
@@ -48,8 +47,8 @@ export default function OverviewSettingsPage() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [privacy, setPrivacy] = useState<ServerPrivacy>(ServerPrivacy.PRIVATE);
-  const [tags, setTags] = useState<string[]>([]);
-  const [tagInput, setTagInput] = useState("");
+  const [tag, setTag] = useState<ServerTag | undefined>();
+  const [isEditingCategory, setIsEditingCategory] = useState(false);
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<{ name?: string; description?: string; tag?: string }>({});
 
@@ -82,7 +81,7 @@ export default function OverviewSettingsPage() {
     setName(currentServer.name || "");
     setDescription(currentServer.description || "");
     setPrivacy(currentServer.privacy || ServerPrivacy.PRIVATE);
-    setTags(currentServer.tags || []);
+    setTag(currentServer.tag);
 
     setIconFile(null);
     setBannerFile(null);
@@ -151,20 +150,18 @@ export default function OverviewSettingsPage() {
     return Object.keys(nextErrors).length === 0;
   };
 
-  const normalizeTags = (value?: string[]) =>
-    (value || []).map((tag) => tag.trim().toLowerCase()).filter(Boolean);
 
   const hasServerChanges = () => {
     if (!currentServer) return false;
 
-    const currentTags = normalizeTags(currentServer.tags);
-    const nextTags = normalizeTags(tags);
+    const currentTag = currentServer.tag;
+    const nextTag = tag;
 
     return (
       name.trim() !== (currentServer.name || "").trim() ||
       description.trim() !== (currentServer.description || "").trim() ||
       (isOwner && privacy !== currentServer.privacy) ||
-      JSON.stringify(nextTags) !== JSON.stringify(currentTags) ||
+      nextTag !== currentTag ||
       iconFile !== null ||
       bannerFile !== null
     );
@@ -206,19 +203,19 @@ export default function OverviewSettingsPage() {
       }
 
       // 3. Update Text Details if changed
-      const currentTags = normalizeTags(currentServer.tags);
-      const nextTags = normalizeTags(tags);
+      const currentTag = currentServer.tag;
+      const nextTag = tag;
       const isTextOrPrivacyChanged = 
         name.trim() !== (currentServer.name || "").trim() ||
         description.trim() !== (currentServer.description || "").trim() ||
         (isOwner && privacy !== currentServer.privacy) ||
-        JSON.stringify(nextTags) !== JSON.stringify(currentTags);
+        nextTag !== currentTag;
 
       if (isTextOrPrivacyChanged) {
         const payload = {
           name: name.trim(),
           description: description.trim(),
-          tags: nextTags,
+          tag: nextTag,
           ...(isOwner && { privacy }),
         };
         const response = await updateServerApi(serverId, payload);
@@ -230,10 +227,14 @@ export default function OverviewSettingsPage() {
       dispatch(fetchUserServers());
 
       // Show success alert
-      if (iconChanged || bannerChanged) {
-        toast.success("Server details and images updated successfully");
-      } else {
-        toast.success("Server details updated successfully");
+      if (iconChanged || bannerChanged || isTextOrPrivacyChanged) {
+        if (iconChanged || bannerChanged) {
+          toast.success("Server details and images updated successfully");
+        } else if (nextTag !== currentTag && name === currentServer.name && description === currentServer.description && privacy === currentServer.privacy) {
+          toast.success("Server category updated successfully.");
+        } else {
+          toast.success("Server details updated successfully");
+        }
       }
 
       // Clear the local files and previews
@@ -250,47 +251,7 @@ export default function OverviewSettingsPage() {
   };
 
 
-  const handleAddTag = () => {
-    const nextTag = tagInput.trim().replace(/^#/, "").toLowerCase();
 
-    if (!nextTag) return;
-
-    if (nextTag.length > ServerValidation.MAX_TAG_LENGTH) {
-      setErrors((prev) => ({
-        ...prev,
-        tag: `Tag must be at most ${ServerValidation.MAX_TAG_LENGTH} characters`,
-      }));
-      return;
-    }
-
-    if (tags.length >= ServerValidation.MAX_TAGS) {
-      setErrors((prev) => ({
-        ...prev,
-        tag: `Cannot have more than ${ServerValidation.MAX_TAGS} tags`,
-      }));
-      return;
-    }
-
-    if (tags.includes(nextTag)) {
-      setErrors((prev) => ({ ...prev, tag: "Tag already added" }));
-      return;
-    }
-
-    setTags((prev) => [...prev, nextTag]);
-    setTagInput("");
-    setErrors((prev) => ({ ...prev, tag: undefined }));
-  };
-
-  const handleRemoveTag = (tag: string) => {
-    setTags((prev) => prev.filter((item) => item !== tag));
-  };
-
-  const handleTagKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      handleAddTag();
-    }
-  };
 
   return (
     <SettingsPageContainer>
@@ -298,7 +259,7 @@ export default function OverviewSettingsPage() {
         title="Server Overview"
         description="Manage your server profile, branding and visibility settings."
         actions={
-          <Button className="gap-2" onClick={handleSave} isLoading={saving}>
+          <Button className="gap-2" onClick={handleSave} isLoading={saving} disabled={!hasServerChanges() || saving}>
             <Save size={16} />
             Save Changes
           </Button>
@@ -500,48 +461,45 @@ export default function OverviewSettingsPage() {
         </SettingsSection>
       )}
 
-      {/* TAGS */}
       <SettingsSection
-        title="Server Tags"
-        description="Help users understand your server topic."
+        title="Server Category"
+        description="Choose the category that best represents your community."
       >
         <div className="space-y-4">
-          <div className="flex gap-2">
-            <Input
-              value={tagInput}
-              onChange={(event) => setTagInput(event.target.value)}
-              onKeyDown={handleTagKeyDown}
-              placeholder="Add a tag"
-              error={errors.tag}
-            />
-
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={handleAddTag}
-              disabled={tags.length >= ServerValidation.MAX_TAGS}
-            >
-              Add
-            </Button>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs text-slate-500 uppercase font-bold mb-2">Current Category</p>
+              <div className="flex items-center gap-2 text-indigo-300 bg-indigo-500/10 border border-indigo-400/20 px-4 py-2 rounded-xl w-fit font-medium">
+                {currentServer?.tag ? ServerTagIcons[currentServer.tag] : ""} {currentServer?.tag}
+              </div>
+            </div>
+            {isOwner && !isEditingCategory && (
+              <Button variant="secondary" onClick={() => setIsEditingCategory(true)}>
+                Change Category
+              </Button>
+            )}
           </div>
 
-          <p className="text-xs text-slate-500">
-            {tags.length}/{ServerValidation.MAX_TAGS} tags. Each tag can be up to {ServerValidation.MAX_TAG_LENGTH} characters.
-          </p>
-
-          <div className="flex flex-wrap gap-2">
-            {tags.map((tag) => (
-              <button
-                key={tag}
-                type="button"
-                onClick={() => handleRemoveTag(tag)}
-                className="inline-flex items-center gap-2 rounded-full border border-indigo-400/20 bg-indigo-500/10 px-4 py-2 text-sm font-medium text-indigo-100"
-              >
-                #{tag}
-                <X size={14} />
-              </button>
-            ))}
-          </div>
+          {isOwner && isEditingCategory && (
+            <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-white/10">
+              {SERVER_TAGS.map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setTag(t)}
+                  className={cn(
+                    "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border flex items-center gap-2",
+                    tag === t
+                      ? "bg-indigo-600/20 border-indigo-500/50 text-indigo-300 shadow-sm shadow-indigo-500/10"
+                      : "bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:text-white"
+                  )}
+                >
+                  <span>{ServerTagIcons[t]}</span>
+                  {t}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </SettingsSection>
     </SettingsPageContainer>

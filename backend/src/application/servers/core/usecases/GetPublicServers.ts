@@ -2,6 +2,7 @@ import { inject, injectable } from "inversify";
 import { SERVERS_TYPES } from "../../../../main/di/modules/servers/servers.types";
 import { IServerRepository } from "../../../../domain/features/servers/repositories/IServerRepository";
 import { IGetPublicServersUsecase } from "../interfaces/IGetPublicServersUsecase";
+import { PublicServerFilters } from "../../../../domain/features/servers/repositories/IServerRepository";
 import { ServerResponse } from "../dtos/responses/ServerResponse";
 import { ServerMapper } from "../mappers/ServerMapper";
 import { ILogger } from "../../../../domain/core/common/services/ILogger";
@@ -14,10 +15,14 @@ export class GetPublicServers implements IGetPublicServersUsecase {
     @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
   ) {}
 
-  async execute(limit: number = 20, offset: number = 0): Promise<ServerResponse[]> {
-    this._logger.info("Getting public servers", { limit, offset });
+  async execute(
+    limit: number = 20,
+    offset: number = 0,
+    filters?: PublicServerFilters,
+  ): Promise<ServerResponse[]> {
+    this._logger.info("Getting public servers", { limit, offset, filters });
 
-    const servers = await this._serverRepo.findPublicServers(limit, offset);
+    const servers = await this._serverRepo.findPublicServers(limit, offset, filters);
 
     return ServerMapper.toResponseList(servers);
   }

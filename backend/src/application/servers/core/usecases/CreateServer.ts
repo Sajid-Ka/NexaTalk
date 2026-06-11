@@ -40,7 +40,7 @@ export class CreateServer implements ICreateServerUsecase {
       banner: request.banner,
       ownerId: userId,
       privacy: request.privacy,
-      tags: request.tags,
+      tag: request.tag,
     });
 
     const createdServer = await this._serverRepo.create(server);

@@ -17,7 +17,7 @@ export class ServerPersistenceMapper implements IMapper<IServerPersistence, Serv
       memberCount: doc.memberCount,
       channelCount: doc.channelCount,
       ownerName: doc.ownerName,
-      tags: doc.tags,
+      tag: doc.tag,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
       deletedAt: doc.deletedAt,
@@ -34,7 +34,7 @@ export class ServerPersistenceMapper implements IMapper<IServerPersistence, Serv
       privacy: entity.privacy,
       isDisabled: entity.isDisabled,
       memberCount: entity.memberCount,
-      tags: entity.tags,
+      tag: entity.tag,
       deletedAt: entity.deletedAt,
     };
   }
@@ -47,7 +47,7 @@ export class ServerPersistenceMapper implements IMapper<IServerPersistence, Serv
     if (partialDomain.banner !== undefined) update.banner = partialDomain.banner;
     if (partialDomain.privacy !== undefined) update.privacy = partialDomain.privacy;
     if (partialDomain.isDisabled !== undefined) update.isDisabled = partialDomain.isDisabled;
-    if (partialDomain.tags !== undefined) update.tags = partialDomain.tags;
+    if (partialDomain.tag !== undefined) update.tag = partialDomain.tag;
     if (partialDomain.deletedAt !== undefined) update.deletedAt = partialDomain.deletedAt;
     return update;
   }

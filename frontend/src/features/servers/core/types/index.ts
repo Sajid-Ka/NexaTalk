@@ -1,5 +1,5 @@
 import { ServerPrivacy } from "../../../../shared/constants/server.const";
-import { ServerMemberRole } from "../../../../shared/constants/server.const";
+import { ServerMemberRole, ServerTag } from "../../../../shared/constants/server.const";
 import { UserPresence } from "../../../../shared/constants/user.const";
 
 export interface ServerMember {
@@ -24,7 +24,7 @@ export interface Server {
   memberCount: number;
   channelCount?: number;
   ownerName?: string;
-  tags: string[];
+  tag: ServerTag;
   members?: ServerMember[];
   userRole?: ServerMemberRole;
   createdAt: string;
@@ -49,5 +49,5 @@ export interface CreateServerRequest {
   icon?: string;
   banner?: string;
   privacy: ServerPrivacy;
-  tags?: string[];
+  tag: ServerTag;
 }

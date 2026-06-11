@@ -1,7 +1,10 @@
 import { injectable } from "inversify";
 import { Types } from "mongoose";
 import { Server } from "../../../../domain/features/servers/entities/Server";
-import { IServerRepository } from "../../../../domain/features/servers/repositories/IServerRepository";
+import {
+  IServerRepository,
+  PublicServerFilters,
+} from "../../../../domain/features/servers/repositories/IServerRepository";
 import { TransactionContext } from "../../../../domain/core/common/services/TransactionContext";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
 import { toMongoSession } from "../../../core/common/database/toMongoSession";
@@ -24,9 +27,30 @@ export class ServerRepository
     return docs.map((doc) => this.mapper.toDomain(doc));
   }
 
-  async findPublicServers(limit: number = 20, offset: number = 0): Promise<Server[]> {
+  async findPublicServers(
+    limit: number = 20,
+    offset: number = 0,
+    filters?: PublicServerFilters,
+  ): Promise<Server[]> {
+    const matchStage: Record<string, unknown> = {
+      privacy: ServerPrivacy.PUBLIC,
+      deletedAt: null,
+      isDisabled: false,
+    };
+
+    if (filters?.tag) {
+      matchStage.tag = filters.tag;
+    }
+
+    if (filters?.search) {
+      matchStage.$or = [
+        { name: { $regex: filters.search, $options: "i" } },
+        { $text: { $search: filters.search } },
+      ];
+    }
+
     const docs = await this.model.aggregate([
-      { $match: { privacy: ServerPrivacy.PUBLIC, deletedAt: null, isDisabled: false } },
+      { $match: matchStage },
       { $sort: { memberCount: -1, createdAt: -1 } },
       { $skip: offset },
       { $limit: limit },

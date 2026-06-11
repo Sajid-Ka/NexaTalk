@@ -1,4 +1,4 @@
-import { ServerPrivacy } from "../../../../../shared/constants/server.const";
+import { ServerPrivacy, ServerTag } from "../../../../../shared/constants/server.const";
 
 export interface AdminServerResponse {
   id: string;
@@ -11,7 +11,7 @@ export interface AdminServerResponse {
   privacy: ServerPrivacy;
   isDisabled: boolean;
   memberCount: number;
-  tags: string[];
+  tag: ServerTag;
   createdAt: Date;
   updatedAt: Date;
 }

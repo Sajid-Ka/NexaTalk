@@ -1,4 +1,4 @@
-import { ServerPrivacy } from "../../../../../shared/constants/server.const";
+import { ServerPrivacy, ServerTag } from "../../../../../shared/constants/server.const";
 
 export interface CreateServerRequest {
   name: string;
@@ -6,5 +6,5 @@ export interface CreateServerRequest {
   icon?: string;
   banner?: string;
   privacy: ServerPrivacy;
-  tags?: string[];
+  tag: ServerTag;
 }

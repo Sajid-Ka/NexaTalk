@@ -15,7 +15,7 @@ export class AdminServerMapper {
       privacy: server.privacy,
       isDisabled: server.isDisabled,
       memberCount: server.memberCount,
-      tags: server.tags,
+      tag: server.tag,
       createdAt: server.createdAt,
       updatedAt: server.updatedAt,
     };

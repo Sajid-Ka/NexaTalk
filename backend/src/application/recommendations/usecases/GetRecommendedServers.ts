@@ -1,0 +1,26 @@
+import { inject, injectable } from "inversify";
+import { IGetRecommendedServersUsecase } from "../interfaces/IGetRecommendedServersUsecase";
+import { RECOMMENDATIONS_TYPES } from "../../../main/di/modules/recommendations/recommendations.types";
+import { IRecommendationService } from "../interfaces/IRecommendationService";
+import { RecommendedServerResponse } from "../dtos/responses/RecommendedServerResponse";
+
+@injectable()
+export class GetRecommendedServers implements IGetRecommendedServersUsecase {
+  constructor(
+    @inject(RECOMMENDATIONS_TYPES.RecommendationService)
+    private readonly _recommendationService: IRecommendationService,
+  ) {}
+
+  async execute(userId: string, limit = 5): Promise<RecommendedServerResponse[]> {
+    const servers = await this._recommendationService.getRecommendedServers(userId, limit);
+    return servers.map((s) => ({
+      id: s.id,
+      name: s.name,
+      icon: s.icon,
+      memberCount: s.memberCount,
+      tag: s.tag,
+      matchedInterest: s.matchedInterest,
+      recommendationScore: s.recommendationScore,
+    }));
+  }
+}

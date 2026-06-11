@@ -25,15 +25,28 @@ const JoinServerPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>('');
   
-  // New state for the Server Details Modal
   const [selectedServer, setSelectedServer] = useState<DiscoveryServer | null>(null);
   const [isJoining, setIsJoining] = useState<boolean>(false);
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>('');
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
 
   useEffect(() => {
     const fetchServers = async () => {
       try {
         setIsLoading(true);
-        const response = await getPublicServersApi();
+        const response = await getPublicServersApi(
+          activeCategory === 'all' ? undefined : activeCategory,
+          debouncedSearchQuery
+        );
         const servers: Server[] = response.data.data;
 
         const mappedServers: DiscoveryServer[] = servers.map(server => ({
@@ -44,7 +57,8 @@ const JoinServerPage: React.FC = () => {
           bannerGradient: 'from-indigo-900/40 to-transparent', 
           channelCount: server.channelCount?.toString() || '0',
           memberCount: server.memberCount ? server.memberCount.toString() : '1',
-          ownerName: server.ownerName || 'Unknown', 
+          ownerName: server.ownerName || 'Unknown',
+          tag: server.tag,
         }));
 
         setPublicServers(mappedServers);
@@ -56,7 +70,7 @@ const JoinServerPage: React.FC = () => {
     };
 
     fetchServers();
-  }, []);
+  }, [activeCategory, debouncedSearchQuery]);
 
   const handleOpenDetails = (serverId: string) => {
     const server = publicServers.find(s => s.id === serverId) || null;
@@ -83,10 +97,7 @@ const JoinServerPage: React.FC = () => {
     navigate(`/servers/${serverId}`);
   };
 
-  // Filter the mapped servers based on the search query
-  const filteredServers = publicServers.filter(server =>
-    server.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+
 
   return (
     <DashboardLayout>
@@ -115,9 +126,9 @@ const JoinServerPage: React.FC = () => {
             <div className="flex justify-center items-center h-40">
               <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
             </div>
-          ) : filteredServers.length > 0 ? (
+          ) : publicServers.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredServers.map((server) => (
+              {publicServers.map((server) => (
                 <DiscoveryServerCard
                   key={server.id}
                   server={server}
@@ -127,7 +138,11 @@ const JoinServerPage: React.FC = () => {
             </div>
           ) : (
             <div className="text-center text-white/50 mt-10">
-              {searchQuery ? "No servers found matching your search." : "No public servers available right now."}
+              {searchQuery 
+                ? "No public servers found for this search." 
+                : activeCategory !== 'all' 
+                  ? `No public servers found in ${activeCategory}. Try another category.` 
+                  : "No public servers available right now."}
             </div>
           )}
         </div>

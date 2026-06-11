@@ -51,7 +51,7 @@ export default function ServerDashboardHero({
   const navigate = useNavigate()
 
   const fallbackInitial = server.name.charAt(0).toUpperCase();
-  const tags = server.tags ?? [];
+  const tag = server.tag;
 
   // const { user } = useAuth();
 
@@ -144,16 +144,13 @@ export default function ServerDashboardHero({
             </div>
           </div>
 
-          {tags.length > 0 && (
+          {tag && (
             <div className="flex flex-wrap gap-2">
-              {tags.map((tag) => (
                 <span
-                  key={tag}
                   className="rounded-full border border-indigo-300/20 bg-indigo-400/10 px-3 py-1 text-xs font-semibold text-indigo-100"
                 >
                   #{tag}
                 </span>
-              ))}
             </div>
           )}
 

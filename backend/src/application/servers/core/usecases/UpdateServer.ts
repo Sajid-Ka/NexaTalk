@@ -46,7 +46,10 @@ export class UpdateServer implements IUpdateServerUsecase {
 
     if (!hasPermission) throw new InsufficientPermissionsError();
 
-    if (request.privacy && request.privacy !== server.privacy && !server.isOwner(userId)) {
+    if (
+      (request.privacy && request.privacy !== server.privacy && !server.isOwner(userId)) ||
+      (request.tag && request.tag !== server.tag && !server.isOwner(userId))
+    ) {
       throw new InsufficientPermissionsError();
     }
 
@@ -56,7 +59,7 @@ export class UpdateServer implements IUpdateServerUsecase {
       icon: request.icon,
       banner: request.banner,
       privacy: request.privacy,
-      tags: request.tags,
+      tag: request.tag,
     });
 
     if (!updatedServer) throw new ServerNotFoundError();
@@ -85,8 +88,11 @@ export class UpdateServer implements IUpdateServerUsecase {
     if (request.banner && server.banner !== request.banner)
       await logChanges(AuditLogAction.SERVER_BANNER_UPDATED, {});
 
-    if (request.tags && JSON.stringify(server.tags) !== JSON.stringify(request.tags))
-      await logChanges(AuditLogAction.SERVER_TAGS_UPDATED, {});
+    if (request.tag && server.tag !== request.tag)
+      await logChanges(AuditLogAction.SERVER_TAG_UPDATED, {
+        oldTag: server.tag,
+        newTag: request.tag,
+      });
 
     this._logger.info("Server updated", { serverId, userId });
 

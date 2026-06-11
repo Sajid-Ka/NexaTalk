@@ -20,7 +20,7 @@ export class ServerMapper {
       memberCount: server.memberCount,
       channelCount: server.channelCount,
       ownerName: server.ownerName,
-      tags: server.tags,
+      tag: server.tag,
       members,
       userRole,
       createdAt: server.createdAt,

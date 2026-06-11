@@ -1,4 +1,8 @@
-import { ServerPrivacy, ServerMemberRole } from "../../../../../shared/constants/server.const";
+import {
+  ServerPrivacy,
+  ServerMemberRole,
+  ServerTag,
+} from "../../../../../shared/constants/server.const";
 import { UserPresenceStatus } from "../../../../../shared/constants/userPresenceStatus.const";
 
 export interface ServerMemberResponse {
@@ -23,7 +27,7 @@ export interface ServerResponse {
   memberCount: number;
   channelCount?: number;
   ownerName?: string;
-  tags: string[];
+  tag: ServerTag;
   members?: ServerMemberResponse[];
   userRole?: ServerMemberRole;
   createdAt: Date;

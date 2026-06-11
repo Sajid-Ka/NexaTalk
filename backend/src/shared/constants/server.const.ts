@@ -17,8 +17,6 @@ export const ServerValidation = {
   MIN_NAME_LENGTH: 3,
   MAX_NAME_LENGTH: 100,
   MAX_DESCRIPTION_LENGTH: 500,
-  MAX_TAGS: 3,
-  MAX_TAG_LENGTH: 30,
   DEFAULT_INVITE_MAX_USES: 0,
   DEFAULT_INVITE_TTL_DAYS: 7,
 } as const;
@@ -29,3 +27,18 @@ export const ServerImageType = {
 } as const;
 
 export type ServerImageType = (typeof ServerImageType)[keyof typeof ServerImageType];
+
+export const ServerTag = {
+  GAMING: "Gaming",
+  MUSIC: "Music",
+  MOVIES: "Movies",
+  TV_SERIES: "TV Series",
+  PROGRAMMING_TECHNOLOGY: "Programming & Technology",
+  SPORTS: "Sports",
+  EDUCATION_LEARNING: "Education & Learning",
+  ART_CREATIVITY: "Art & Creativity",
+} as const;
+
+export type ServerTag = (typeof ServerTag)[keyof typeof ServerTag];
+
+export const SERVER_TAGS = Object.values(ServerTag);

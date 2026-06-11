@@ -15,6 +15,7 @@ import { getPendingRequestsApi } from "../../friends/api/friendApi";
 import { FriendTab } from "../../../shared/constants/friend.const";
 import NotificationDropdown from "../../notifications/components/NotificationDropdown";
 import { AxiosError } from "axios";
+import { useInvalidateRecommendations } from "../../recommendations/api/recommendationApi";
 
 // Define error response type
 interface ApiErrorResponse {
@@ -33,6 +34,7 @@ export default function FriendsList() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [processing, setProcessing] = useState<string | null>(null);
   const [pendingCount, setPendingCount] = useState(0);
+  const invalidateRecommendations = useInvalidateRecommendations();
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(searchQuery), 300);
@@ -109,7 +111,8 @@ export default function FriendsList() {
       await respondFriendRequestApi(userId, { status: "accepted" });
       toast.success("Friend request accepted");
       fetchFriends();
-      fetchPendingCount()
+      fetchPendingCount();
+      invalidateRecommendations();
     } catch (err) {
       let errorMessage = "Failed to accept request";
       if (err instanceof AxiosError) {
@@ -128,7 +131,8 @@ export default function FriendsList() {
       await respondFriendRequestApi(userId, { status: "blocked" });
       toast.success("Friend request rejected");
       fetchFriends();
-      fetchPendingCount()
+      fetchPendingCount();
+      invalidateRecommendations();
     } catch (err) {
       let errorMessage = "Failed to reject request";
       if (err instanceof AxiosError) {
@@ -146,6 +150,7 @@ export default function FriendsList() {
       await removeFriendApi(friendId);
       toast.success("Friend removed");
       fetchFriends();
+      invalidateRecommendations();
     } catch (err) {
       let errorMessage = "Failed to remove friend";
       if (err instanceof AxiosError) {

@@ -10,7 +10,8 @@ export interface DiscoveryServer {
   channelCount: string;
   memberCount: string;
   ownerName?: string;
-  badge?: string; 
+  badge?: string;
+  tag?: string;
 }
 
 interface DiscoveryServerCardProps {
@@ -46,6 +47,14 @@ const DiscoveryServerCard: React.FC<DiscoveryServerCardProps> = ({ server, onCar
             )}
           </div>
         </div>
+
+        {server.tag && (
+          <div className="flex items-center gap-2 mb-2">
+            <span className="bg-white/10 border border-white/10 px-2 py-0.5 rounded-md text-[10px] font-bold text-white/70 uppercase tracking-wider">
+              {server.tag}
+            </span>
+          </div>
+        )}
 
         {/* Server Content */}
         <h3 className="text-lg font-bold text-white mb-2">{server.name}</h3>

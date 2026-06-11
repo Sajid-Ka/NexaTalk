@@ -5,6 +5,7 @@ import Button from "../../../../shared/ui/Button";
 import Input from "../../../../shared/ui/Input";
 import { useAppDispatch } from "../../../../app/store";
 import { joinServerByInvite } from "../store/serverSlice";
+import { useInvalidateRecommendations } from "../../../recommendations/api/recommendationApi";
 
 interface JoinServerModalProps {
   isOpen: boolean;
@@ -26,6 +27,7 @@ const JoinServerModal: React.FC<JoinServerModalProps> = ({ isOpen, onClose }) =>
   const [inviteCode, setInviteCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const invalidateRecommendations = useInvalidateRecommendations();
 
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,6 +43,7 @@ const JoinServerModal: React.FC<JoinServerModalProps> = ({ isOpen, onClose }) =>
 
     try {
       await dispatch(joinServerByInvite(code)).unwrap();
+      invalidateRecommendations();
       setInviteCode("");
       onClose();
     } catch (err: unknown) {

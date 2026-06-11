@@ -3,6 +3,7 @@ import Switch from '../../../../../shared/ui/Switch';
 import Button from '../../../../../shared/ui/Button';
 import { getUserSettingsApi, updateUserSettingsApi } from '../../../api/userSettingsApi';
 import toast from 'react-hot-toast';
+import { useInvalidateRecommendations } from '../../../../recommendations/api/recommendationApi';
 
 interface Settings {
   showRecommendations: boolean;
@@ -18,6 +19,7 @@ export default function RecommendationSettings() {
   });
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const invalidateRecommendations = useInvalidateRecommendations();
 
   useEffect(() => {
     fetchSettings();
@@ -44,6 +46,7 @@ export default function RecommendationSettings() {
     try {
       await updateUserSettingsApi(settings);
       toast.success('Settings updated successfully');
+      invalidateRecommendations();
     } catch {
       toast.error('Failed to update settings');
     } finally {

@@ -68,10 +68,8 @@ export default function ServerDetailSidebar({
 
         <DetailItem
           icon={Hash}
-          label="Tags"
-          value={
-            (server.raw.tags ?? []).length > 0 ? server.raw.tags.join(", ") : "No tags"
-          }
+          label="Category"
+          value={server.raw.tag ?? "No category"}
         />
       </div>
 
