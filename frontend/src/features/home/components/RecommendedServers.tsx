@@ -10,10 +10,12 @@ const joinServerApi = async (serverId: string) => {
   return api.post(`/servers/${serverId}/join`);
 };
 
-export default function RecommendedServers() {
-  const { data: servers, isLoading, isError } = useRecommendedServersQuery(5);
+export default function RecommendedServers({ enabled = true }: { enabled?: boolean }) {
+  const { data: servers, isLoading, isError } = useRecommendedServersQuery(5, enabled);
   const invalidateRecommendations = useInvalidateRecommendations();
   const [joiningIds, setJoiningIds] = useState<Set<string>>(new Set());
+
+  if (!enabled) return null;
 
   if (isError) {
     return (
@@ -41,7 +43,12 @@ export default function RecommendedServers() {
   }
 
   if (!servers || servers.length === 0) {
-    return null;
+    return (
+      <div className="px-4 py-3 space-y-1">
+        <p className="text-xs text-white/50">No matching communities found.</p>
+        <p className="text-[10px] text-white/30">Try adding more interests.</p>
+      </div>
+    );
   }
 
   const handleJoinServer = async (serverId: string) => {

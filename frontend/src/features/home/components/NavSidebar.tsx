@@ -6,9 +6,12 @@ import RecommendedPeople from "./RecommendedPeople";
 import RecommendedServers from "./RecommendedServers";
 import { useNavigate } from "react-router-dom";
 import { AppRoute } from "../../../shared/constants/app-route.const";
+import { useUserSettings } from "../../settings/hooks/useUserSettings";
 
 export default function NavSidebar() {
   const navigate = useNavigate();
+  const { data: settings, isLoading: isLoadingSettings } = useUserSettings();
+
   const mainItems = [
     { icon: Users, label: "Friends", active: true },
     { icon: MessageSquare, label: "Direct Messages", badge: 4 },
@@ -47,23 +50,46 @@ export default function NavSidebar() {
           ))}
         </div>
 
-        <hr className="border-white/5 mx-2" />
+        {isLoadingSettings && (
+          <>
+            <hr className="border-white/5 mx-2" />
+            <div className="px-3 space-y-4 mt-4">
+              <div className="h-3 w-32 bg-white/5 rounded animate-pulse" />
+              <div className="space-y-3">
+                <div className="h-12 bg-white/5 rounded-lg animate-pulse" />
+                <div className="h-12 bg-white/5 rounded-lg animate-pulse" />
+              </div>
+            </div>
+          </>
+        )}
 
-        <div className="space-y-2">
-          <h2 className="px-3 text-[11px] font-bold text-white/30 uppercase tracking-wider">
-            Recommended People
-          </h2>
-          <RecommendedPeople />
-        </div>
+        {!isLoadingSettings && settings?.showRecommendations && (
+          <>
+            {settings.allowFriendRecommendations && (
+              <>
+                <hr className="border-white/5 mx-2" />
+                <div className="space-y-2">
+                  <h2 className="px-3 text-[11px] font-bold text-white/30 uppercase tracking-wider">
+                    Recommended People
+                  </h2>
+                  <RecommendedPeople enabled={settings.showRecommendations && settings.allowFriendRecommendations} />
+                </div>
+              </>
+            )}
 
-        <hr className="border-white/5 mx-2" />
-
-        <div className="space-y-2 pb-4">
-          <h2 className="px-3 text-[11px] font-bold text-white/30 uppercase tracking-wider">
-            Recommended Servers
-          </h2>
-          <RecommendedServers />
-        </div>
+            {settings.allowServerRecommendations && (
+              <>
+                <hr className="border-white/5 mx-2" />
+                <div className="space-y-2 pb-4">
+                  <h2 className="px-3 text-[11px] font-bold text-white/30 uppercase tracking-wider">
+                    Recommended Servers
+                  </h2>
+                  <RecommendedServers enabled={settings.showRecommendations && settings.allowServerRecommendations} />
+                </div>
+              </>
+            )}
+          </>
+        )}
       </div>
 
       {/* User Status Footer */}
