@@ -8,7 +8,7 @@ import {
     Bell,
     Radio,
     DollarSign,
-    Lock,
+    Star,
     Cpu,
     LogOut,
     ArrowLeft
@@ -23,7 +23,7 @@ const sidebarItems = [
     { id: "notifications", label: "Notifications", icon: Bell },
     { id: "streaming", label: "Streaming Settings", icon: Radio },
     { id: "monetization", label: "Monetization & Earnings", icon: DollarSign },
-    { id: "privacy", label: "Privacy & Safety", icon: Lock },
+    { id: "interests", label: "Interests", icon: Star },
     { id: "ai", label: "AI Settings", icon: Cpu },
 ];
 

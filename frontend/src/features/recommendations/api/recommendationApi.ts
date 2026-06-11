@@ -27,7 +27,7 @@ export const recommendationKeys = {
   servers: () => [...recommendationKeys.all, "servers"] as const,
 };
 
-export const useRecommendedUsersQuery = (limit = 5) => {
+export const useRecommendedUsersQuery = (limit = 5, enabled = true) => {
   return useQuery({
     queryKey: [...recommendationKeys.users(), limit],
     queryFn: async () => {
@@ -36,10 +36,11 @@ export const useRecommendedUsersQuery = (limit = 5) => {
     },
     staleTime: 1000 * 60 * 30, // 30 minutes
     retry: 1, // Don't aggressively retry if recommendations fail
+    enabled,
   });
 };
 
-export const useRecommendedServersQuery = (limit = 5) => {
+export const useRecommendedServersQuery = (limit = 5, enabled = true) => {
   return useQuery({
     queryKey: [...recommendationKeys.servers(), limit],
     queryFn: async () => {
@@ -48,6 +49,7 @@ export const useRecommendedServersQuery = (limit = 5) => {
     },
     staleTime: 1000 * 60 * 30, // 30 minutes
     retry: 1,
+    enabled,
   });
 };
 

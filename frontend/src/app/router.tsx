@@ -6,6 +6,7 @@ import HomePage from "../features/home/pages/HomePage";
 import SettingsPage from "../features/settings/pages/SettingsPage";
 import AccountPage from "../features/settings/settingsFeat/account/pages/AccountPage";
 import { ProfilePage } from "../features/settings/settingsFeat/profile/pages";
+import InterestsPage from "../features/settings/settingsFeat/interests/pages/InterestsPage";
 import ProtectedRoute from "../routes/ProtectedRoute";
 import PublicRoute from "../routes/PublicRoute";
 import VerifyEmailPage from "../features/auth/pages/VerifyEmailPage";
@@ -93,6 +94,7 @@ export default function AppRouter() {
                 <Route index element={<Navigate to="profile" replace />} />
                 <Route path="profile" element={<ProfilePage />} />
                 <Route path="account" element={<AccountPage />} />
+                <Route path="interests" element={<InterestsPage />} />
             </Route>
             <Route
                 path={AppRoute.VERIFY_EMAIL}

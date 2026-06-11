@@ -5,10 +5,12 @@ import { useRecommendedUsersQuery, useInvalidateRecommendations } from "../../re
 import { sendFriendRequestApi } from "../../friends/api/friendApi";
 import toast from "react-hot-toast";
 
-export default function RecommendedPeople() {
-  const { data: users, isLoading, isError } = useRecommendedUsersQuery(5);
+export default function RecommendedPeople({ enabled = true }: { enabled?: boolean }) {
+  const { data: users, isLoading, isError } = useRecommendedUsersQuery(5, enabled);
   const invalidateRecommendations = useInvalidateRecommendations();
   const [pendingIds, setPendingIds] = useState<Set<string>>(new Set());
+
+  if (!enabled) return null;
 
   if (isError) {
     return (
@@ -37,8 +39,9 @@ export default function RecommendedPeople() {
 
   if (!users || users.length === 0) {
     return (
-      <div className="px-4 py-3">
-        <p className="text-xs text-white/50 text-center">Select more interests to discover people.</p>
+      <div className="px-4 py-3 space-y-1">
+        <p className="text-xs text-white/50">No recommendations yet.</p>
+        <p className="text-[10px] text-white/30">Select more interests to discover people.</p>
       </div>
     );
   }
