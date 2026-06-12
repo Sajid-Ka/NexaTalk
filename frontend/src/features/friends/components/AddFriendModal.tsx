@@ -193,6 +193,7 @@ export default function AddFriendModal({ isOpen, onClose, onSuccess }: AddFriend
                     size="sm"
                     onClick={() => handleSendRequest(user.id)}
                     isLoading={sending === user.id}
+                    disabled={user.isFriend}
                     className="bg-indigo-600/20 text-indigo-400 hover:bg-indigo-600 hover:text-white"
                   >
                     <UserPlus size={14} className="mr-1" />

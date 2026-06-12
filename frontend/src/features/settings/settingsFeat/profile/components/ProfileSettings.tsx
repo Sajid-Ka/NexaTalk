@@ -39,6 +39,7 @@ export default function ProfileSettings() {
     showActivity: false,
     avatar: "",
   });
+  const [initialData, setInitialData] = useState<ProfileFormData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -53,14 +54,16 @@ export default function ProfileSettings() {
     try {
       const res = await getMyProfileApi();
       const profile = res.data.data;
-      setFormData({
+      const newFormData = {
         username: profile.username,
         bio: profile.bio || "",
         publicProfile: profile.isProfilePublic,
         showOnlineStatus: profile.showOnlineStatus,
         showActivity: false,
         avatar: profile.avatar,
-      });
+      };
+      setFormData(newFormData);
+      setInitialData(newFormData);
     } catch {
       toast.error("Failed to load profile");
     } finally {
@@ -93,6 +96,7 @@ export default function ProfileSettings() {
       const avatarUrl = await uploadAvatarApi(file);
       console.log("Upload success, avatar URL:", avatarUrl);
       setFormData((prev) => ({ ...prev, avatar: avatarUrl }));
+      setInitialData((prev) => prev ? { ...prev, avatar: avatarUrl } : null);
       window.dispatchEvent(new Event("profileUpdated"));
       toast.success("Avatar uploaded successfully");
     } catch (err) {
@@ -120,6 +124,7 @@ export default function ProfileSettings() {
     try {
       await deleteAvatarApi();
       setFormData((prev) => ({ ...prev, avatar: "" }));
+      setInitialData((prev) => prev ? { ...prev, avatar: "" } : null);
       window.dispatchEvent(new Event("profileUpdated"));
       toast.success("Avatar removed successfully");
     } catch {
@@ -155,6 +160,7 @@ export default function ProfileSettings() {
         isProfilePublic: formData.publicProfile,
         showOnlineStatus: formData.showOnlineStatus
       });
+      setInitialData(formData);
       window.dispatchEvent(new Event("profileUpdated"));
       toast.success("Profile updated successfully");
     } catch (err) {
@@ -176,6 +182,8 @@ export default function ProfileSettings() {
       setSaving(false);
     }
   };
+
+  const hasChanges = initialData ? JSON.stringify(formData) !== JSON.stringify(initialData) : false;
 
   if (loading) {
     return <div className="animate-pulse bg-white/5 h-96 rounded-2xl" />;
@@ -332,15 +340,18 @@ export default function ProfileSettings() {
 
           {/* Actions */}
           <footer className="flex items-center justify-end gap-6 pt-10 mt-10 border-t border-white/5">
-            <button
-              onClick={fetchProfile}
-              className="text-sm font-bold text-white/40 hover:text-white transition-colors"
-            >
-              Discard Changes
-            </button>
+            {hasChanges && (
+              <button
+                onClick={() => setFormData(initialData as ProfileFormData)}
+                className="text-sm font-bold text-white/40 hover:text-white transition-colors"
+              >
+                Discard Changes
+              </button>
+            )}
             <Button
               onClick={handleSave}
               isLoading={saving}
+              disabled={!hasChanges}
               className="bg-indigo-600 hover:bg-indigo-700 px-10 h-14 rounded-2xl text-base shadow-xl shadow-indigo-600/20"
             >
               Save Changes
