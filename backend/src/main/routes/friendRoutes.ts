@@ -35,4 +35,9 @@ router.patch(
   controller.respondFriendRequest,
 );
 
+// Blocking
+router.get("/blocked", controller.getBlockedUsers);
+router.post("/block/:userId", controller.blockUser);
+router.delete("/block/:userId", controller.unblockUser);
+
 export default router;

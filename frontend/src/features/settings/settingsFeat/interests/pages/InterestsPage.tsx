@@ -9,10 +9,11 @@ import { useInvalidateRecommendations } from '../../../../recommendations/api/re
 import { useQueryClient } from '@tanstack/react-query';
 import { USER_SETTINGS_QUERY_KEY } from '../../../hooks/useUserSettings';
 import toast from 'react-hot-toast';
+import type { Interest } from '../../../../../shared/constants/interests.const';
 
 interface ProfileInterest {
   id: string;
-  name: string;
+  name: Interest;
 }
 
 export default function InterestsPage() {
@@ -21,7 +22,7 @@ export default function InterestsPage() {
   const [error, setError] = useState(false);
 
   const [initialInterests, setInitialInterests] = useState<ProfileInterest[]>([]);
-  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  const [selectedInterests, setSelectedInterests] = useState<Interest[]>([]);
   const [initialSettings, setInitialSettings] = useState<RecommendationSettingsState | null>(null);
   const [settings, setSettings] = useState<RecommendationSettingsState | null>(null);
 
@@ -43,7 +44,7 @@ export default function InterestsPage() {
 
       const interests = interestsRes.data.data || [];
       setInitialInterests(interests);
-      setSelectedInterests(interests.map(i => i.name.toLowerCase()));
+      setSelectedInterests(interests.map(i => i.name));
 
       setInitialSettings(settingsRes.data.data);
       setSettings(settingsRes.data.data);
@@ -102,7 +103,7 @@ export default function InterestsPage() {
       const initialNames = initialInterests.map(i => i.name.toLowerCase());
       const interestsToAdd = selectedInterests.filter(name => !initialNames.includes(name));
       const interestsToRemove = initialInterests
-        .filter(i => !selectedInterests.includes(i.name.toLowerCase()))
+        .filter(i => !selectedInterests.includes(i.name))
         .map(i => i.id);
 
       if (interestsToAdd.length > 0) {

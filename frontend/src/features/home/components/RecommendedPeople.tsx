@@ -4,11 +4,14 @@ import Button from "../../../shared/ui/Button";
 import { useRecommendedUsersQuery, useInvalidateRecommendations } from "../../recommendations/api/recommendationApi";
 import { sendFriendRequestApi } from "../../friends/api/friendApi";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { openProfileDrawer } from "../../users/store/userProfileDrawerSlice";
 
 export default function RecommendedPeople({ enabled = true }: { enabled?: boolean }) {
   const { data: users, isLoading, isError } = useRecommendedUsersQuery(5, enabled);
   const invalidateRecommendations = useInvalidateRecommendations();
   const [pendingIds, setPendingIds] = useState<Set<string>>(new Set());
+  const dispatch = useDispatch();
 
   if (!enabled) return null;
 
@@ -70,7 +73,11 @@ export default function RecommendedPeople({ enabled = true }: { enabled?: boolea
         const displayInterests = user.mutualInterests.slice(0, 3).join(" • ") + (user.mutualInterests.length > 3 ? ` +${user.mutualInterests.length - 3}` : "");
 
         return (
-          <div key={user.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 group transition-colors">
+          <div 
+            key={user.id} 
+            className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 group transition-colors cursor-pointer"
+            onClick={() => dispatch(openProfileDrawer(user.id))}
+          >
             <Avatar
               src={user.avatar}
               fallback={user.username[0]}
@@ -87,7 +94,7 @@ export default function RecommendedPeople({ enabled = true }: { enabled?: boolea
               size="sm"
               variant={isPending ? "secondary" : "primary"}
               className="h-6 px-2 text-[10px]"
-              onClick={() => handleAddFriend(user.id)}
+              onClick={(e) => { e.stopPropagation(); handleAddFriend(user.id); }}
               disabled={isPending}
             >
               {isPending ? "Pending" : "Add"}

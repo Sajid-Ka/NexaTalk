@@ -1,7 +1,7 @@
 // import React from "react";
 import ServerSidebar from "./ServerSidebar";
 import NavSidebar from "./NavSidebar";
-// import ActivitySidebar from "./ActivitySidebar";
+import ActivitySidebar from "./ActivitySidebar";
 
 interface DashboardLayoutProps {
     children?: React.ReactNode;
@@ -22,7 +22,7 @@ export default function DashboardLayout({ children : children }: DashboardLayout
             </main>
 
             {/* 4th Column: Activity Sidebar */}
-            {/* <ActivitySidebar /> */}
+            <ActivitySidebar />
         </div>
     );
 }

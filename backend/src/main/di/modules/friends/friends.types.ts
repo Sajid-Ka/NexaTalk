@@ -8,6 +8,9 @@ export const FRIENDS_TYPES = {
   GetFriends: Symbol.for("GetFriends"),
   GetPendingRequests: Symbol.for("GetPendingRequests"),
   RemoveFriend: Symbol.for("RemoveFriend"),
+  BlockUser: Symbol.for("FriendsBlockUser"),
+  UnblockUser: Symbol.for("FriendsUnblockUser"),
+  GetBlockedUsers: Symbol.for("GetBlockedUsers"),
 
   // Controllers
   FriendController: Symbol.for("FriendController"),

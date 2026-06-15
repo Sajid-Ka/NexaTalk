@@ -7,6 +7,7 @@ export const USER_TYPES = {
 
   //Profile
   GetProfile: Symbol.for("GetProfile"),
+  GetUserPreview: Symbol.for("GetUserPreview"),
   UpdateProfile: Symbol.for("UpdateProfile"),
   ProfileController: Symbol.for("ProfileController"),
 

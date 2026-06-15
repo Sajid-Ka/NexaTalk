@@ -1,5 +1,6 @@
 import { api } from "../../../../../shared/api/axios";
 import type { UserPresence, UserRole } from "../../../../../shared/constants/user.const";
+import { UserRelationship } from "../../../../../shared/constants/relationship.const";
 
 export interface ProfileResponse {
   id: string;
@@ -38,6 +39,11 @@ export interface PublicProfileResponse {
   createdAt: string;
 }
 
+export interface UserPreviewResponse {
+  user: ProfileResponse | PublicProfileResponse;
+  relationship: UserRelationship;
+}
+
 export interface UpdateProfileRequest {
   username?: string;
   avatar?: string | null;
@@ -72,6 +78,9 @@ export const getMyProfileApi = () =>
 
 export const getProfileByIdApi = (userId: string) =>
   api.get<{ data: ProfileResponse | PublicProfileResponse }>(`/profiles/${userId}`);
+
+export const getUserPreviewApi = (userId: string) =>
+  api.get<{ data: UserPreviewResponse }>(`/profiles/${userId}/preview`);
 
 export const updateProfileApi = (data: UpdateProfileRequest) =>
   api.patch<{ data: ProfileResponse }>("/profiles/me", data);

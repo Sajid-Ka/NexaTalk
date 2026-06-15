@@ -1,4 +1,5 @@
 import { api } from "../../../../../shared/api/axios";
+import type { Interest } from "../../../../../shared/constants/interests.const";
 
 export interface AddInterestsRequest {
   interests: string[];
@@ -16,7 +17,7 @@ export const removeInterestsApi = (data: RemoveInterestsRequest) =>
 
 export interface InterestResponse {
   id: string;
-  name: string;
+  name: Interest;
   category: string;
 }
 

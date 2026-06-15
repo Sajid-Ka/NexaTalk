@@ -1,21 +1,27 @@
 import { useState, useEffect, useCallback } from "react";
 import {
-  Users, Search, MessageSquare, Phone, UserPlus,
-  Check, X, UserMinus
+  Users, Search, MessageSquare, Phone, Check, X, UserPlus
 } from "lucide-react";
 import Avatar from "../../../shared/ui/Avatar";
 import Button from "../../../shared/ui/Button";
 import { cn } from "../../../shared/utils/cn";
-import { getFriendsApi, respondFriendRequestApi, removeFriendApi } from "../../friends/api/friendApi";
+import { 
+  getFriendsApi, 
+  respondFriendRequestApi, 
+  getPendingRequestsApi, 
+  getBlockedUsersApi, 
+  unblockUserApi 
+} from "../../friends/api/friendApi";
 import type { Friend } from "../../friends/api/friendApi";
 import { UserPresence } from "../../../shared/constants/user.const";
 import AddFriendModal from "./AddFriendModal";
 import toast from "react-hot-toast";
-import { getPendingRequestsApi } from "../../friends/api/friendApi";
-import { FriendTab } from "../../../shared/constants/friend.const";
+import { FriendTab, FriendshipStatus } from "../../../shared/constants/friend.const";
 import NotificationDropdown from "../../notifications/components/NotificationDropdown";
 import { AxiosError } from "axios";
 import { useInvalidateRecommendations } from "../../recommendations/api/recommendationApi";
+import { useDispatch } from "react-redux";
+import { openProfileDrawer } from "../../users/store/userProfileDrawerSlice";
 
 // Define error response type
 interface ApiErrorResponse {
@@ -35,6 +41,7 @@ export default function FriendsList() {
   const [processing, setProcessing] = useState<string | null>(null);
   const [pendingCount, setPendingCount] = useState(0);
   const invalidateRecommendations = useInvalidateRecommendations();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(searchQuery), 300);
@@ -64,11 +71,24 @@ export default function FriendsList() {
         }
         setPendingCount(receivedRequests.length)
       } else if (activeTab === FriendTab.BLOCKED) {
+        const res = await getBlockedUsersApi();
         friendsData = {
-          friends: [],
-          total: 0,
+          friends: res.data.data.map((b) => ({
+            id: b.userId,
+            userId: b.userId, // use for block specific logic
+            friendId: b.userId,
+            friend: {
+              id: b.userId,
+              username: b.username,
+              avatar: b.avatar,
+              status: UserPresence.OFFLINE,
+            },
+            status: "blocked" as FriendshipStatus,
+            createdAt: b.blockedAt,
+          })),
+          total: res.data.data.length,
           online: 0,
-          offline: 0,
+          offline: res.data.data.length,
         };
       } else {
         const status = activeTab === FriendTab.ONLINE ? "accepted" : undefined;
@@ -145,19 +165,19 @@ export default function FriendsList() {
     }
   };
 
-  const handleRemoveFriend = async (friendId: string) => {
+
+  const handleUnblock = async (userId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setProcessing(userId);
     try {
-      await removeFriendApi(friendId);
-      toast.success("Friend removed");
+      await unblockUserApi(userId);
+      toast.success("User unblocked");
       fetchFriends();
       invalidateRecommendations();
-    } catch (err) {
-      let errorMessage = "Failed to remove friend";
-      if (err instanceof AxiosError) {
-        const data = err.response?.data as ApiErrorResponse;
-        errorMessage = data?.error?.message || data?.message || "Failed to remove friend";
-      }
-      toast.error(errorMessage);
+    } catch {
+      toast.error("Failed to unblock user");
+    } finally {
+      setProcessing(null);
     }
   };
 
@@ -261,8 +281,19 @@ export default function FriendsList() {
           </div>
         ) : (
           <div className="space-y-1">
+            {activeTab === FriendTab.BLOCKED && (
+              <div className="px-4 py-2 mb-4 bg-white/5 rounded-lg border border-white/10">
+                <p className="text-xs text-white/60 text-center">
+                  Users you block will no longer be able to send friend requests, appear in recommendations, or contact you.
+                </p>
+              </div>
+            )}
             {filteredFriends.map((friend) => (
-              <div key={friend.id} className="group flex items-center justify-between px-4 py-3 rounded-xl hover:bg-white/5 transition-all cursor-pointer border border-transparent hover:border-white/5">
+              <div 
+                key={friend.id} 
+                className="group flex items-center justify-between px-4 py-3 rounded-xl hover:bg-white/5 transition-all cursor-pointer border border-transparent hover:border-white/5"
+                onClick={() => dispatch(openProfileDrawer(friend.friend.id))}
+              >
                 <div className="flex items-center gap-4">
                   <Avatar
                     src={friend.friend.avatar}
@@ -288,7 +319,7 @@ export default function FriendsList() {
                     // Show Accept/Reject buttons for recieved requests
                     <>
                       <button
-                        onClick={() => handleAcceptRequest(friend.userId, friend.id)}
+                        onClick={(e) => { e.stopPropagation(); handleAcceptRequest(friend.userId, friend.id); }}
                         disabled={processing === friend.id}
                         className="p-2.5 rounded-full bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white transition-colors"
                         title="Accept"
@@ -296,7 +327,7 @@ export default function FriendsList() {
                         <Check size={18} />
                       </button>
                       <button
-                        onClick={() => handleRejectRequest(friend.userId, friend.id)}
+                        onClick={(e) => { e.stopPropagation(); handleRejectRequest(friend.userId, friend.id); }}
                         disabled={processing === friend.id}
                         className="p-2.5 rounded-full bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
                         title="Reject"
@@ -304,24 +335,24 @@ export default function FriendsList() {
                         <X size={18} />
                       </button>
                     </>
-                  ) : friend.status === "pending" ? null : (
-                    // Show message/phone/remove for accepted friends
+                  ) : friend.status === "pending" ? null : friend.status === "blocked" ? (
+                    <Button
+                      size="sm"
+                      onClick={(e) => handleUnblock(friend.userId, e)}
+                      isLoading={processing === friend.userId}
+                      className="bg-[#090B11] text-white/50 hover:text-white border-none"
+                    >
+                      Unblock
+                    </Button>
+                  ) : (
+                    // Show message/phone for accepted friends
                     <>
-                      <button className="p-2.5 rounded-full bg-[#090B11] text-white/50 hover:text-indigo-400 transition-colors">
+                      <button className="p-2.5 rounded-full bg-[#090B11] text-white/50 hover:text-indigo-400 transition-colors" onClick={(e) => e.stopPropagation()}>
                         <MessageSquare size={18} />
                       </button>
-                      <button className="p-2.5 rounded-full bg-[#090B11] text-white/50 hover:text-indigo-400 transition-colors">
+                      <button className="p-2.5 rounded-full bg-[#090B11] text-white/50 hover:text-indigo-400 transition-colors" onClick={(e) => e.stopPropagation()}>
                         <Phone size={18} />
                       </button>
-                      {activeTab !== FriendTab.BLOCKED && (
-                        <button
-                          onClick={() => handleRemoveFriend(friend.friendId)}
-                          className="p-2.5 rounded-full bg-[#090B11] text-white/50 hover:text-red-400 transition-colors"
-                          title="Remove Friend"
-                        >
-                          <UserMinus size={18} />
-                        </button>
-                      )}
                     </>
                   )}
                 </div>

@@ -78,6 +78,7 @@ export class RecommendationRepository
 
   async getRecommendedUsers(userId: string, limit: number): Promise<RecommendedUser[]> {
     const { FriendModel } = await import("../../friends/models/FriendModel");
+    const { BlockedUserModel } = await import("../../friends/models/BlockedUserModel");
     const { UserInterestModel } = await import("../../interests/models/UserInterestModel");
     const { InterestModel } = await import("../../interests/models/InterestModel");
     const { UserModel } = await import("../../auth/models/UserModel");
@@ -90,14 +91,21 @@ export class RecommendationRepository
 
     const interestIds = userInterests.map((ui) => ui.interestId);
 
-    // 2. Get excluded user IDs (self, friends, blocked)
-    const friendsOrBlocked = await FriendModel.find({
+    // 2. Get excluded user IDs (self, friends, pending, blocked)
+    const friendships = await FriendModel.find({
       $or: [{ userId }, { friendId: userId }],
     }).lean();
 
+    const blocks = await BlockedUserModel.find({
+      $or: [{ blockerId: userId }, { blockedUserId: userId }],
+    }).lean();
+
     const excludedIds = new Set<string>([userId]);
-    friendsOrBlocked.forEach((f) => {
+    friendships.forEach((f) => {
       excludedIds.add(f.userId === userId ? f.friendId : f.userId);
+    });
+    blocks.forEach((b) => {
+      excludedIds.add(b.blockerId === userId ? b.blockedUserId : b.blockerId);
     });
 
     // 3. Aggregate matching users

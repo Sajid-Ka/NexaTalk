@@ -8,8 +8,8 @@ export const ADMIN_TYPES = {
   //users
   ListUsers: Symbol.for("ListUsers"),
   GetUserDetails: Symbol.for("GetUserDetails"),
-  BlockUser: Symbol.for("BlockUser"),
-  UnblockUser: Symbol.for("UnblockUser"),
+  BlockUser: Symbol.for("AdminBlockUser"),
+  UnblockUser: Symbol.for("AdminUnblockUser"),
   UpdateRole: Symbol.for("UpdateUserRole"),
   ForceLogoutUser: Symbol.for("ForceLogoutUser"),
   DeleteUser: Symbol.for("DeleteUser"),

@@ -2,10 +2,12 @@ import { configureStore } from "@reduxjs/toolkit";
 import type { TypedUseSelectorHook } from "react-redux";
 import { useDispatch, useSelector } from "react-redux";
 import serverReducer from "../features/servers/core/store/serverSlice";
+import userProfileDrawerReducer from "../features/users/store/userProfileDrawerSlice";
 
 export const store = configureStore({
   reducer: {
     servers: serverReducer,
+    userProfileDrawer: userProfileDrawerReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

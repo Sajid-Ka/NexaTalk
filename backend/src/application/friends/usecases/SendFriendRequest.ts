@@ -9,6 +9,7 @@ import { ILogger } from "../../../domain/core/common/services/ILogger";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 import { NotFoundError } from "../../../domain/core/errors/NotFoundError";
 import { BadRequestError } from "../../../domain/core/errors/BadRequestError";
+import { ForbiddenError } from "../../../domain/core/errors/ForbiddenError";
 import { SendFriendRequestRequest } from "../dtos/requests/SendFrinedRequestRequest";
 import { FriendResponse } from "../dtos/responses/FriendResponse";
 import { FriendMapper } from "../mappers/FriendMapper";
@@ -34,6 +35,12 @@ export class SendFriendRequest implements ISendFriendRequestUsecase {
     // Cannot friend yourself
     if (userId === request.friendId) {
       throw new BadRequestError("You cannot send a friend request to yourself");
+    }
+
+    // Check if either user has blocked the other
+    const isBlocked = await this._friendRepo.checkIfBlocked(userId, request.friendId);
+    if (isBlocked) {
+      throw new ForbiddenError("Cannot send friend request to this user");
     }
 
     // Check if friendship already exists

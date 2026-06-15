@@ -12,6 +12,9 @@ import { IGetFriendsUsecase } from "../../../application/friends/interfaces/IGet
 import { IGetPendingRequestsUsecase } from "../../../application/friends/interfaces/IGetPendingRequestsUsecase";
 import { IRemoveFriendUsecase } from "../../../application/friends/interfaces/IRemoveFriendUsecase";
 import { FriendRequestType } from "../../../shared/constants/Friend-request-type.const";
+import { IBlockUserUsecase } from "../../../application/friends/usecases/BlockUser";
+import { IUnblockUserUsecase } from "../../../application/friends/usecases/UnblockUser";
+import { IGetBlockedUsersUsecase } from "../../../application/friends/usecases/GetBlockedUsers";
 
 @injectable()
 export class FriendController {
@@ -24,6 +27,10 @@ export class FriendController {
     @inject(FRIENDS_TYPES.GetPendingRequests)
     private readonly _getPendingRequests: IGetPendingRequestsUsecase,
     @inject(FRIENDS_TYPES.RemoveFriend) private readonly _removeFriend: IRemoveFriendUsecase,
+    @inject(FRIENDS_TYPES.BlockUser) private readonly _blockUser: IBlockUserUsecase,
+    @inject(FRIENDS_TYPES.UnblockUser) private readonly _unblockUser: IUnblockUserUsecase,
+    @inject(FRIENDS_TYPES.GetBlockedUsers)
+    private readonly _getBlockedUsers: IGetBlockedUsersUsecase,
   ) {}
 
   sendFriendRequest = async (req: AuthenticatedRequest, res: Response) => {
@@ -62,5 +69,20 @@ export class FriendController {
   removeFriend = async (req: AuthenticatedRequest, res: Response) => {
     await this._removeFriend.execute(req.user!.userId, req.params.userId);
     res.json(successResponse(null, "Friend removed"));
+  };
+
+  blockUser = async (req: AuthenticatedRequest, res: Response) => {
+    await this._blockUser.execute(req.user!.userId, req.params.userId);
+    res.json(successResponse(null, "User blocked successfully"));
+  };
+
+  unblockUser = async (req: AuthenticatedRequest, res: Response) => {
+    await this._unblockUser.execute(req.user!.userId, req.params.userId);
+    res.json(successResponse(null, "User unblocked successfully"));
+  };
+
+  getBlockedUsers = async (req: AuthenticatedRequest, res: Response) => {
+    const result = await this._getBlockedUsers.execute(req.user!.userId);
+    res.json(successResponse(result, "Blocked users fetched"));
   };
 }

@@ -35,8 +35,17 @@ export class SearchUsers implements ISearchUsersUsecase {
     // Filter out the current user if excludeUserId provided
     const filteredUsers = excludeUserId ? users.filter((u) => u.id !== excludeUserId) : users;
 
-    return Promise.all(
-      filteredUsers.map(async (user) => ({
+    const results: SearchUserResponse[] = [];
+
+    for (const user of filteredUsers) {
+      if (excludeUserId) {
+        const isBlocked = await this._friendRepo.checkIfBlocked(excludeUserId, user.id);
+        if (isBlocked) {
+          continue; // Skip blocked users
+        }
+      }
+
+      results.push({
         id: user.id,
         username: user.username,
         avatar: user.avatar,
@@ -44,7 +53,9 @@ export class SearchUsers implements ISearchUsersUsecase {
         isFriend: excludeUserId
           ? await this._friendRepo.checkIfFriends(excludeUserId, user.id)
           : false,
-      })),
-    );
+      });
+    }
+
+    return results;
   }
 }

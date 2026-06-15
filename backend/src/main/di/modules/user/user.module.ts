@@ -10,6 +10,7 @@ import { UserSettingsController } from "../../../../presentation/user/controller
 
 //Profile
 import { GetProfile } from "../../../../application/user/usecases/GetProfile";
+import { GetUserPreview } from "../../../../application/user/usecases/GetUserPreview";
 import { UpdateProfile } from "../../../../application/user/usecases/UpdateProfile";
 import { ProfileController } from "../../../../presentation/user/controllers/ProfileController";
 
@@ -34,6 +35,7 @@ export function loadUserModule(container: Container) {
 
   //Profile
   container.bind(USER_TYPES.GetProfile).to(GetProfile);
+  container.bind(USER_TYPES.GetUserPreview).to(GetUserPreview);
   container.bind(USER_TYPES.UpdateProfile).to(UpdateProfile);
   container.bind(USER_TYPES.ProfileController).to(ProfileController);
 

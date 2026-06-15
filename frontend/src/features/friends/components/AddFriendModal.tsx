@@ -8,7 +8,8 @@ import type { UserSearchResult } from "../../settings/settingsFeat/profile/api/p
 import { sendFriendRequestApi } from "../api/friendApi";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
-import ProfilePopup from "../../settings/settingsFeat/profile/components/ProfilePopup";
+import UserPreviewModal from "./UserPreviewModal";
+import { useAuth } from "../../auth/context/useAuth";
 
 interface AddFriendModalProps {
   isOpen: boolean;
@@ -29,10 +30,10 @@ export default function AddFriendModal({ isOpen, onClose, onSuccess }: AddFriend
   const [results, setResults] = useState<UserSearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState<string | null>(null);
-  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
-  const [profilePosition, setProfilePosition] = useState<{ x: number; y: number }>();
-
-
+  const [previewUserId, setPreviewUserId] = useState<string | null>(null);
+  const { user } = useAuth();
+  const currentUserId = user?.id;
+  
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchQuery.trim());
@@ -85,7 +86,6 @@ export default function AddFriendModal({ isOpen, onClose, onSuccess }: AddFriend
       setResults([]);
       setLoading(false);
       setSending(null);
-      setSelectedProfileId(null);
     }
   }, [isOpen]);
 
@@ -111,12 +111,9 @@ export default function AddFriendModal({ isOpen, onClose, onSuccess }: AddFriend
     }
   };
 
-  const handleAvatarClick = (e: React.MouseEvent, userId: string) => {
-    e.stopPropagation();
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    // Position the popup slightly to the right of the clicked avatar
-    setProfilePosition({ x: rect.right + 16, y: rect.top });
-    setSelectedProfileId(userId);
+  const handleUserClick = (userId: string) => {
+    if (userId === currentUserId) return;
+    setPreviewUserId(userId);
   };
 
   const handleSendRequest = async (userId: string) => {
@@ -142,6 +139,12 @@ export default function AddFriendModal({ isOpen, onClose, onSuccess }: AddFriend
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
       onClick={onClose}
     >
+      {previewUserId && (
+        <UserPreviewModal
+          userId={previewUserId}
+          onClose={() => setPreviewUserId(null)}
+        />
+      )}
       <div 
         className="w-full max-w-md rounded-2xl bg-[#0F121D] border border-white/10 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
@@ -176,47 +179,41 @@ export default function AddFriendModal({ isOpen, onClose, onSuccess }: AddFriend
             ) : results.length === 0 ? (
               <div className="text-center py-8 text-white/40">No users found</div>
             ) : (
-              results.map((user) => (
-                <div key={user.id} className="flex items-center justify-between p-3 rounded-xl hover:bg-white/5 transition-colors">
+              results
+                .filter(user => user.id !== currentUserId)
+                .map((user) => (
+                <div key={user.id} className="flex items-center justify-between p-3 rounded-xl hover:bg-white/5 transition-colors cursor-pointer" onClick={() => handleUserClick(user.id)}>
                   <div className="flex items-center gap-3">
-                    <div className="cursor-pointer hover:opacity-80 transition-opacity" onClick={(e) => handleAvatarClick(e, user.id)}>
-                      <Avatar src={user.avatar} fallback={user.username} size="md" />
-                    </div>
+                    <Avatar src={user.avatar} fallback={user.username} size="md" />
                     <div>
                       <p className="font-medium text-white">{user.username}</p>
-                      {user.isFriend && (
-                        <p className="text-xs font-semibold text-green-500">Friend</p>
-                      )}
                     </div>
                   </div>
-                  <Button
-                    size="sm"
-                    onClick={() => handleSendRequest(user.id)}
-                    isLoading={sending === user.id}
-                    disabled={user.isFriend}
-                    className="bg-indigo-600/20 text-indigo-400 hover:bg-indigo-600 hover:text-white"
-                  >
-                    <UserPlus size={14} className="mr-1" />
-                    Add
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    {user.isFriend ? (
+                      <span className="px-3 py-1 bg-white/5 text-white/40 text-xs font-semibold rounded-md">
+                        Friend
+                      </span>
+                    ) : (
+                      <>
+                        <Button
+                          size="sm"
+                          onClick={(e) => { e.stopPropagation(); handleSendRequest(user.id); }}
+                          isLoading={sending === user.id}
+                          className="bg-indigo-600/20 text-indigo-400 hover:bg-indigo-600 hover:text-white"
+                        >
+                          <UserPlus size={14} className="mr-1" />
+                          Add
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </div>
               ))
             )}
           </div>
         </div>
       </div>
-       {selectedProfileId && (
-        <div onClick={(e) => e.stopPropagation()}>
-          <ProfilePopup
-            userId={selectedProfileId}
-            onClose={() => setSelectedProfileId(null)}
-            position={profilePosition}
-            hideMessageButton={true}
-            onAddFriend={handleSendRequest}
-            isSendingFriendRequest={sending === selectedProfileId}
-          />
-        </div>
-      )}
     </div>
   );
 }

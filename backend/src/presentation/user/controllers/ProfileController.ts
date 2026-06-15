@@ -4,6 +4,7 @@ import { USER_TYPES } from "../../../main/di/modules/user/user.types";
 import { AuthenticatedRequest } from "../../../main/types/AuthenticatedRequest";
 import { successResponse } from "../../../shared/response/responseFormatter";
 import { IGetProfileUsecase } from "../../../application/user/interfaces/IGetProfileUsecase";
+import { IGetUserPreviewUsecase } from "../../../application/user/interfaces/IGetUserPreviewUsecase";
 import { IUpdateProfileUsecase } from "../../../application/user/interfaces/IUpdateProfileUsecase";
 import { UpdateProfileRequest } from "../../../application/user/dtos/requests/UpdateProfileRequest";
 import { IUploadAvatarUsecase } from "../../../application/user/interfaces/IUploadAvatar";
@@ -14,6 +15,7 @@ import { ISearchUsersUsecase } from "../../../application/user/interfaces/ISearc
 export class ProfileController {
   constructor(
     @inject(USER_TYPES.GetProfile) private readonly _getProfile: IGetProfileUsecase,
+    @inject(USER_TYPES.GetUserPreview) private readonly _getUserPreview: IGetUserPreviewUsecase,
     @inject(USER_TYPES.UpdateProfile) private readonly _updateProfile: IUpdateProfileUsecase,
     @inject(USER_TYPES.UploadAvatar) private readonly _uploadAvatar: IUploadAvatarUsecase,
     @inject(USER_TYPES.DeleteAvatar) private readonly _deleteAvatar: IDeleteAvatarUsecase,
@@ -28,6 +30,11 @@ export class ProfileController {
   getProfileById = async (req: AuthenticatedRequest, res: Response) => {
     const profile = await this._getProfile.execute(req.params.userId, req.user?.userId);
     res.json(successResponse(profile, "Profile fetched successfully"));
+  };
+
+  getUserPreview = async (req: AuthenticatedRequest, res: Response) => {
+    const preview = await this._getUserPreview.execute(req.params.userId, req.user!.userId);
+    res.json(successResponse(preview, "User preview fetched successfully"));
   };
 
   updateProfile = async (req: AuthenticatedRequest, res: Response) => {

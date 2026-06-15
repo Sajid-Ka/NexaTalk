@@ -27,6 +27,7 @@ router.get("/search", controller.searchUsers);
 router.get("/me", controller.getMyProfile);
 router.patch("/me", validate(updateProfileSchema), controller.updateProfile);
 router.get("/:userId", controller.getProfileById);
+router.get("/:userId/preview", controller.getUserPreview);
 
 // avatar routes
 router.post("/me/avatar", upload.single("avatar"), controller.uploadAvatar);

@@ -46,3 +46,19 @@ export const respondFriendRequestApi = (userId: string, data: RespondFriendReque
 
 export const removeFriendApi = (userId: string) =>
   api.delete(`/friends/${userId}`);
+
+export const blockUserApi = (userId: string) =>
+  api.post(`/friends/block/${userId}`);
+
+export const unblockUserApi = (userId: string) =>
+  api.delete(`/friends/block/${userId}`);
+
+export interface BlockedUserResponse {
+  userId: string;
+  username: string;
+  avatar?: string;
+  blockedAt: string;
+}
+
+export const getBlockedUsersApi = () =>
+  api.get<{ data: BlockedUserResponse[] }>("/friends/blocked");
