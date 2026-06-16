@@ -28,21 +28,31 @@ export class GetBlockedUsers implements IGetBlockedUsersUsecase {
   async execute(userId: string): Promise<BlockedUserDto[]> {
     this._logger.info("Getting blocked users", { userId });
 
-    const blockedRecords = await this._friendRepo.getBlockedUsers(userId);
-    const result: BlockedUserDto[] = [];
+    const blockedRecords =
+  await this._friendRepo.getBlockedUsers(userId);
 
-    for (const record of blockedRecords) {
-      const blockedUser = await this._userRepo.findById(record.blockedUserId);
-      if (blockedUser) {
-        result.push({
-          userId: blockedUser.id,
-          username: blockedUser.username,
-          avatar: blockedUser.avatar,
-          blockedAt: record.createdAt,
-        });
-      }
-    }
+  const blockedUserIds = blockedRecords.map(
+    record => record.blockedUserId
+  );
 
-    return result;
+  const users = await this._userRepo.findByIds(blockedUserIds);
+
+  const usersMap = new Map(
+    users.map(user => [user.id, user])
+  );
+
+  return blockedRecords.flatMap(record => {
+    const user = usersMap.get(record.blockedUserId);
+
+    if (!user) return [];
+
+    return [{
+      userId: user.id,
+      username: user.username,
+      avatar: user.avatar,
+      blockedAt: record.createdAt,
+    }];
+  });
+
   }
 }

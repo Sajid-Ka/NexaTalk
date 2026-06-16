@@ -9,4 +9,5 @@ export interface IUserRepository extends IBaseRepository<User> {
   findByUsernameIncludingDeleted(username: string): Promise<User | null>;
   search(query: string, limit: number): Promise<User[]>;
   searchPublicProfiles(query: string, limit: number): Promise<User[]>;
+  findByIds(ids: string[]): Promise<User[]>;
 }

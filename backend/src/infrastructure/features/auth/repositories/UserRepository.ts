@@ -136,4 +136,12 @@ export class UserRepository
     await this.deleteRaw(id, transaction);
     return true;
   }
+
+  async findByIds(ids: string[]): Promise<User[]> {
+    const docs = await UserModel.find({
+      _id: { $in: ids },
+    }).lean();
+
+    return docs.map(doc => this.mapper.toDomain(doc));
+  }
 }
