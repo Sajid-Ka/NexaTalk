@@ -1,18 +1,18 @@
 import { inject, injectable } from "inversify";
 import { IGetRecommendedUsersUsecase } from "../interfaces/IGetRecommendedUsersUsecase";
 import { RECOMMENDATIONS_TYPES } from "../../../main/di/modules/recommendations/recommendations.types";
-import { IRecommendationService } from "../interfaces/IRecommendationService";
+import { IRecommendationQueryRepository } from "../../../domain/features/recommendations/repositories/IRecommendationQueryRepository";
 import { RecommendedUserResponse } from "../dtos/responses/RecommendedUserResponse";
 
 @injectable()
 export class GetRecommendedUsers implements IGetRecommendedUsersUsecase {
   constructor(
-    @inject(RECOMMENDATIONS_TYPES.RecommendationService)
-    private readonly _recommendationService: IRecommendationService,
+    @inject(RECOMMENDATIONS_TYPES.RecommendationQueryRepository)
+    private readonly _recommendationQueryRepo: IRecommendationQueryRepository,
   ) {}
 
   async execute(userId: string, limit = 5): Promise<RecommendedUserResponse[]> {
-    const users = await this._recommendationService.getRecommendedUsers(userId, limit);
+    const users = await this._recommendationQueryRepo.getRecommendedUsers(userId, limit);
     return users.map((u) => ({
       id: u.id,
       username: u.username,

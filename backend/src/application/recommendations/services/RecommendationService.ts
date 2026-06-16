@@ -1,15 +1,15 @@
 import { inject, injectable } from "inversify";
 import { IRecommendationService } from "../interfaces/IRecommendationService";
 import { RECOMMENDATIONS_TYPES } from "../../../main/di/modules/recommendations/recommendations.types";
-import { IRecommendationRepository } from "../../../domain/features/recommendations/repositories/IRecommendationRepository";
+import { IRecommendationQueryRepository } from "../../../domain/features/recommendations/repositories/IRecommendationQueryRepository";
 import { RecommendedUser } from "../../../domain/features/recommendations/types/RecommendedUser";
 import { RecommendedServer } from "../../../domain/features/recommendations/types/RecommendedServer";
 
 @injectable()
 export class RecommendationService implements IRecommendationService {
   constructor(
-    @inject(RECOMMENDATIONS_TYPES.RecommendationRepository)
-    private readonly _repository: IRecommendationRepository,
+    @inject(RECOMMENDATIONS_TYPES.RecommendationQueryRepository)
+    private readonly _repository: IRecommendationQueryRepository,
   ) {}
 
   async getRecommendedUsers(userId: string, limit = 5): Promise<RecommendedUser[]> {

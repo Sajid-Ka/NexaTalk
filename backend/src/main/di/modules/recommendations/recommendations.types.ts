@@ -1,6 +1,7 @@
 export const RECOMMENDATIONS_TYPES = {
   // Repositories
   RecommendationRepository: Symbol.for("RecommendationRepository"),
+  RecommendationQueryRepository: Symbol.for("RecommendationQueryRepository"),
 
   // Use Cases
   GenerateRecommendations: Symbol.for("GenerateRecommendations"),

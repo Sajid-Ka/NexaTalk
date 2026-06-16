@@ -2,6 +2,7 @@ import { Container } from "inversify";
 import { RECOMMENDATIONS_TYPES } from "./recommendations.types";
 
 import { RecommendationRepository } from "../../../../infrastructure/features/recommendations/repositories/RecommendationRepository";
+import { RecommendationQueryRepository } from "../../../../infrastructure/features/recommendations/repositories/RecommendationQueryRepository";
 
 import { TensorFlowRecommendationEngine } from "../../../../infrastructure/features/recommendations/services/TensorFlowRecommendationEngine";
 
@@ -21,6 +22,11 @@ export function loadRecommendationsModule(container: Container) {
     .bind(RECOMMENDATIONS_TYPES.RecommendationRepository)
     .to(RecommendationRepository)
     .inSingletonScope();
+
+  container
+  .bind(RECOMMENDATIONS_TYPES.RecommendationQueryRepository)
+  .to(RecommendationQueryRepository)
+  .inSingletonScope();
 
   // Services
   container
