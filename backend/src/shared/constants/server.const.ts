@@ -13,6 +13,14 @@ export const ServerMemberRole = {
 
 export type ServerMemberRole = (typeof ServerMemberRole)[keyof typeof ServerMemberRole];
 
+export const ServerStatus = {
+  ALL: "all",
+  ACTIVE: "active",
+  DISABLED: "disabled",
+} as const;
+
+export type ServerStatus = (typeof ServerStatus)[keyof typeof ServerStatus];
+
 export const ServerValidation = {
   MIN_NAME_LENGTH: 3,
   MAX_NAME_LENGTH: 100,

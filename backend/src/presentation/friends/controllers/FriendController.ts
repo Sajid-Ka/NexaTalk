@@ -14,7 +14,7 @@ import { IRemoveFriendUsecase } from "../../../application/friends/interfaces/IR
 import { FriendRequestType } from "../../../shared/constants/Friend-request-type.const";
 import { IBlockUserUsecase } from "../../../application/friends/usecases/BlockUser";
 import { IUnblockUserUsecase } from "../../../application/friends/usecases/UnblockUser";
-import { IGetBlockedUsersUsecase } from "../../../application/friends/usecases/GetBlockedUsers";
+import { IGetBlockedUsersUsecase } from "../../../application/friends/interfaces/IGetBlockedUserUsecase";
 
 @injectable()
 export class FriendController {

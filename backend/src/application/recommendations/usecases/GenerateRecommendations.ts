@@ -102,8 +102,7 @@ export class GenerateRecommendations {
   }
 
   private async _getAllUsersInterests(): Promise<UserInterestData[]> {
-    // TODO: Implement this method to fetch all users' interests from database
-    // For now, return empty map
+    // Implement this method to fetch all users, For now, return empty map
     const users: UserInterestData[] = [];
 
     return users;

@@ -1,7 +1,9 @@
+import { ServerStatus } from "../../../../../shared/constants/server.const";
+
 export interface ListServersRequestQuery {
   page?: number;
   limit?: number;
   search?: string;
-  status?: "all" | "active" | "disabled";
+  status?: ServerStatus;
   sort?: string;
 }

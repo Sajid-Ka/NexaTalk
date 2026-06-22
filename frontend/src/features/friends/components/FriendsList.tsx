@@ -198,8 +198,6 @@ export default function FriendsList() {
   const getStatusText = (status: UserPresence) => {
     switch (status) {
       case UserPresence.ONLINE: return "Online";
-      case UserPresence.IDLE: return "Idle";
-      case UserPresence.DND: return "Do Not Disturb";
       default: return "Offline";
     }
   };

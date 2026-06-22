@@ -2,7 +2,7 @@ import { IUserRepository } from "../../../../domain/features/auth/repositories/I
 import { User } from "../../../../domain/features/auth/entities/User";
 import { UserModel, IUserPersistence } from "../models/UserModel";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
-import { UserPersistenceMapper } from "../mappers/UserPersistenceMapper";
+import { UserPersistenceMapper } from "../mappers/UserMapper";
 import { injectable } from "inversify";
 import { TransactionContext } from "../../../../domain/core/common/services/TransactionContext";
 import { toMongoSession } from "../../../core/common/database/toMongoSession";
@@ -142,6 +142,6 @@ export class UserRepository
       _id: { $in: ids },
     }).lean();
 
-    return docs.map(doc => this.mapper.toDomain(doc));
+    return docs.map((doc) => this.mapper.toDomain(doc));
   }
 }

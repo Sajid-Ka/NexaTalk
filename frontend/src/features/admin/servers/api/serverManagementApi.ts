@@ -1,5 +1,6 @@
 import { api } from "../../../../shared/api/axios";
-import type { AdminServerSort, AdminServerSortOrder, AdminServerStatus } from "../../../../shared/constants/serverManagement.const";
+import type { AdminServerSort, AdminServerStatus } from "../../../../shared/constants/serverManagement.const";
+import type { SortOrder } from "../../../../shared/constants/sort.const";
 
 export const getAdminServersApi = (params?: {
   page?: number;
@@ -7,7 +8,7 @@ export const getAdminServersApi = (params?: {
   search?: string;
   status?: AdminServerStatus;
   sort?: AdminServerSort;
-  sortOrder?: AdminServerSortOrder
+  sortOrder?: SortOrder
 }) => api.get("/admin/servers", { params });
 
 export const disableAdminServerApi = (id: string) =>

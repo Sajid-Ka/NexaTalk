@@ -5,7 +5,7 @@ import { AuthenticatedRequest } from "../../../main/types/AuthenticatedRequest";
 import { successResponse } from "../../../shared/response/responseFormatter";
 import { IGetRecommendationsUseCase } from "../../../application/recommendations/interfaces/IGetRecommendationsUsecase";
 import { RecommendationRequest } from "../../../application/recommendations/dtos/requests/RecommendationRequest";
-import { RecommendationType } from "../../../shared/constants/recommendation-type.const";
+import { RecommendationType } from "../../../shared/constants/recommendation.const";
 
 @injectable()
 export class RecommendationController {

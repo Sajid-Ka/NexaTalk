@@ -1,4 +1,5 @@
-import { ProfileResponse, PublicProfileResponse } from "./ProfileResponse";
+import { ProfileResponse } from "./ProfileResponse";
+import { PublicProfileResponse } from "./PublicProfileResponse";
 import { UserRelationship } from "../../../../shared/constants/relationship.const";
 
 export interface UserPreviewResponse {

@@ -1,6 +1,7 @@
 import { User } from "../../../domain/features/auth/entities/User";
 import { Interest } from "../../../domain/features/interests/entities/Interest";
-import { ProfileResponse, PublicProfileResponse } from "../dtos/responses/ProfileResponse";
+import { ProfileResponse } from "../dtos/responses/ProfileResponse";
+import { PublicProfileResponse } from "../dtos/responses/PublicProfileResponse";
 import { InterestApplicationMapper } from "../../interests/mappers/InterestMapper";
 
 export class ProfileMapper {

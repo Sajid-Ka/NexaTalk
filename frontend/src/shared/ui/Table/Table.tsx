@@ -1,5 +1,6 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "../../utils/cn";
+import { SortOrder } from "../../constants/sort.const";
 
 export interface Column<T> {
   key: keyof T | string;
@@ -19,7 +20,7 @@ interface TableProps<T> {
   onRowClick?: (row: T) => void;
   selectedRowId?: string;
   sortBy?: string;
-  sortOrder?: "asc" | "desc";
+  sortOrder?: SortOrder;
   onSort?: (key: string) => void;
   rowClassName?: string;
 }
@@ -82,7 +83,7 @@ export function Table<T extends { id: string }>({
 
                   {col.sortable &&
                     sortBy === col.key &&
-                    (sortOrder === "asc" ? (
+                    (sortOrder === SortOrder.ASC ? (
                       <ChevronUp size={14} />
                     ) : (
                       <ChevronDown size={14} />

@@ -112,16 +112,12 @@ export default function UserPreviewModal({ userId, onClose }: UserPreviewModalPr
 
   const statusColors: Record<UserPresence, string> = {
     [UserPresence.ONLINE]: "bg-emerald-500",
-    [UserPresence.IDLE]: "bg-yellow-500",
     [UserPresence.OFFLINE]: "bg-gray-500",
-    [UserPresence.DND]: "bg-red-500",
   };
 
   const statusText: Record<UserPresence, string> = {
     [UserPresence.ONLINE]: "Online",
-    [UserPresence.IDLE]: "Idle",
     [UserPresence.OFFLINE]: "Offline",
-    [UserPresence.DND]: "Do Not Disturb",
   };
 
   const handleActionSuccess = () => {

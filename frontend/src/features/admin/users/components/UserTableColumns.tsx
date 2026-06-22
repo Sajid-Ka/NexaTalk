@@ -4,6 +4,7 @@ import Avatar from "../../../../shared/ui/Avatar";
 import Badge from "../../../../shared/ui/Badge";
 import type { Column } from "../../../../shared/ui/Table/Table";
 import type { User } from "../type/userManagement.types";
+import { UserPresence, UserRole } from "../../../../shared/constants/user.const";
 
 interface GetUserColumnsParams {
   currentUserId?: string;
@@ -44,8 +45,10 @@ export const getUserColumns = ({
     header: "Role",
     sortable: true,
     render: (role) => (
-      <Badge variant={role === "Admin" ? "indigo" : "secondary"}>
-        {role as string}
+      <Badge variant={role === UserRole.ADMIN ? "indigo" : "secondary"}>
+        {role === UserRole.ADMIN
+        ? "Admin"
+        : "User"}
       </Badge>
     ),
   },
@@ -57,11 +60,11 @@ export const getUserColumns = ({
       <div className="flex items-center gap-2">
         <span
           className={`h-2 w-2 rounded-full ${
-            status === "Online" ? "bg-green-500" : "bg-gray-500"
+            status === UserPresence.ONLINE ? "bg-green-500" : "bg-gray-500"
           }`}
         />
 
-        <span className="text-xs text-gray-300">{status as string}</span>
+        <span className="text-xs text-gray-300">{status === UserPresence.ONLINE ? "Online" : "Offline"}</span>
       </div>
     ),
   },

@@ -1,7 +1,5 @@
-import {
-  UserWithInterestsResponse,
-  ServerWithInterestsResponse,
-} from "../../../interests/dtos/responses/InterestResponse";
+import { UserWithInterestsResponse } from "../../../interests/dtos/responses/UserWithInterestsResponse";
+import { ServerWithInterestsResponse } from "../../../interests/dtos/responses/ServerWithInterestsResponse";
 
 export interface RecommendationResponse {
   people: UserWithInterestsResponse[];

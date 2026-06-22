@@ -9,13 +9,14 @@ import {
 } from "../../../../domain/features/recommendations/types/recommendation.types";
 import { COMMON_TYPES } from "../../../../main/di/modules/common/common.types";
 import { ILogger } from "../../../../domain/core/common/services/ILogger";
+import { env } from "../../../../shared/config/env";
 
 @injectable()
 export class TensorFlowRecommendationEngine implements IRecommendationEngine {
-  private readonly MIN_SIMILARITY_THRESHOLD = 0.05;
-  private readonly DEFAULT_LIMIT = 20;
-  private readonly MAX_LIMIT = 50;
-  private readonly CACHE_TTL_HOURS = 24;
+  private readonly MIN_SIMILARITY_THRESHOLD = env.RECOMMENDATION_MIN_SIMILARITY_THRESHOLD;
+  private readonly DEFAULT_LIMIT = env.RECOMMENDATION_DEFAULT_LIMIT;
+  private readonly MAX_LIMIT = env.RECOMMENDATION_MAX_LIMIT;
+  private readonly CACHE_TTL_HOURS = env.RECOMMENDATION_CACHE_TTL_HOURS;
 
   constructor(@inject(COMMON_TYPES.Logger) private _logger: ILogger) {}
 

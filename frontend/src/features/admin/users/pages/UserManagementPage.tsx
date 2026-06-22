@@ -17,10 +17,9 @@ import {
 } from "../api/userManagementApi";
 
 import {
-  AdminUserSortOrder,
   UserPresence,
   UserRole,
-  UserStatus,
+  AccountStatus,
   UserTab,
 } from "../../../../shared/constants/user.const";
 
@@ -33,13 +32,14 @@ import ManagementPageHeader from "../../../../shared/ui/management/ManagementPag
 import ManagementToolbar from "../../../../shared/ui/management/ManagementToolbar";
 import ManagementSearch from "../../../../shared/ui/management/ManagementSearch";
 import ManagementCard from "../../../../shared/ui/management/ManagementCard";
+import { SortOrder } from "../../../../shared/constants/sort.const";
 
 interface ApiUser {
   id: string;
   username: string;
   email: string;
   role: UserRole;
-  status: UserStatus;
+  status: AccountStatus;
   presenceStatus?: UserPresence;
   createdAt: string;
 }
@@ -62,7 +62,7 @@ export default function UserManagementPage() {
     useState<string>("joinedDate");
 
   const [sortOrder, setSortOrder] =
-    useState<AdminUserSortOrder>(AdminUserSortOrder.DESC);
+    useState<SortOrder>(SortOrder.DESC);
 
   useEffect(() => {
     const timer = setTimeout(
@@ -87,10 +87,7 @@ export default function UserManagementPage() {
           id: u.id,
           username: u.username,
           email: u.email,
-          role:
-            u.role === UserRole.ADMIN
-              ? "Admin"
-              : "User",
+          role: u.role,
           status: getPresenceLabel(u.presenceStatus),
           accountStatus: u.status,
           joinedDate: new Date(
@@ -118,11 +115,11 @@ export default function UserManagementPage() {
   const handleSort = (key: string) => {
     if (sortBy === key) {
       setSortOrder(
-        sortOrder === AdminUserSortOrder.ASC ? AdminUserSortOrder.DESC : AdminUserSortOrder.ASC
+        sortOrder === SortOrder.ASC ? SortOrder.DESC : SortOrder.ASC
       );
     } else {
       setSortBy(key);
-      setSortOrder("asc");
+      setSortOrder(SortOrder.ASC);
     }
   };
 
@@ -138,11 +135,8 @@ export default function UserManagementPage() {
         id: userData.id,
         username: userData.username,
         email: userData.email,
-        role:
-          userData.role === "admin"
-            ? "Admin"
-            : "User",
-        status: getPresenceLabel(userData.presenceStatus),
+        role: userData.role,
+        status: userData.presenceStatus ?? UserPresence.OFFLINE,
         accountStatus: userData.status,
         joinedDate: new Date(
           userData.createdAt
@@ -174,7 +168,7 @@ export default function UserManagementPage() {
       setUsers((prev) =>
         prev.map((u) =>
           u.id === userId
-            ? { ...u, accountStatus: UserStatus.BLOCKED, status: "Offline" }
+            ? { ...u, accountStatus: AccountStatus.BLOCKED, status: UserPresence.OFFLINE }
             : u
         )
       );
@@ -184,8 +178,8 @@ export default function UserManagementPage() {
           prev
             ? {
                 ...prev,
-                accountStatus: UserStatus.BLOCKED,
-                status: "Offline",
+                accountStatus: AccountStatus.BLOCKED,
+                status: UserPresence.OFFLINE,
               }
             : null
         );
@@ -218,7 +212,7 @@ export default function UserManagementPage() {
       setUsers((prev) =>
         prev.map((u) =>
           u.id === userId
-            ? { ...u, accountStatus: UserStatus.ACTIVE }
+            ? { ...u, accountStatus: AccountStatus.ACTIVE }
             : u
         )
       );
@@ -228,7 +222,7 @@ export default function UserManagementPage() {
           prev
             ? {
                 ...prev,
-                accountStatus: UserStatus.ACTIVE,
+                accountStatus: AccountStatus.ACTIVE,
               }
             : null
         );
@@ -261,7 +255,7 @@ export default function UserManagementPage() {
       setUsers((prev) =>
         prev.map((u) =>
           u.id === userId
-            ? { ...u, status: "Offline" }
+            ? { ...u, status: UserPresence.OFFLINE }
             : u
         )
       );
@@ -271,7 +265,7 @@ export default function UserManagementPage() {
           prev
             ? {
                 ...prev,
-                status: "Offline",
+                status: UserPresence.OFFLINE,
               }
             : null
         );

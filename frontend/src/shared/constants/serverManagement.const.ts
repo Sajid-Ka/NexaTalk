@@ -14,11 +14,3 @@ export const AdminServerSort = {
 
 export type AdminServerSort =
   (typeof AdminServerSort)[keyof typeof AdminServerSort];
-
-export const AdminServerSortOrder = {
-  ASC: "asc",
-  DESC: "desc",
-} as const;
-
-export type AdminServerSortOrder =
-  (typeof AdminServerSortOrder)[keyof typeof AdminServerSortOrder];

@@ -3,6 +3,7 @@ import ConfirmModal from "../../../../shared/ui/ConfirmModal";
 import { Table } from "../../../../shared/ui/Table/Table";
 import type { ServerTableRow } from "../type/serverManagement.types";
 import { getServerColumns } from "./ServerTableColumns";
+import type { SortOrder } from "../../../../shared/constants/sort.const";
 
 const ServerAction = {
   DISABLE: "disable",
@@ -17,7 +18,7 @@ interface ServerTableProps {
   selectedServerId?: string;
   loading?: boolean;
   sortBy?: string;
-  sortOrder?: "asc" | "desc";
+  sortOrder?: SortOrder;
   onSort?: (key: string) => void;
   onSelectServer: (server: ServerTableRow) => void;
   onDisableServer: (serverId: string) => void;

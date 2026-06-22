@@ -1,4 +1,4 @@
-import { ServerInviteResponse } from "../../core/dtos/responses/ServerResponse";
+import { ServerInviteResponse } from "../dtos/responses/ServerInviteResponse";
 
 export interface ICreateServerInviteUsecase {
   execute(

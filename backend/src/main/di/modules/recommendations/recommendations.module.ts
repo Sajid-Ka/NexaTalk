@@ -24,9 +24,9 @@ export function loadRecommendationsModule(container: Container) {
     .inSingletonScope();
 
   container
-  .bind(RECOMMENDATIONS_TYPES.RecommendationQueryRepository)
-  .to(RecommendationQueryRepository)
-  .inSingletonScope();
+    .bind(RECOMMENDATIONS_TYPES.RecommendationQueryRepository)
+    .to(RecommendationQueryRepository)
+    .inSingletonScope();
 
   // Services
   container

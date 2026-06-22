@@ -1,4 +1,5 @@
-import { IGoogleLoginUsecase, GoogleLoginRequest } from "../interfaces/IGoogleLoginUsecase";
+import { IGoogleLoginUsecase } from "../interfaces/IGoogleLoginUsecase";
+import { GoogleLoginRequest } from "../dtos/requests/GoogleLoginRequest";
 import { LoginUserResponse } from "../dtos/responses/LoginUserResponse";
 import { IUserRepository } from "../../../domain/features/auth/repositories/IUserRepository";
 import { IGoogleAuthService } from "../../../domain/features/auth/services/IGoogleAuthService";

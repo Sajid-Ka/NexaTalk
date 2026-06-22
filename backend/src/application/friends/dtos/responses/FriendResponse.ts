@@ -15,10 +15,3 @@ export interface FriendResponse {
   status: FriendsStatus;
   createdAt: Date;
 }
-
-export interface FriendListResponse {
-  friends: FriendResponse[];
-  total: number;
-  online: number;
-  offline: number;
-}

@@ -1,12 +1,9 @@
 import { injectable } from "inversify";
-import { Types } from "mongoose";
 import { Recommendation } from "../../../../domain/features/recommendations/entities/Recommendation";
 import { IRecommendationRepository } from "../../../../domain/features/recommendations/repositories/IRecommendationRepository";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
 import { RecommendationModel, IRecommendationPersistence } from "../models/RecommendationModel";
 import { RecommendationMapper } from "../mappers/RecommendationMapper";
-import { RecommendedUser } from "../../../../domain/features/recommendations/types/RecommendedUser";
-import { RecommendedServer } from "../../../../domain/features/recommendations/types/RecommendedServer";
 
 @injectable()
 export class RecommendationRepository

@@ -6,7 +6,8 @@ import { IUserInterestRepository } from "../../../domain/features/interests/repo
 import { ILogger } from "../../../domain/core/common/services/ILogger";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 import { NotFoundError } from "../../../domain/core/errors/NotFoundError";
-import { ProfileResponse, PublicProfileResponse } from "../dtos/responses/ProfileResponse";
+import { ProfileResponse } from "../dtos/responses/ProfileResponse";
+import { PublicProfileResponse } from "../dtos/responses/PublicProfileResponse";
 import { ProfileMapper } from "../mappers/ProfileMapper";
 import { IGetProfileUsecase } from "../interfaces/IGetProfileUsecase";
 

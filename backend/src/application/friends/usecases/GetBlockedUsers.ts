@@ -5,17 +5,8 @@ import { IFriendRepository } from "../../../domain/features/friends/repositories
 import { IUserRepository } from "../../../domain/features/auth/repositories/IUserRepository";
 import { ILogger } from "../../../domain/core/common/services/ILogger";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
-
-export interface BlockedUserDto {
-  userId: string;
-  username: string;
-  avatar?: string;
-  blockedAt: Date;
-}
-
-export interface IGetBlockedUsersUsecase {
-  execute(userId: string): Promise<BlockedUserDto[]>;
-}
+import { IGetBlockedUsersUsecase } from "../interfaces/IGetBlockedUserUsecase";
+import { BlockedUserResponse } from "../dtos/responses/BlockedUserResponse";
 
 @injectable()
 export class GetBlockedUsers implements IGetBlockedUsersUsecase {
@@ -25,34 +16,30 @@ export class GetBlockedUsers implements IGetBlockedUsersUsecase {
     @inject(COMMON_TYPES.Logger) private readonly _logger: ILogger,
   ) {}
 
-  async execute(userId: string): Promise<BlockedUserDto[]> {
+  async execute(userId: string): Promise<BlockedUserResponse[]> {
     this._logger.info("Getting blocked users", { userId });
 
-    const blockedRecords =
-  await this._friendRepo.getBlockedUsers(userId);
+    const blockedRecords = await this._friendRepo.getBlockedUsers(userId);
 
-  const blockedUserIds = blockedRecords.map(
-    record => record.blockedUserId
-  );
+    const blockedUserIds = blockedRecords.map((record) => record.blockedUserId);
 
-  const users = await this._userRepo.findByIds(blockedUserIds);
+    const users = await this._userRepo.findByIds(blockedUserIds);
 
-  const usersMap = new Map(
-    users.map(user => [user.id, user])
-  );
+    const usersMap = new Map(users.map((user) => [user.id, user]));
 
-  return blockedRecords.flatMap(record => {
-    const user = usersMap.get(record.blockedUserId);
+    return blockedRecords.flatMap((record) => {
+      const user = usersMap.get(record.blockedUserId);
 
-    if (!user) return [];
+      if (!user) return [];
 
-    return [{
-      userId: user.id,
-      username: user.username,
-      avatar: user.avatar,
-      blockedAt: record.createdAt,
-    }];
-  });
-
+      return [
+        {
+          userId: user.id,
+          username: user.username,
+          avatar: user.avatar,
+          blockedAt: record.createdAt,
+        },
+      ];
+    });
   }
 }

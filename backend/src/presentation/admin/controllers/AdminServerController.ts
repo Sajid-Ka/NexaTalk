@@ -13,16 +13,12 @@ export class AdminServerController {
   constructor(
     @inject(ADMIN_TYPES.ListServers)
     private readonly _listServers: IListServersUsecase,
-
     @inject(ADMIN_TYPES.GetServerDetails)
     private readonly _getServerDetails: IGetServerDetailsUsecase,
-
     @inject(ADMIN_TYPES.DisableServer)
     private readonly _disableServer: IDisableServerUsecase,
-
     @inject(ADMIN_TYPES.EnableServer)
     private readonly _enableServer: IEnableServerUsecase,
-
     @inject(ADMIN_TYPES.DeleteServerByAdmin)
     private readonly _deleteServer: IDeleteServerByAdminUsecase,
   ) {}

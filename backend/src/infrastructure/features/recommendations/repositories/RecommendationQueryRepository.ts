@@ -10,16 +10,12 @@ import { InterestModel } from "../../interests/models/InterestModel";
 import { UserModel } from "../../auth/models/UserModel";
 import { ServerModel } from "../../servers/models/ServerModel";
 import { ServerMemberModel } from "../../servers/models/ServerMemberModel";
-import { RECOMMENDATION_CONSTANTS } from "../../../../domain/features/recommendations/constants/RecommendationConstants";
+import { RecommendationMatching } from "../../../../shared/constants/recommendation.const";
+import { UserPresenceStatus } from "../../../../shared/constants/userPresenceStatus.const";
 
 @injectable()
-export class RecommendationQueryRepository
-  implements IRecommendationQueryRepository
-{
-
-
+export class RecommendationQueryRepository implements IRecommendationQueryRepository {
   async getRecommendedUsers(userId: string, limit: number): Promise<RecommendedUser[]> {
-
     // 1. Get user's own interests
     const userInterests = await UserInterestModel.find({ userId }).lean();
     if (userInterests.length === 0) return [];
@@ -54,7 +50,7 @@ export class RecommendationQueryRepository
         },
       },
       {
-        $match: { mutualInterestCount: { $gte: RECOMMENDATION_CONSTANTS.MIN_MATCHING_INTERESTS } },
+        $match: { mutualInterestCount: { $gte: RecommendationMatching.MIN_MATCHING_INTERESTS } },
       },
       { $sort: { mutualInterestCount: -1, _id: -1 } },
       { $limit: limit * 2 }, // Fetch some extra to account for deleted/blocked users filtered later
@@ -89,7 +85,7 @@ export class RecommendationQueryRepository
         mutualInterestCount: res.mutualInterestCount,
         mutualInterests: interests.map((i) => i.name),
         recommendationScore: res.mutualInterestCount,
-        isOnline: user.status === "online",
+        isOnline: user.status === UserPresenceStatus.ONLINE,
       });
     }
 
@@ -97,7 +93,6 @@ export class RecommendationQueryRepository
   }
 
   async getRecommendedServers(userId: string, limit: number): Promise<RecommendedServer[]> {
-
     const userInterests = await UserInterestModel.find({ userId }).lean();
     if (userInterests.length === 0) return [];
 

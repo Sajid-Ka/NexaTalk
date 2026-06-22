@@ -1,4 +1,5 @@
-import { ProfileResponse, PublicProfileResponse } from "../dtos/responses/ProfileResponse";
+import { ProfileResponse } from "../dtos/responses/ProfileResponse";
+import { PublicProfileResponse } from "../dtos/responses/PublicProfileResponse";
 
 export interface IGetProfileUsecase {
   execute(

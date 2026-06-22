@@ -1,12 +1,12 @@
 import { api } from "../../../../shared/api/axios";
 import { AppRoute } from "../../../../shared/constants/app-route.const";
-import { UserStatus } from "../../../../shared/constants/user.const";
+import { AccountStatus } from "../../../../shared/constants/user.const";
 
 export const getUsersApi = (params?: {
     page?: number;
     limit?: number;
     search?: string;
-    status?: UserStatus;
+    status?: AccountStatus;
 }) => api.get(`${AppRoute.ADMIN_USERS}`, { params });
 
 export const getUserDetailsApi = (id: string) =>

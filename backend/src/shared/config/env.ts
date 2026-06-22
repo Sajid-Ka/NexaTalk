@@ -15,12 +15,10 @@ const envSchema = z.object({
   MONGO_URI: z.string().url(),
 
   JWT_SECRET: z.string().min(32, "JWT_SECRET must be at least 32 characters"),
-
   JWT_REFRESH_SECRET: z
     .string()
     .trim()
     .min(32, "JWT_REFRESH_SECRET must be at least 32 characters"),
-
   JWT_ACCESS_TTL: z.string().default("15m"),
 
   CLIENT_ORIGIN: z.string().trim().url(),
@@ -34,6 +32,7 @@ const envSchema = z.object({
 
   REDIS_HOST: z.string().default("nexatalk-redis"),
   REDIS_PORT: z.coerce.number().default(6379),
+  REDIS_MAX_RETRIES_PER_REQUEST: z.coerce.number().default(3),
 
   EMAIL_VERIFY_TTL_MINUTES: z.coerce.number().default(15),
   RESET_PASSWORD_TTL_MINUTES: z.coerce.number().default(15),
@@ -44,6 +43,11 @@ const envSchema = z.object({
   RATE_LIMIT_SIGNUP: z.coerce.number().default(3),
   RATE_LIMIT_RESET: z.coerce.number().default(3),
   RATE_LIMIT_WINDOW_SECONDS: z.coerce.number().default(60),
+
+  RECOMMENDATION_MIN_SIMILARITY_THRESHOLD: z.coerce.number().default(0.05),
+  RECOMMENDATION_DEFAULT_LIMIT: z.coerce.number().int().positive().default(20),
+  RECOMMENDATION_MAX_LIMIT: z.coerce.number().int().positive().default(50),
+  RECOMMENDATION_CACHE_TTL_HOURS: z.coerce.number().int().positive().default(24),
 });
 
 const parsed = envSchema.safeParse(process.env);

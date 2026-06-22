@@ -1,7 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../features/auth/context/useAuth";
 import type { ReactNode } from "react";
-import { UserRole, UserStatus } from "../shared/constants/user.const";
+import { UserRole, AccountStatus } from "../shared/constants/user.const";
 
 export default function AdminRoute({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
@@ -10,11 +10,11 @@ export default function AdminRoute({ children }: { children: ReactNode }) {
 
   if (!user) return <Navigate to="/login" replace />;
 
-  if (user.isBlocked || user.accountStatus === UserStatus.BLOCKED || user.accountStatus === UserStatus.DELETED) {
+  if (user.isBlocked || user.accountStatus === AccountStatus.BLOCKED || user.accountStatus === AccountStatus.DELETED) {
     return <Navigate to="/login?blocked=true" replace />;
   }
 
-  if (user.globalRole !== UserRole.ADMIN && user.globalRole !== UserRole.SUPER_ADMIN) {
+  if (user.globalRole !== UserRole.ADMIN) {
     return <Navigate to="/home" replace />
   }
 

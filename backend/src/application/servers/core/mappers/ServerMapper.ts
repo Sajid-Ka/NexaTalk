@@ -1,6 +1,7 @@
 import { Server } from "../../../../domain/features/servers/entities/Server";
-import { ServerResponse, ServerMemberResponse } from "../dtos/responses/ServerResponse";
+import { ServerResponse } from "../dtos/responses/ServerResponse";
 import { ServerMemberRole } from "../../../../shared/constants/server.const";
+import { ServerMemberResponse } from "../../members/dtos/responses/ServerMemberResponse";
 
 export class ServerMapper {
   static toResponse(

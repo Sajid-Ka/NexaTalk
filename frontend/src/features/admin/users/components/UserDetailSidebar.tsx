@@ -1,5 +1,6 @@
 import type { User } from "../type/userManagement.types";
 import Avatar from "../../../../shared/ui/Avatar";
+import { UserPresence } from "../../../../shared/constants/user.const";
 
 
 interface UserDetailSidebarProps {
@@ -45,7 +46,7 @@ export default function UserDetailSidebar({ user }: UserDetailSidebarProps) {
                     <span className="text-xs text-gray-500 font-medium">Status</span>
                     <span
                     className={`text-sm font-medium ${
-                        user.status === "Online" ? "text-green-500" : "text-gray-500"
+                        user.status === UserPresence.ONLINE ? "text-green-500" : "text-gray-500"
                     }`}
                     >
                     {user.status}

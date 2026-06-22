@@ -16,11 +16,9 @@ import { InterestApplicationMapper } from "../../interests/mappers/InterestMappe
 import { ILogger } from "../../../domain/core/common/services/ILogger";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 import { NotFoundError } from "../../../domain/core/errors/NotFoundError";
-import { RecommendationType } from "../../../shared/constants/recommendation-type.const";
-import {
-  UserWithInterestsResponse,
-  ServerWithInterestsResponse,
-} from "../../interests/dtos/responses/InterestResponse";
+import { RecommendationType } from "../../../shared/constants/recommendation.const";
+import { UserWithInterestsResponse } from "../../interests/dtos/responses/UserWithInterestsResponse";
+import { ServerWithInterestsResponse } from "../../interests/dtos/responses/ServerWithInterestsResponse";
 import { UserInterestData } from "../../../domain/features/recommendations/types/recommendation.types";
 
 @injectable()

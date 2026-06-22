@@ -1,4 +1,4 @@
-import { RecommendationType } from "../../../../shared/constants/recommendation-type.const";
+import { RecommendationType } from "../../../../shared/constants/recommendation.const";
 
 export interface RecommendationRequest {
   limit?: number;

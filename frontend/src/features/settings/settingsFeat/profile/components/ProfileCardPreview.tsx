@@ -29,16 +29,12 @@ export default function ProfileCardPreview({
     // Status color mapping
     const statusColors = {
         [UserPresence.ONLINE]: "bg-emerald-500",
-        [UserPresence.IDLE]: "bg-yellow-500",
         [UserPresence.OFFLINE]: "bg-gray-500",
-        [UserPresence.DND]: "bg-red-500",
     };
 
     const statusText = {
         [UserPresence.ONLINE]: "Online",
-        [UserPresence.IDLE]: "Idle",
         [UserPresence.OFFLINE]: "Offline",
-        [UserPresence.DND]: "Do Not Disturb",
     };
 
     return (
@@ -97,9 +93,7 @@ export default function ProfileCardPreview({
                                 <div className={`w-2 h-2 rounded-full ${statusColors[status]}`} />
                                 <span className="text-[10px] font-bold uppercase tracking-wider"
                                     style={{
-                                        color: status === UserPresence.ONLINE ? '#10b981' :
-                                            status === UserPresence.IDLE ? '#eab308' :
-                                                status === UserPresence.DND ? '#ef4444' : '#6b7280'
+                                        color: statusColors[status]
                                     }}>
                                     {statusText[status]}
                                 </span>

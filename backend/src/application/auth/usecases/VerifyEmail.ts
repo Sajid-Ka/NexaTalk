@@ -74,7 +74,6 @@ export class VerifyEmail implements IVerifyEmailUsecase {
       });
 
       // Invalidate all active sessions by deleting refresh tokens.
-      // Combined with the sessionVersion increment above, this forces a complete logout.
       await this._refreshRepo.deleteAllByUser(user.id);
 
       await this._cache.delete(cacheKey);

@@ -17,7 +17,6 @@ import {
 } from "../api/serverManagementApi";
 import {
   AdminServerSort,
-  AdminServerSortOrder,
   AdminServerStatus,
 } from "../../../../shared/constants/serverManagement.const";
 import type {
@@ -26,6 +25,7 @@ import type {
 } from "../type/serverManagement.types";
 import ServerTable from "../components/ServerTable";
 import ServerDetailSidebar from "../components/ServerDetailSidebar";
+import { SortOrder } from "../../../../shared/constants/sort.const";
 
 const getErrorMessage = (error: unknown, fallback: string) => {
   if (axios.isAxiosError(error)) {
@@ -59,7 +59,7 @@ export default function ServerManagementPage() {
   const [sortBy, setSortBy] = useState<AdminServerSort>(
     AdminServerSort.CREATED_AT,
   );
-  const [sortOrder, setSortOrder] = useState<AdminServerSortOrder>(AdminServerSortOrder.DESC);
+  const [sortOrder, setSortOrder] = useState<SortOrder>(SortOrder.DESC);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -118,14 +118,14 @@ export default function ServerManagementPage() {
 
     if (sortBy === key) {
         setSortOrder((current) =>
-        current === AdminServerSortOrder.ASC ? AdminServerSortOrder.DESC : AdminServerSortOrder.ASC
+        current === SortOrder.ASC ? SortOrder.DESC : SortOrder.ASC
         );
 
         return;
     }
 
     setSortBy(key);
-    setSortOrder("desc");
+    setSortOrder(SortOrder.DESC);
   };
 
   const updateServerState = (

@@ -3,7 +3,8 @@ import { SERVERS_TYPES } from "../../../../main/di/modules/servers/servers.types
 import { IServerRepository } from "../../../../domain/features/servers/repositories/IServerRepository";
 import { IServerMemberRepository } from "../../../../domain/features/servers/repositories/IServerMemberRepository";
 import { IGetServerUsecase } from "../interfaces/IGetServerUsecase";
-import { ServerMemberResponse, ServerResponse } from "../dtos/responses/ServerResponse";
+import { ServerResponse } from "../dtos/responses/ServerResponse";
+import { ServerMemberResponse } from "../../members/dtos/responses/ServerMemberResponse";
 import { ServerMapper } from "../mappers/ServerMapper";
 import { ILogger } from "../../../../domain/core/common/services/ILogger";
 import { COMMON_TYPES } from "../../../../main/di/modules/common/common.types";

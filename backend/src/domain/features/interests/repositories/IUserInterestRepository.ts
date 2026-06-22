@@ -3,17 +3,17 @@ import { UserInterest } from "../entities/UserInterest";
 import { Interest } from "../entities/Interest";
 
 export interface IUserInterestRepository extends IBaseRepository<UserInterest> {
-  findByUser(userId: string): Promise<Interest[]>; // Find all interests for a specific user
-  addInterests(userId: string, interestIds: string[]): Promise<void>; // Add multiple interests to a user
-  removeInterests(userId: string, interestIds: string[]): Promise<void>; // Remove multiple interests from a user
-  hasInterest(userId: string, interestId: string): Promise<boolean>; // Check if a user has a specific interest
+  findByUser(userId: string): Promise<Interest[]>;
+  addInterests(userId: string, interestIds: string[]): Promise<void>;
+  removeInterests(userId: string, interestIds: string[]): Promise<void>;
+  hasInterest(userId: string, interestId: string): Promise<boolean>;
   findUsersWithSharedInterests(
     userId: string,
     interestIds: string[],
     limit?: number,
     excludeSelf?: boolean,
-  ): Promise<Array<{ userId: string; sharedInterests: string[]; matchCount: number }>>; // Get users who share at least one interest with the target user
-  getUsersByInterest(interestId: string, limit?: number): Promise<string[]>; // Get users who have a specific interest
-  getInterestIdsByUser(userId: string): Promise<string[]>; // Get all interest IDs for a user
+  ): Promise<Array<{ userId: string; sharedInterests: string[]; matchCount: number }>>;
+  getUsersByInterest(interestId: string, limit?: number): Promise<string[]>;
+  getInterestIdsByUser(userId: string): Promise<string[]>;
   findAllUsersWithInterests(): Promise<Array<{ userId: string; interestIds: string[] }>>;
 }

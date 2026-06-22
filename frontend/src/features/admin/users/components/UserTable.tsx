@@ -4,6 +4,7 @@ import { Table } from "../../../../shared/ui/Table/Table";
 import { useAuth } from "../../../auth/context/useAuth";
 import type { User } from "../type/userManagement.types";
 import { getUserColumns } from "./UserTableColumns";
+import type { SortOrder } from "../../../../shared/constants/sort.const";
 
 interface UserTableProps {
   users: User[];
@@ -14,7 +15,7 @@ interface UserTableProps {
   onForceLogout: (userId: string) => void;
   onDeleteUser: (userId: string) => void;
   sortBy?: string;
-  sortOrder?: "asc" | "desc";
+  sortOrder?: SortOrder;
   onSort?: (key: string) => void;
 }
 

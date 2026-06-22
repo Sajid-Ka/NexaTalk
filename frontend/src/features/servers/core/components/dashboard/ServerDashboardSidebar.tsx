@@ -1,5 +1,6 @@
 import { Crown, Signal, Users } from "lucide-react";
 import type { Server, ServerMember } from "../../types";
+import { UserPresence } from "../../../../../shared/constants/user.const";
 
 interface ServerDashboardSidebarProps {
   server: Server;
@@ -18,9 +19,7 @@ const formatCompact = (value: number) =>
   }).format(value);
 
 const getPresenceClassName = (status: ServerMember["status"]) => {
-  if (status === "online") return "bg-emerald-400";
-  if (status === "idle") return "bg-amber-400";
-  if (status === "dnd") return "bg-rose-400";
+  if (status ===  UserPresence.ONLINE) return "bg-emerald-400";
   return "bg-slate-500";
 };
 

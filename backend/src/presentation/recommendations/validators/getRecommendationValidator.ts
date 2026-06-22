@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { RecommendationType } from "../../../shared/constants/recommendation-type.const";
+import { RecommendationType } from "../../../shared/constants/recommendation.const";
 
 export const getRecommendationsQuerySchema = z.object({
   limit: z.coerce

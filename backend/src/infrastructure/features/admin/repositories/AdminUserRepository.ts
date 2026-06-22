@@ -5,7 +5,7 @@ import { IAdminUserRepository } from "../../../../domain/features/admin/reposito
 import { AdminUserQuery } from "../../../../domain/features/admin/types/AdminUserQuery";
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
 import { UserModel, IUserPersistence } from "../../auth/models/UserModel";
-import { UserPersistenceMapper } from "../../auth/mappers/UserPersistenceMapper";
+import { UserPersistenceMapper } from "../../auth/mappers/UserMapper";
 import { MongoQueryBuilder } from "../../../core/common/database/MongoQueryBuilder";
 
 @injectable()

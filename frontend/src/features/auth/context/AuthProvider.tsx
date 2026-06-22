@@ -6,7 +6,7 @@ import {
 } from "../../../shared/api/interceptors";
 import type { AuthUser } from "./AuthContext";
 import { AuthContext } from "./AuthContext";
-import { UserStatus } from "../../../shared/constants/user.const";
+import { AccountStatus } from "../../../shared/constants/user.const";
 import axios from "axios";
 
 
@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 const token = payload.accessToken;
                 const user = payload.user as AuthUser;
 
-                if(user.isBlocked || user.accountStatus === UserStatus.BLOCKED || user.accountStatus === UserStatus.DELETED ) {
+                if(user.isBlocked || user.accountStatus === AccountStatus.BLOCKED || user.accountStatus === AccountStatus.DELETED ) {
                     setAccessToken(null);
                     setUser(null);
                     return null;

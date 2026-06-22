@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { UserRole, UserStatus } from "../../../shared/constants/user.const";
+import { UserRole, AccountStatus } from "../../../shared/constants/user.const";
 
 export interface AuthUser {
     id: string;
@@ -7,7 +7,7 @@ export interface AuthUser {
     email: string;
     globalRole: UserRole;
     isBlocked: boolean;
-    accountStatus: UserStatus;
+    accountStatus: AccountStatus;
     hasCompletedOnboarding: boolean;
     authProviders?: {
         password: boolean;

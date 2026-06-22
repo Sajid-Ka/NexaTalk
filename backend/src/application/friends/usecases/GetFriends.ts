@@ -6,7 +6,8 @@ import { IUserRepository } from "../../../domain/features/auth/repositories/IUse
 import { FriendsStatus } from "../../../shared/constants/friends-status.const";
 import { ILogger } from "../../../domain/core/common/services/ILogger";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
-import { FriendListResponse, FriendResponse } from "../dtos/responses/FriendResponse";
+import { FriendResponse } from "../dtos/responses/FriendResponse";
+import { FriendListResponse } from "../dtos/responses/FriendListResponse";
 import { FriendMapper } from "../mappers/FriendMapper";
 import { UserPresenceStatus } from "../../../shared/constants/userPresenceStatus.const";
 import { IGetFriendsUsecase } from "../interfaces/IGetFriendsUsecase";

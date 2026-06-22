@@ -10,6 +10,7 @@ import { loadUserModule } from "./modules/user/user.module";
 import { loadFriendsModule } from "./modules/friends/friends.module";
 import { loadServersModule } from "./modules/servers/servers.module";
 import { loadChannelsModule } from "./modules/channels/channels.module";
+import { loadMessagesModule } from "./modules/messages/messages.module";
 
 const container = new Container();
 
@@ -24,5 +25,6 @@ loadUserModule(container);
 loadFriendsModule(container);
 loadServersModule(container);
 loadChannelsModule(container);
+loadMessagesModule(container);
 
 export { container };

@@ -1,7 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../features/auth/context/useAuth";
 import type { ReactNode } from "react";
-import { UserRole, UserStatus } from "../shared/constants/user.const";
+import { UserRole, AccountStatus } from "../shared/constants/user.const";
 import { AppRoute } from "../shared/constants/app-route.const";
 
 export default function ProtectedRoute({ children }: { children: ReactNode }) {
@@ -13,7 +13,7 @@ export default function ProtectedRoute({ children }: { children: ReactNode }) {
     return <Navigate to={AppRoute.LOGIN} replace />;
   }
 
-  if (user.isBlocked || user.accountStatus === UserStatus.BLOCKED || user.accountStatus === UserStatus.DELETED) {
+  if (user.isBlocked || user.accountStatus === AccountStatus.BLOCKED || user.accountStatus === AccountStatus.DELETED) {
     return <Navigate to={AppRoute.LOGIN} replace />;
   }
 
@@ -29,7 +29,7 @@ export default function ProtectedRoute({ children }: { children: ReactNode }) {
     return <Navigate to={AppRoute.HOME_PAGE} replace />;
   }
 
-  if (user.globalRole === UserRole.ADMIN || user.globalRole === UserRole.SUPER_ADMIN) {
+  if (user.globalRole === UserRole.ADMIN) {
     // If admin is on a user protected route, redirect to admin dashboard
     if (!window.location.pathname.startsWith(AppRoute.ADMIN)) {
         return <Navigate to={AppRoute.ADMIN} replace />;

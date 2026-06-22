@@ -10,7 +10,7 @@ export default function PublicRoute({ children }: { children: ReactNode }) {
 
 
   if (user && !user.isBlocked && user.accountStatus !== "deleted") {
-    if (user.globalRole === UserRole.ADMIN || user.globalRole === UserRole.SUPER_ADMIN) {
+    if (user.globalRole === UserRole.ADMIN) {
       return <Navigate to="/admin" replace />
     }
     return <Navigate to="/home" replace />;
