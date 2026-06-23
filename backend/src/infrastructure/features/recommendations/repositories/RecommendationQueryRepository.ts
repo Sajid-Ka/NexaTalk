@@ -11,7 +11,7 @@ import { UserModel } from "../../auth/models/UserModel";
 import { ServerModel } from "../../servers/models/ServerModel";
 import { ServerMemberModel } from "../../servers/models/ServerMemberModel";
 import { RecommendationMatching } from "../../../../shared/constants/recommendation.const";
-import { UserPresenceStatus } from "../../../../shared/constants/userPresenceStatus.const";
+import { UserPresenceStatus } from "../../../../shared/constants/user.const";
 
 @injectable()
 export class RecommendationQueryRepository implements IRecommendationQueryRepository {

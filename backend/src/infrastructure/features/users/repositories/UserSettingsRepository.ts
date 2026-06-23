@@ -4,7 +4,7 @@ import { IUserSettingsRepository } from "../../../../domain/features/users/repos
 import { BaseRepository } from "../../../core/common/database/BaseRepository";
 import { UserSettingsModel, IUserSettingsPersistence } from "../models/UserSettingsModel";
 import { UserSettingsMapper } from "../mappers/UserSettingsMapper";
-import { UserSettingsField } from "../../../../shared/constants/user-settings.const";
+import { UserSettingsField } from "../../../../shared/constants/user.const";
 
 @injectable()
 export class UserSettingsRepository

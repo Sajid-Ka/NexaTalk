@@ -1,5 +1,5 @@
-import { UserPresenceStatus } from "../../../../shared/constants/userPresenceStatus.const";
-import { GlobalRole } from "../../../../shared/constants/userRole.const";
+import { UserPresenceStatus } from "../../../../shared/constants/user.const";
+import { GlobalRole } from "../../../../shared/constants/user.const";
 import { InterestResponse } from "../../../interests/dtos/responses/InterestResponse";
 
 export interface PublicProfileResponse {

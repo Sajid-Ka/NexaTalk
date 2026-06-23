@@ -137,9 +137,9 @@ export class UserRepository
     return true;
   }
 
-  async findByIds(ids: string[]): Promise<User[]> {
+  async findByIds(userIds: string[]): Promise<User[]> {
     const docs = await UserModel.find({
-      _id: { $in: ids },
+      _id: { $in: userIds },
     }).lean();
 
     return docs.map((doc) => this.mapper.toDomain(doc));

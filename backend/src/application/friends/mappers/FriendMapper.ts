@@ -1,7 +1,7 @@
 import { User } from "../../../domain/features/auth/entities/User";
 import { Friend } from "../../../domain/features/friends/entities/Friend";
 import { FriendResponse } from "../dtos/responses/FriendResponse";
-import { UserPresenceStatus } from "../../../shared/constants/userPresenceStatus.const";
+import { UserPresenceStatus } from "../../../shared/constants/user.const";
 
 export class FriendMapper {
   static async toResponse(friend: Friend, friendUser: User): Promise<FriendResponse> {

@@ -10,7 +10,7 @@ import { AUTH_TYPES } from "../../../main/di/modules/auth/auth.types";
 import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 import { TimeUtil } from "../../../shared/utils/time/time.util";
 import { CACHE_KEYS } from "../../../shared/constants/cacheKeys";
-import { UserPresenceStatus } from "../../../shared/constants/userPresenceStatus.const";
+import { UserPresenceStatus } from "../../../shared/constants/user.const";
 import { LoginUserMapper } from "../mappers/LoginUserMapper";
 import { IUserRepository } from "../../../domain/features/auth/repositories/IUserRepository";
 

@@ -9,7 +9,7 @@ import { CreateDirectConversationRequest } from "../../../application/messages/d
 @injectable()
 export class ConversationController {
   constructor(
-    @inject(MESSAGES_TYPES.CreateDirectConversationUsecase)
+    @inject(MESSAGES_TYPES.CreateDirectConversation)
     private readonly _createDirectConversation: ICreateDirectConversationUsecase,
   ) {}
 

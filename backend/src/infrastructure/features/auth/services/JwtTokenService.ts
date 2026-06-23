@@ -3,7 +3,7 @@ import { ITokenService } from "../../../../domain/features/auth/services/ITokenS
 import { AccessTokenPayload } from "../../../../domain/features/auth/types/AccessTokenPayload";
 import { inject, injectable } from "inversify";
 import { AUTH_TYPES } from "../../../../main/di/modules/auth/auth.types";
-import { GlobalRole } from "../../../../shared/constants/userRole.const";
+import { GlobalRole } from "../../../../shared/constants/user.const";
 import { TokenType } from "../../../../shared/constants/token-type.const";
 import { RedisCacheService } from "../../../core/common/cache/RedisCacheService";
 import { COMMON_TYPES } from "../../../../main/di/modules/common/common.types";

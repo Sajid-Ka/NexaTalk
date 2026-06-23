@@ -1,6 +1,6 @@
 import { Model } from "mongoose";
 import { UserAccountStatus } from "../../../../shared/constants/authStatus.const";
-import { GlobalRole } from "../../../../shared/constants/userRole.const";
+import { GlobalRole } from "../../../../shared/constants/user.const";
 import { SortField, SortOrder, sortOrderToMongo } from "../../../../shared/constants/sort.const";
 
 export interface QueryOptions {

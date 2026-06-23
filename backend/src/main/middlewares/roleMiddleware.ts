@@ -1,7 +1,7 @@
 import { Response, NextFunction } from "express";
 import { ForbiddenError } from "../../domain/core/errors/ForbiddenError";
 import { AuthenticatedRequest } from "../types/AuthenticatedRequest";
-import { GlobalRole } from "../../shared/constants/userRole.const";
+import { GlobalRole } from "../../shared/constants/user.const";
 import { ErrorMessage } from "../../shared/constants/messages.const";
 
 export const requireRole =

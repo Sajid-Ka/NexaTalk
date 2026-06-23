@@ -1,4 +1,4 @@
-import { UserPresenceStatus } from "../../../../shared/constants/userPresenceStatus.const";
+import { UserPresenceStatus } from "../../../../shared/constants/user.const";
 import { FriendsStatus } from "../../../../shared/constants/friends-status.const";
 
 export interface FriendResponse {

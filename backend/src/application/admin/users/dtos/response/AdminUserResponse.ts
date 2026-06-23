@@ -1,6 +1,6 @@
-import { GlobalRole } from "../../../../../shared/constants/userRole.const";
+import { GlobalRole } from "../../../../../shared/constants/user.const";
 import { UserAccountStatus } from "../../../../../shared/constants/authStatus.const";
-import { UserPresenceStatus } from "../../../../../shared/constants/userPresenceStatus.const";
+import { UserPresenceStatus } from "../../../../../shared/constants/user.const";
 
 export interface AdminUserResponse {
   id: string;

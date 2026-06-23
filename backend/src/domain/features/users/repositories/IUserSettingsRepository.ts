@@ -1,4 +1,4 @@
-import { UserSettingsField } from "../../../../shared/constants/user-settings.const";
+import { UserSettingsField } from "../../../../shared/constants/user.const";
 import { IBaseRepository } from "../../../core/common/repositories/IBaseRepository";
 import { UserSettings } from "../entities/UserSettings";
 

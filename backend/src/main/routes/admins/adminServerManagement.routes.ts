@@ -9,7 +9,7 @@ import { ITokenService } from "../../../domain/features/auth/services/ITokenServ
 import { IUserStatusService } from "../../../domain/features/auth/services/IUserStatusService";
 import { validate } from "../../../presentation/validators.ts/validate";
 import { listServersQuerySchema } from "../../../presentation/admin/validators/servers/listServersValidator";
-import { GlobalRole } from "../../../shared/constants/userRole.const";
+import { GlobalRole } from "../../../shared/constants/user.const";
 import { ValidationSource } from "../../../shared/constants/validation.const";
 
 const router = Router();

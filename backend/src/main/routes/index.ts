@@ -12,6 +12,7 @@ import friendRoutes from "./friendRoutes";
 import serverRoutes from "./servers";
 import channelRoutes from "./channels";
 import accountRoutes from "./accountRoutes";
+import messageRoutes from "./messageRoutes";
 
 const router = Router();
 
@@ -28,5 +29,6 @@ router.use("/friends", friendRoutes);
 router.use("/servers", serverRoutes);
 router.use("/servers", channelRoutes);
 router.use("/users", accountRoutes);
+router.use("/messages", messageRoutes);
 
 export default router;

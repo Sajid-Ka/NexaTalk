@@ -1,4 +1,4 @@
-import { GlobalRole } from "../../../../shared/constants/userRole.const";
+import { GlobalRole } from "../../../../shared/constants/user.const";
 
 export interface AccessTokenPayload {
   userId: string;

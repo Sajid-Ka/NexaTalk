@@ -92,9 +92,8 @@ export class CreateDirectConversation implements ICreateDirectConversationUsecas
     });
 
     if (!createdConversation) {
-        throw new Error("Conversation creation failed");
+      throw new Error("Conversation creation failed");
     }
-
 
     return createdConversation;
   }

@@ -1,5 +1,5 @@
-import { GlobalRole } from "../../../../shared/constants/userRole.const";
-import { UserPresenceStatus } from "../../../../shared/constants/userPresenceStatus.const";
+import { GlobalRole } from "../../../../shared/constants/user.const";
+import { UserPresenceStatus } from "../../../../shared/constants/user.const";
 import { UserAccountStatus } from "../../../../shared/constants/authStatus.const";
 import { BadRequestError } from "../../../core/errors/BadRequestError";
 

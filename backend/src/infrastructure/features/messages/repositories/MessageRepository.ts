@@ -5,6 +5,7 @@ import { IMessageRepository } from "../../../../domain/features/messages/reposit
 import { MessageModel, IMessagePersistence } from "../models/MessageModel";
 import { MessagePersistenceMapper } from "../mappers/MessageMapper";
 import { Types } from "mongoose";
+import { MessagePage } from "../../../../domain/features/messages/types/MessagePage";
 
 @injectable()
 export class MessageRepository
@@ -19,7 +20,7 @@ export class MessageRepository
     conversationId: string,
     limit = 20,
     cursor?: string,
-  ): Promise<Message[]> {
+  ): Promise<MessagePage> {
     const filter: Record<string, unknown> = {
       conversationId,
     };
@@ -30,7 +31,39 @@ export class MessageRepository
       };
     }
 
-    const docs = await this.model.find(filter).sort({ createdAt: -1 }).limit(limit).lean();
+    const docs = await this.model
+      .find(filter)
+      .sort({ createdAt: -1 })
+      .limit(limit + 1)
+      .lean();
+
+    const hasMore = docs.length > limit;
+
+    const paginatedDocs = hasMore ? docs.slice(0, limit) : docs;
+
+    const messages = paginatedDocs.map((doc) => this.mapper.toDomain(doc));
+
+    return {
+      messages,
+      nextCursor: hasMore && messages.length > 0 ? messages[messages.length - 1].id : null,
+      hasMore,
+    };
+  }
+
+  async findByIds(messageIds: string[]): Promise<Message[]> {
+    if (messageIds.length === 0) {
+      return [];
+    }
+
+    const objectIds = messageIds.map((id) => new Types.ObjectId(id));
+
+    const docs = await this.model
+      .find({
+        _id: {
+          $in: objectIds,
+        },
+      })
+      .lean();
 
     return docs.map((doc) => this.mapper.toDomain(doc));
   }

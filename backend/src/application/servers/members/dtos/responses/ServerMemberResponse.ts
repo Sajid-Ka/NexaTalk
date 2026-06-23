@@ -1,5 +1,5 @@
 import { ServerMemberRole } from "../../../../../shared/constants/server.const";
-import { UserPresenceStatus } from "../../../../../shared/constants/userPresenceStatus.const";
+import { UserPresenceStatus } from "../../../../../shared/constants/user.const";
 
 export interface ServerMemberResponse {
   id: string;

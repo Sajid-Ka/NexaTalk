@@ -7,7 +7,7 @@ import { ISearchUsersUsecase } from "../interfaces/ISearchUsersUsecase";
 import { SearchUserResponse } from "../dtos/responses/SearchUserResponse";
 import { FRIENDS_TYPES } from "../../../main/di/modules/friends/friends.types";
 import { IFriendRepository } from "../../../domain/features/friends/repositories/IFriendRepository";
-import { UserPresenceStatus } from "../../../shared/constants/userPresenceStatus.const";
+import { UserPresenceStatus } from "../../../shared/constants/user.const";
 
 @injectable()
 export class SearchUsers implements ISearchUsersUsecase {

@@ -1,6 +1,6 @@
 import { SortOrder, SortField } from "../../../../shared/constants/sort.const";
 import { UserAccountStatus } from "../../../../shared/constants/authStatus.const";
-import { GlobalRole } from "../../../../shared/constants/userRole.const";
+import { GlobalRole } from "../../../../shared/constants/user.const";
 
 export interface AdminUserQuery {
   page?: number;

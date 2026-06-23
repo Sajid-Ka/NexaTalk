@@ -9,7 +9,7 @@ import { COMMON_TYPES } from "../../../main/di/modules/common/common.types";
 import { FriendResponse } from "../dtos/responses/FriendResponse";
 import { FriendListResponse } from "../dtos/responses/FriendListResponse";
 import { FriendMapper } from "../mappers/FriendMapper";
-import { UserPresenceStatus } from "../../../shared/constants/userPresenceStatus.const";
+import { UserPresenceStatus } from "../../../shared/constants/user.const";
 import { IGetFriendsUsecase } from "../interfaces/IGetFriendsUsecase";
 
 @injectable()

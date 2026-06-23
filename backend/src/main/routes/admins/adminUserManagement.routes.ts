@@ -9,7 +9,7 @@ import { ADMIN_TYPES } from "../../di/modules/admin/admin.types";
 import { validate } from "../../../presentation/validators.ts/validate";
 import { listUsersQuerySchema } from "../../../presentation/admin/validators/users/listUsersValidator";
 import { updateRoleSchema } from "../../../presentation/admin/validators/users/updateRoleValidator";
-import { GlobalRole } from "../../../shared/constants/userRole.const";
+import { GlobalRole } from "../../../shared/constants/user.const";
 import { ValidationSource } from "../../../shared/constants/validation.const";
 import { IUserStatusService } from "../../../domain/features/auth/services/IUserStatusService";
 
