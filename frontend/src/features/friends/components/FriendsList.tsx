@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useOpenDirectConversation } from "../../messages/hooks/useOpenDirectConversation";
 import {
   Users, Search, MessageSquare, Phone, Check, X, UserPlus
 } from "lucide-react";
@@ -42,6 +43,8 @@ export default function FriendsList() {
   const [pendingCount, setPendingCount] = useState(0);
   const invalidateRecommendations = useInvalidateRecommendations();
   const dispatch = useDispatch();
+
+  const {mutate: openConversation, isPending: isOpeningConversation} = useOpenDirectConversation();
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(searchQuery), 300);
@@ -345,7 +348,14 @@ export default function FriendsList() {
                   ) : (
                     // Show message/phone for accepted friends
                     <>
-                      <button className="p-2.5 rounded-full bg-[#090B11] text-white/50 hover:text-indigo-400 transition-colors" onClick={(e) => e.stopPropagation()}>
+                      <button 
+                        className="p-2.5 rounded-full bg-[#090B11] text-white/50 hover:text-indigo-400 transition-colors" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openConversation(friend.friend.id);
+                        }}
+                        disabled={isOpeningConversation}
+                      >
                         <MessageSquare size={18} />
                       </button>
                       <button className="p-2.5 rounded-full bg-[#090B11] text-white/50 hover:text-indigo-400 transition-colors" onClick={(e) => e.stopPropagation()}>

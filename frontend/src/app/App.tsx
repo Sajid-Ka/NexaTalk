@@ -3,8 +3,8 @@ import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
-    <div>
-       <Toaster
+    <>
+      <Toaster
         position="top-right"
         toastOptions={{
           style: {
@@ -15,8 +15,7 @@ function App() {
         }}
       />
       <AppRouter />
-    </div>
+    </>
   );
 }
-
 export default App;

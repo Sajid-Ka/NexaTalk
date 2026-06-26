@@ -33,7 +33,7 @@ export class MessageRepository
 
     const docs = await this.model
       .find(filter)
-      .sort({ createdAt: -1 })
+      .sort({ createdAt: 1 })
       .limit(limit + 1)
       .lean();
 

@@ -7,15 +7,24 @@ import RecommendedServers from "./RecommendedServers";
 import { useNavigate } from "react-router-dom";
 import { AppRoute } from "../../../shared/constants/app-route.const";
 import { useUserSettings } from "../../settings/hooks/useUserSettings";
+import { HomeTab, HomeTabLabels } from "../../../shared/constants/homeTab.const";
+import { useAppDispatch, useAppSelector } from "../../../app/store";
+import { setHomeTab } from "../store/homeNavigationSlice";
+import { closeDirectChat } from "../../messages/store/directChatSlice";
+import { closeProfileDrawer } from "../../users/store/userProfileDrawerSlice";
 
 export default function NavSidebar() {
   const navigate = useNavigate();
   const { data: settings, isLoading: isLoadingSettings } = useUserSettings();
 
+  const dispatch = useAppDispatch();
+
+  const { activeTab } = useAppSelector(state => state.homeNavigation);
+
   const mainItems = [
-    { icon: Users, label: "Friends", active: true },
-    { icon: MessageSquare, label: "Direct Messages", badge: 4 },
-    { icon: Users2, label: "Group Messages" },
+    { key: HomeTab.FRIENDS, icon: Users, label: HomeTabLabels.FRIENDS_LABEL },
+    { key: HomeTab.DIRECTMESSAGES, icon: MessageSquare, label: HomeTabLabels.DIRECTMESSAGES_LABEL, badge: 4 },
+    { key: HomeTab.GROUPMESSAGES, icon: Users2, label: HomeTabLabels.GROUPMESSAGES_LABEL },
   ];
 
   return (
@@ -34,16 +43,17 @@ export default function NavSidebar() {
             <button
               key={item.label}
               onClick={() => {
-                if (item.label === "Friends") {
-                  navigate(AppRoute.HOME_PAGE);
-                }
+                dispatch(setHomeTab(item.key));
+                dispatch(closeProfileDrawer());
+                dispatch(closeDirectChat());
+                navigate(AppRoute.HOME_PAGE);
               }}
               className={cn(
                 "w-full px-3 py-2 flex items-center gap-3 rounded-lg transition-colors group",
-                item.active ? "bg-white/10 text-white" : "text-white/50 hover:bg-white/5 hover:text-white/80"
+                activeTab === item.key ? "bg-white/10 text-white" : "text-white/50 hover:bg-white/5 hover:text-white/80"
               )}
             >
-              <item.icon size={20} className={item.active ? "text-indigo-400" : "text-white/40 group-hover:text-white/60"} />
+              <item.icon size={20} className={activeTab === item.key ? "text-indigo-400" : "text-white/40 group-hover:text-white/60"} />
               <span className="text-sm font-medium flex-1 text-left">{item.label}</span>
               {item.badge && <Badge variant="primary" className="bg-indigo-600">{item.badge}</Badge>}
             </button>
