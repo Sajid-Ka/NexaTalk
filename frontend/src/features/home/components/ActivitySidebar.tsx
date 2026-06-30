@@ -1,6 +1,6 @@
 import { useAppSelector } from "../../../app/store";
 import UserProfileDrawer from "../../users/components/UserProfileDrawer";
-import DirectChatPanel from "../../messages/components/DirectChatPanel";
+import DirectChatPanel from "../../messages/components/ConversationChatPanel";
 import { cn } from "../../../shared/utils/cn";
 
 export default function ActivitySidebar() {

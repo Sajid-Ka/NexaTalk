@@ -3,6 +3,8 @@ import MessageBubble from "./MessageBubble";
 import { useAutoScroll } from "../hooks/useAutoScroll";
 import ChatMessagesSkeleton from "./ChatMessageSkeleton";
 import EmptyMessagesState from "./EmptyMessagesState";
+import { useEffect } from "react";
+import { useMarkConversationRead } from "../hooks/useMarkConversationRead";
 
 interface ChatMessagesProps {
     conversationId: string;
@@ -13,6 +15,34 @@ export default function ChatMessages({
 }: ChatMessagesProps) {
     const {data, isLoading} = useConversationMessages(conversationId);
     const bottomRef = useAutoScroll(data?.messages);
+    const { mutate: markConversationRead } = useMarkConversationRead();
+
+    useEffect(() => {
+        if (!data?.messages.length) {
+            return;
+        }
+
+        const latestIncomingMessage = [...data.messages]
+            .reverse()
+            .find(
+                (message) =>
+                    !message.isOwnMessage &&
+                    !message.deletedAt
+            );
+
+        if (!latestIncomingMessage) {
+            return;
+        }
+
+        markConversationRead({
+            conversationId,
+            messageId: latestIncomingMessage.id,
+        });
+    }, [
+        conversationId,
+        data?.messages,
+        markConversationRead,
+    ]);
 
     if (isLoading) {
         return <ChatMessagesSkeleton />

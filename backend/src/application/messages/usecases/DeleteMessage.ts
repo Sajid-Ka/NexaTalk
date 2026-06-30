@@ -51,7 +51,7 @@ export class DeleteMessage implements IDeleteMessageUsecase {
     }
 
     const updated = await this._messageRepo.update(message.id, {
-      content: "",
+      content: message.content,
       deletedAt: new Date(),
       updatedAt: new Date(),
     });

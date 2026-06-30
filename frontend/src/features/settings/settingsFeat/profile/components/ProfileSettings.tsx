@@ -92,9 +92,7 @@ export default function ProfileSettings() {
 
     setUploading(true);
     try {
-      console.log("Uploading file:", file.name, file.size, file.type);
       const avatarUrl = await uploadAvatarApi(file);
-      console.log("Upload success, avatar URL:", avatarUrl);
       setFormData((prev) => ({ ...prev, avatar: avatarUrl }));
       setInitialData((prev) => prev ? { ...prev, avatar: avatarUrl } : null);
       window.dispatchEvent(new Event("profileUpdated"));

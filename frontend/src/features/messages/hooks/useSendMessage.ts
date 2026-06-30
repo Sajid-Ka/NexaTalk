@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { sendMessageApi } from "../api/messageApi";
 import { ConversationQuery } from "../../../shared/constants/message.const";
+import type { MessagePage } from "../types/message.types";
 
 export function useSendMessage() {
     const queryClient = useQueryClient();
@@ -12,21 +13,34 @@ export function useSendMessage() {
         }: {
             conversationId: string;
             content: string;
-        }) => sendMessageApi(conversationId, content),
+        }) => sendMessageApi({conversationId, content}),
 
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({
-                queryKey: [
-                    ConversationQuery.CONVERSATION_MESSAGE,
+        onSuccess: ({ data }, variables) => {
+            queryClient.setQueryData(
+                [
+                    ConversationQuery.CONVERSATION,
                     variables.conversationId,
                 ],
-            });
+                (oldData: MessagePage | undefined) => {
+                    if (!oldData) {
+                        return oldData;
+                    }
+
+                    return {
+                        ...oldData,
+                        messages: [
+                            ...oldData.messages,
+                            data.data,
+                        ],
+                    };
+                }
+            );
 
             queryClient.invalidateQueries({
                 queryKey: [
                     ConversationQuery.DIRECT_CONVERSATIONS,
                 ],
             });
-        },
+        }
     });
 }

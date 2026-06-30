@@ -6,6 +6,7 @@ export interface MessageItem {
     editedAt: Date | null;
     deletedAt: Date | null;
     isOwnMessage: boolean;
+    conversationId: string;
 }
 
 export interface MessagePage {

@@ -22,7 +22,15 @@ export function errorInterceptor(
   logger.error("Unhandled Error", {
     requestId: req.requestId,
     path: req.originalUrl,
-    error: err,
+
+    error:
+      err instanceof Error
+        ? {
+            name: err.name,
+            message: err.message,
+            stack: err.stack,
+          }
+        : err,
   });
 
   if (err instanceof AppError) {

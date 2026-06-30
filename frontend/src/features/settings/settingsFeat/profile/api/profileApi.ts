@@ -97,9 +97,6 @@ export const uploadAvatarApi = async (file: File): Promise<string> => {
       },
     });
 
-    console.log("Full upload response:", response);
-    console.log("Response data:", response.data);
-
     const avatarUrl = response.data?.data?.avatarUrl;
 
     if (!avatarUrl) {
