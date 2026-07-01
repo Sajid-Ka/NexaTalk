@@ -10,7 +10,7 @@ import { useUserSettings } from "../../settings/hooks/useUserSettings";
 import { HomeTab, HomeTabLabels } from "../../../shared/constants/homeTab.const";
 import { useAppDispatch, useAppSelector } from "../../../app/store";
 import { setHomeTab } from "../store/homeNavigationSlice";
-import { closeDirectChat } from "../../messages/store/directChatSlice";
+import { closeDirectChat } from "../../messages/direct/store/directChatSlice";
 import { closeProfileDrawer } from "../../users/store/userProfileDrawerSlice";
 
 export default function NavSidebar() {

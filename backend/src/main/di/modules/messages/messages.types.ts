@@ -6,12 +6,14 @@ export const MESSAGES_TYPES = {
 
   // usecases
   CreateDirectConversation: Symbol.for("CreateDirectConversationUsecase"),
+  CreateGroup: Symbol.for("CreateGroup"),
   GetDirectConversations: Symbol.for("GetDirectConversations"),
   GetConversationMessages: Symbol.for("GetConversationMessages"),
   SendMessage: Symbol.for("SendMessage"),
   EditMessage: Symbol.for("EditMessage"),
   DeleteMessage: Symbol.for("DeleteMessage"),
   MarkAsRead: Symbol.for("MarkAsRead"),
+  GetGroups: Symbol.for("GetGroups"),
 
   // controllers
   ConversationController: Symbol.for("ConversationController"),

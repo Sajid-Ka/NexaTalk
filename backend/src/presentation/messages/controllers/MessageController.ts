@@ -3,18 +3,21 @@ import { inject, injectable } from "inversify";
 import { AuthenticatedRequest } from "../../../main/types/AuthenticatedRequest";
 import { MESSAGES_TYPES } from "../../../main/di/modules/messages/messages.types";
 import { successResponse } from "../../../shared/response/responseFormatter";
-import { IGetDirectConversationsUsecase } from "../../../application/messages/interfaces/IGetDirectConversationsUsecase";
-import { ICreateDirectConversationUsecase } from "../../../application/messages/interfaces/ICreateDirectConversationUsecase";
-import { CreateDirectConversationRequest } from "../../../application/messages/dtos/requests/CreateDirectConversationRequest";
-import { IGetConversationMessagesUsecase } from "../../../application/messages/interfaces/IGetConversationMessagesUsecase";
-import { GetConversationMessagesRequest } from "../../../application/messages/dtos/requests/GetConversationMessagesRequest";
-import { ISendMessageUsecase } from "../../../application/messages/interfaces/ISendMessageUsecase";
-import { SendMessageRequest } from "../../../application/messages/dtos/requests/SendMessageRequest";
-import { IEditMessageUsecase } from "../../../application/messages/interfaces/IEditMessageUsecase";
-import { EditMessageRequest } from "../../../application/messages/dtos/requests/EditMessageRequest";
-import { IDeleteMessageUsecase } from "../../../application/messages/interfaces/IDeleteMessageUsecase";
-import { IMarkAsReadUsecase } from "../../../application/messages/interfaces/IMarkAsReadUsecase";
-import { MarkAsReadRequest } from "../../../application/messages/dtos/requests/MarkAsReadRequest";
+import { IGetDirectConversationsUsecase } from "../../../application/messages/direct/interfaces/IGetDirectConversationsUsecase";
+import { ICreateDirectConversationUsecase } from "../../../application/messages/direct/interfaces/ICreateDirectConversationUsecase";
+import { CreateDirectConversationRequest } from "../../../application/messages/direct/dtos/requests/CreateDirectConversationRequest";
+import { IGetConversationMessagesUsecase } from "../../../application/messages/shared/interfaces/IGetConversationMessagesUsecase";
+import { GetConversationMessagesRequest } from "../../../application/messages/shared/dtos/requests/GetConversationMessagesRequest";
+import { ISendMessageUsecase } from "../../../application/messages/shared/interfaces/ISendMessageUsecase";
+import { SendMessageRequest } from "../../../application/messages/shared/dtos/requests/SendMessageRequest";
+import { IEditMessageUsecase } from "../../../application/messages/shared/interfaces/IEditMessageUsecase";
+import { EditMessageRequest } from "../../../application/messages/shared/dtos/requests/EditMessageRequest";
+import { IDeleteMessageUsecase } from "../../../application/messages/shared/interfaces/IDeleteMessageUsecase";
+import { IMarkAsReadUsecase } from "../../../application/messages/shared/interfaces/IMarkAsReadUsecase";
+import { MarkAsReadRequest } from "../../../application/messages/shared/dtos/requests/MarkAsReadRequest";
+import { ICreateGroupUsecase } from "../../../application/messages/group/interfaces/ICreateGroupUsecase";
+import { CreateGroupRequest } from "../../../application/messages/group/dtos/requests/CreateGroupRequest";
+import { IGetGroupsUsecase } from "../../../application/messages/group/interfaces/IGetGroupsUsecase";
 
 @injectable()
 export class MessageController {
@@ -33,6 +36,10 @@ export class MessageController {
     private readonly _deleteMessage: IDeleteMessageUsecase,
     @inject(MESSAGES_TYPES.MarkAsRead)
     private readonly _markAsRead: IMarkAsReadUsecase,
+    @inject(MESSAGES_TYPES.CreateGroup)
+    private readonly _createGroup: ICreateGroupUsecase,
+    @inject(MESSAGES_TYPES.GetGroups)
+    private readonly _getGroups: IGetGroupsUsecase,
   ) {}
 
   createDirectConversation = async (req: AuthenticatedRequest, res: Response) => {
@@ -104,5 +111,23 @@ export class MessageController {
     const result = await this._markAsRead.execute(req.user!.userId, request);
 
     res.json(successResponse(result, "Conversation marked as read"));
+  };
+
+  createGroup = async (req: AuthenticatedRequest, res: Response) => {
+    const request: CreateGroupRequest = {
+      name: req.body.name,
+      avatar: req.body.avatar,
+      participantIds: req.body.participantIds,
+    };
+
+    const result = await this._createGroup.execute(req.user!.userId, request);
+
+    res.json(successResponse(result, "Group created successfully"));
+  };
+
+  getGroups = async (req: AuthenticatedRequest, res: Response) => {
+    const result = await this._getGroups.execute(req.user!.userId);
+
+    res.json(successResponse(result, "Groups retrieved successfully"));
   };
 }

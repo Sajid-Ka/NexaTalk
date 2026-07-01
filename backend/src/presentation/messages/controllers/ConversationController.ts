@@ -3,8 +3,8 @@ import { inject, injectable } from "inversify";
 import { AuthenticatedRequest } from "../../../main/types/AuthenticatedRequest";
 import { MESSAGES_TYPES } from "../../../main/di/modules/messages/messages.types";
 import { successResponse } from "../../../shared/response/responseFormatter";
-import { ICreateDirectConversationUsecase } from "../../../application/messages/interfaces/ICreateDirectConversationUsecase";
-import { CreateDirectConversationRequest } from "../../../application/messages/dtos/requests/CreateDirectConversationRequest";
+import { ICreateDirectConversationUsecase } from "../../../application/messages/direct/interfaces/ICreateDirectConversationUsecase";
+import { CreateDirectConversationRequest } from "../../../application/messages/direct/dtos/requests/CreateDirectConversationRequest";
 
 @injectable()
 export class ConversationController {

@@ -3,9 +3,9 @@ import type { TypedUseSelectorHook } from "react-redux";
 import { useDispatch, useSelector } from "react-redux";
 import serverReducer from "../features/servers/core/store/serverSlice";
 import userProfileDrawerReducer from "../features/users/store/userProfileDrawerSlice";
-import directChatReducer from "../features/messages/store/directChatSlice";
+import directChatReducer from "../features/messages/direct/store/directChatSlice";
 import homeNavigationReducer from "../features/home/store/homeNavigationSlice";
-import messageEditingReducer from "../features/messages/store/messageEditingSlice";
+import messageEditingReducer from "../features/messages/shared/store/messageEditingSlice";
 
 export const store = configureStore({
   reducer: {

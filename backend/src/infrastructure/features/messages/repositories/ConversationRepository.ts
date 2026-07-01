@@ -51,4 +51,18 @@ export class ConversationRepository
 
     return docs.map((doc) => this.mapper.toDomain(doc));
   }
+
+  async findGroupsByUser(userId: string): Promise<Conversation[]> {
+    const docs = await this.model
+      .find({
+        type: ConversationType.GROUP,
+        participantIds: userId,
+      })
+      .sort({
+        updatedAt: -1,
+      })
+      .lean();
+
+    return docs.map((doc) => this.mapper.toDomain(doc));
+  }
 }

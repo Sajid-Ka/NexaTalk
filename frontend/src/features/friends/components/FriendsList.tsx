@@ -1,17 +1,17 @@
 import { useState, useEffect, useCallback } from "react";
-import { useOpenDirectConversation } from "../../messages/hooks/useOpenDirectConversation";
+import { useOpenDirectConversation } from "../../messages/direct/hooks/useOpenDirectConversation";
 import {
   Users, Search, MessageSquare, Phone, Check, X, UserPlus
 } from "lucide-react";
 import Avatar from "../../../shared/ui/Avatar";
 import Button from "../../../shared/ui/Button";
 import { cn } from "../../../shared/utils/cn";
-import { 
-  getFriendsApi, 
-  respondFriendRequestApi, 
-  getPendingRequestsApi, 
-  getBlockedUsersApi, 
-  unblockUserApi 
+import {
+  getFriendsApi,
+  respondFriendRequestApi,
+  getPendingRequestsApi,
+  getBlockedUsersApi,
+  unblockUserApi
 } from "../../friends/api/friendApi";
 import type { Friend } from "../../friends/api/friendApi";
 import { UserPresence } from "../../../shared/constants/user.const";
@@ -44,7 +44,7 @@ export default function FriendsList() {
   const invalidateRecommendations = useInvalidateRecommendations();
   const dispatch = useDispatch();
 
-  const {mutate: openConversation, isPending: isOpeningConversation} = useOpenDirectConversation();
+  const { mutate: openConversation, isPending: isOpeningConversation } = useOpenDirectConversation();
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(searchQuery), 300);
@@ -290,8 +290,8 @@ export default function FriendsList() {
               </div>
             )}
             {filteredFriends.map((friend) => (
-              <div 
-                key={friend.id} 
+              <div
+                key={friend.id}
                 className="group flex items-center justify-between px-4 py-3 rounded-xl hover:bg-white/5 transition-all cursor-pointer border border-transparent hover:border-white/5"
                 onClick={() => dispatch(openProfileDrawer(friend.friend.id))}
               >
@@ -348,8 +348,8 @@ export default function FriendsList() {
                   ) : (
                     // Show message/phone for accepted friends
                     <>
-                      <button 
-                        className="p-2.5 rounded-full bg-[#090B11] text-white/50 hover:text-indigo-400 transition-colors" 
+                      <button
+                        className="p-2.5 rounded-full bg-[#090B11] text-white/50 hover:text-indigo-400 transition-colors"
                         onClick={(e) => {
                           e.stopPropagation();
                           openConversation(friend.friend.id);
