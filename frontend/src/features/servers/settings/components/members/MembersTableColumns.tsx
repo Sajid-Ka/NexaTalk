@@ -5,15 +5,12 @@ import type { ServerSettingsMember } from "../../types";
 
 import MembersRoleBadge from "./MemberRoleBadge";
 import MembersAction from "./MemberActions";
+import { UserPresence } from "../../../../../shared/constants/user.const";
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case "online":
+    case UserPresence.ONLINE:
       return "bg-emerald-500";
-    case "idle":
-      return "bg-amber-500";
-    case "dnd":
-      return "bg-red-500";
     default:
       return "bg-slate-500";
   }

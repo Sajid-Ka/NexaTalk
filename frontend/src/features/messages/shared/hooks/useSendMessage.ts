@@ -41,6 +41,12 @@ export function useSendMessage() {
                     ConversationQuery.DIRECT_CONVERSATIONS,
                 ],
             });
+
+            queryClient.invalidateQueries({
+                queryKey: [
+                    ConversationQuery.GROUP_CONVERSATIONS,
+                ],
+            });
         }
     });
 }

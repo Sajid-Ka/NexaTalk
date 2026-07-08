@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Search, UserPlus } from "lucide-react";
+import { X, Search as SearchIcon, UserPlus } from "lucide-react";
 import Button from "../../../shared/ui/Button";
 import Input from "../../../shared/ui/Input";
 import Avatar from "../../../shared/ui/Avatar";
@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import UserPreviewModal from "./UserPreviewModal";
 import { useAuth } from "../../auth/context/useAuth";
+import EmptyState from "../../../shared/ui/EmptyState";
 
 interface AddFriendModalProps {
   isOpen: boolean;
@@ -168,7 +169,7 @@ export default function AddFriendModal({ isOpen, onClose, onSuccess }: AddFriend
               className="flex-1"
             />
             <Button onClick={handleSearch} disabled={loading} className="bg-indigo-600">
-              <Search size={18} />
+              <SearchIcon size={18} />
             </Button>
           </div>
 
@@ -177,7 +178,11 @@ export default function AddFriendModal({ isOpen, onClose, onSuccess }: AddFriend
             {loading ? (
               <div className="text-center py-8 text-white/40">Searching...</div>
             ) : results.length === 0 ? (
-              <div className="text-center py-8 text-white/40">No users found</div>
+              <EmptyState
+                  icon={SearchIcon}
+                  title="No results"
+                  description="Try another search."
+              />
             ) : (
               results
                 .filter(user => user.id !== currentUserId)

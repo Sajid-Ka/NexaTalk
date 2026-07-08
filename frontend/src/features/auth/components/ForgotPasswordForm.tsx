@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router-dom";
@@ -26,8 +27,24 @@ export default function ForgotPasswordForm() {
             await requestPasswordResetApi(data.email);
             setIsSuccess(true);
         } catch (error: unknown) {
-            const err = error as {response?:{data?:{message?: string}}}
-            setServerError(err?.response?.data?.message || "Something went wrong. Please try again.");
+            if (axios.isAxiosError(error)) {
+                const code = error.response?.data?.error?.code;
+                const message =
+                    error.response?.data?.error?.message ||
+                    error.response?.data?.message;
+
+                if (code === "AUTH_PROVIDER_NOT_ENABLED") {
+                    setServerError(
+                        "This account was created with Google. Password reset is not available because no password is set. Please sign in with Google."
+                    );
+                    return;
+                }
+
+                setServerError(message || "Something went wrong. Please try again.");
+                return;
+            }
+
+            setServerError("Something went wrong. Please try again.");
         }
     };
 

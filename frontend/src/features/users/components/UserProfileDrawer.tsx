@@ -8,7 +8,7 @@ import Button from "../../../shared/ui/Button";
 import { getProfileByIdApi } from "../../settings/settingsFeat/profile/api/profileApi";
 import type { ProfileResponse } from "../../settings/settingsFeat/profile/api/profileApi";
 import { getFriendsApi, getBlockedUsersApi, sendFriendRequestApi, unblockUserApi } from "../../friends/api/friendApi";
-import type { Friend, BlockedUserResponse } from "../../friends/api/friendApi";
+import type { Friend, BlockedUserResponse } from "../../friends/types/friend.types";
 import { UserPresence } from "../../../shared/constants/user.const";
 import { useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";

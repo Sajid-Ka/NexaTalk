@@ -6,7 +6,7 @@ import Card from "../../../shared/ui/Card";
 import Button from "../../../shared/ui/Button";
 import { verifyEmailApi } from "../api/authApi";
 import { ComponentStatus } from "../../../shared/constants/ui.const";
-import { AuthMessage } from "../../../shared/constants/messages.const";
+import { AuthMessage } from "../../../shared/constants/response-messages.const";
 
 export default function VerifyEmailPage() {
     const [searchParams] = useSearchParams();

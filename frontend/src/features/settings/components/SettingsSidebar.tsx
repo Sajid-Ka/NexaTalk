@@ -9,7 +9,6 @@ import {
     Radio,
     DollarSign,
     Star,
-    Cpu,
     LogOut,
     ArrowLeft
 } from "lucide-react";
@@ -24,7 +23,6 @@ const sidebarItems = [
     { id: "streaming", label: "Streaming Settings", icon: Radio },
     { id: "monetization", label: "Monetization & Earnings", icon: DollarSign },
     { id: "interests", label: "Interests", icon: Star },
-    { id: "ai", label: "AI Settings", icon: Cpu },
 ];
 
 export default function SettingsSidebar() {

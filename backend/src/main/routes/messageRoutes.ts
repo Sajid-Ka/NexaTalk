@@ -24,7 +24,6 @@ const userStatusService = container.get<IUserStatusService>(AUTH_TYPES.UserStatu
 const authMiddleware = createAuthMiddleware(tokenService, userStatusService);
 
 router.get("/direct", authMiddleware, controller.getDirectConversations);
-
 router.post(
   "/direct",
   authMiddleware,
@@ -32,6 +31,7 @@ router.post(
   controller.createDirectConversation,
 );
 
+router.get("/groups", authMiddleware, controller.getGroups);
 router.post("/groups", authMiddleware, validate(createGroupSchema), controller.createGroup);
 
 router.get(
@@ -40,8 +40,6 @@ router.get(
   validate(getConversationMessagesSchema, ValidationSource.QUERY),
   controller.getConversationMessages,
 );
-
-router.get("/groups", authMiddleware, controller.getGroups);
 
 router.post("/", authMiddleware, validate(sendMessageSchema), controller.sendMessage);
 router.patch("/", authMiddleware, validate(editMessageSchema), controller.editMessage);

@@ -3,6 +3,7 @@ import FriendsList from "../../friends/components/FriendsList";
 import { useAppSelector } from "../../../app/store";
 import { HomeTab } from "../../../shared/constants/homeTab.const";
 import DirectMessagesPage from "../../messages/direct/pages/DirectMessagesPage";
+import GroupMessagesPage from "../../messages/group/page/GroupMessagesPage";
 
 export default function HomePage() {
     const { activeTab } = useAppSelector(state => state.homeNavigation)
@@ -17,7 +18,7 @@ export default function HomePage() {
             }
 
             {activeTab === HomeTab.GROUPMESSAGES &&
-                <div>Coming Soon</div>
+                <GroupMessagesPage />
             }
         </DashboardLayout>
     );

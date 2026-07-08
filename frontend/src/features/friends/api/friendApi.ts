@@ -1,36 +1,12 @@
 import { api } from "../../../shared/api/axios";
-import type { FriendshipStatus } from "../../../shared/constants/friend.const";
-import { UserPresence } from "../../../shared/constants/user.const";
+import type { 
+  Friend, 
+  FriendListResponse, 
+  SendFriendRequestRequest, 
+  RespondFriendRequestRequest, 
+  BlockedUserResponse 
+} from "../types/friend.types";
 
-export interface Friend {
-  id: string;
-  userId: string;
-  friendId: string;
-  friend: {
-    id: string;
-    username: string;
-    avatar?: string;
-    status: UserPresence;
-    lastSeenAt?: string;
-  };
-  status: FriendshipStatus;
-  createdAt: string;
-}
-
-export interface FriendListResponse {
-  friends: Friend[];
-  total: number;
-  online: number;
-  offline: number;
-}
-
-export interface SendFriendRequestRequest {
-  friendId: string;
-}
-
-export interface RespondFriendRequestRequest {
-  status: Extract<FriendshipStatus, "accepted" | "blocked">;
-}
 
 export const getFriendsApi = (params?: { status?: string; search?: string }) =>
   api.get<{ data: FriendListResponse }>("/friends", { params });
@@ -52,13 +28,6 @@ export const blockUserApi = (userId: string) =>
 
 export const unblockUserApi = (userId: string) =>
   api.delete(`/friends/block/${userId}`);
-
-export interface BlockedUserResponse {
-  userId: string;
-  username: string;
-  avatar?: string;
-  blockedAt: string;
-}
 
 export const getBlockedUsersApi = () =>
   api.get<{ data: BlockedUserResponse[] }>("/friends/blocked");

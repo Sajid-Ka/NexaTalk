@@ -1,12 +1,13 @@
 import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { Search as SearchIcon, MessageSquare } from "lucide-react";
 import Input from "../../../../shared/ui/Input";
 import { useAppDispatch, useAppSelector } from "../../../../app/store";
 import { openDirectChat } from "../store/directChatSlice";
+import { closeGroupChat } from "../../group/store/groupChatSlice";
 import { useDirectConversations } from "../hooks/useDirectConversations";
 import DirectConversationItem from "./DirectConversationItem";
 import DirectConversationSkeleton from "./DirectConversationSkeleton";
-import EmptyConversationState from "../../shared/components/EmptyConversationState";
+import EmptyState from "../../../../shared/ui/EmptyState";
 import { cn } from "../../../../shared/utils/cn";
 
 export default function DirectConversationList() {
@@ -16,8 +17,7 @@ export default function DirectConversationList() {
         (state) => state.directChat
     );
 
-    const { data: conversations = [], isLoading } =
-        useDirectConversations();
+    const { data: conversations = [], isLoading } = useDirectConversations();
 
     const [search, setSearch] = useState("");
 
@@ -46,7 +46,7 @@ export default function DirectConversationList() {
                 </h1>
 
                 <div className="relative mt-4">
-                    <Search
+                    <SearchIcon
                         size={18}
                         className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30"
                     />
@@ -66,8 +66,22 @@ export default function DirectConversationList() {
                 {isLoading && <DirectConversationSkeleton />}
 
                 {!isLoading &&
+                    conversations.length === 0 && (
+                        <EmptyState
+                            icon={MessageSquare}
+                            title="No conversations"
+                            description="Start chatting with a friend."
+                        />
+                    )}
+
+                {!isLoading &&
+                    conversations.length > 0 &&
                     filteredConversations.length === 0 && (
-                        <EmptyConversationState />
+                        <EmptyState
+                            icon={SearchIcon}
+                            title="No results"
+                            description="Try another search."
+                        />
                     )}
 
                 {!isLoading &&
@@ -87,6 +101,7 @@ export default function DirectConversationList() {
                                             conversation.conversationId
                                         }
                                         onClick={() => {
+                                            dispatch(closeGroupChat());
                                             dispatch(openDirectChat(conversation.conversationId));
                                         }
                                         }

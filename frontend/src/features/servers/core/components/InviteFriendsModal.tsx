@@ -3,7 +3,7 @@ import { UserPlus, Search } from "lucide-react";
 import toast from "react-hot-toast";
 import Modal from "../../../../shared/ui/Modal";
 import { getFriendsApi } from "../../../friends/api/friendApi";
-import type { Friend } from "../../../friends/api/friendApi";
+import type { Friend } from "../../../friends/types/friend.types";
 import { getServerMembersApi } from "../../settings/api/serverSettingsApi";
 import {
   sendDirectServerInviteApi,
@@ -13,6 +13,7 @@ import {
 import type { ServerMember } from "../types";
 import { AxiosError } from "axios";
 import Avatar from "../../../../shared/ui/Avatar";
+import type { AvatarStatus } from "../../../../shared/constants/avatar.const";
 
 interface ApiErrorResponse {
   error?: { code?: string; message?: string };
@@ -161,7 +162,7 @@ export default function InviteFriendsModal({ isOpen, onClose, serverId }: Invite
                         src={friend.friend.avatar}
                         alt={friend.friend.username}
                         fallback={friend.friend.username}
-                        status={friend.friend.status as "online" | "offline" | "idle" | "dnd" | "streaming"}
+                        status={friend.friend.status as AvatarStatus}
                         size="md"
                       />
                       <div>

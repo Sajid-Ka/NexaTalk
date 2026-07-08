@@ -2,13 +2,14 @@ import { useState, useEffect, useRef } from "react";
 import { Bell } from "lucide-react";
 import toast from "react-hot-toast";
 import { getPendingRequestsApi, respondFriendRequestApi } from "../../friends/api/friendApi";
-import type { Friend } from "../../friends/api/friendApi";
+import type { Friend } from "../../friends/types/friend.types";
 import { getPendingServerInvitesApi, respondToDirectInviteApi } from "../api/notificationApi";
 import type { ServerDirectInvite } from "../api/notificationApi";
 import { FriendshipStatus } from "../../../shared/constants/friend.const";
 import { DirectInviteStatus } from "../../../shared/constants/server.const";
 import Avatar from "../../../shared/ui/Avatar";
 import { AvatarSize } from "../../../shared/constants/avatar.const";
+import EmptyState from "../../../shared/ui/EmptyState";
 
 export default function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -113,9 +114,11 @@ export default function NotificationDropdown() {
                 <div className="w-6 h-6 rounded-full border-2 border-dashed border-violet-500 animate-spin" />
               </div>
             ) : totalNotifications === 0 ? (
-              <div className="text-center py-8 text-white/40 text-sm">
-                No new notifications
-              </div>
+              <EmptyState
+                  icon={Bell}
+                  title="No notifications"
+                  description="You're all caught up."
+              />
             ) : (
               <div className="space-y-2">
                 

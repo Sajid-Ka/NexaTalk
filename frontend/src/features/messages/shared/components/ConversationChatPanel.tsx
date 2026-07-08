@@ -2,13 +2,13 @@ import { useAppSelector } from "../../../../app/store";
 import ChatHeader from "./ChatHeader";
 import ChatMessages from "./ChatMessages";
 import ChatInput from "./ChatInput";
-import { useSelectedConversation } from "../../direct/hooks/useSelectedConversation";
+import { useSelectedConversation } from "../hooks/useSelectedConversation";
 
 export default function DirectChatPanel() {
-    const { selectedConversationId } =
-        useAppSelector(
-            (state) => state.directChat
-        );
+    const directChat = useAppSelector(state => state.directChat);
+    const groupChat = useAppSelector(state => state.groupChat);
+
+    const selectedConversationId = directChat.isOpen ? directChat.selectedConversationId : groupChat.selectedConversationId;
 
     const conversation = useSelectedConversation();
 
@@ -26,9 +26,7 @@ export default function DirectChatPanel() {
             />
 
             <ChatMessages
-                conversationId={
-                    selectedConversationId
-                }
+                conversationId={selectedConversationId}
             />
 
             <ChatInput

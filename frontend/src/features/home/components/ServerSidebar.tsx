@@ -104,17 +104,6 @@ export default function ServerSidebar() {
                 >
                     <Compass size={24} />
                 </button>
-                {/* AI Chat Button */}
-                <button className="h-12 w-12 flex items-center justify-center rounded-full bg-white/5 hover:bg-violet-600 transition-all duration-300 group relative ring-offset-[#090B11] hover:ring-2 hover:ring-violet-500/50 hover:ring-offset-2">
-                    <img
-                        src="/Chat bubble character with neon headphones.png"
-                        alt="AI"
-                        className="w-15 h-15 object-contain scale-[1.7] translate-y-[2px]"
-                    />
-                    <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-[#090B11] border border-white/10 text-white text-xs px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-xl z-50">
-                        AI Chat
-                    </div>
-                </button>
             </div>
 
 

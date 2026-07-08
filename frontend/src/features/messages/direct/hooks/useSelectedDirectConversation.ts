@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useAppSelector } from "../../../../app/store";
 import { useDirectConversations } from "./useDirectConversations";
 
-export function useSelectedConversation() {
+export function useSelectedDirectConversation() {
     const { selectedConversationId } = useAppSelector(
         state => state.directChat
     );

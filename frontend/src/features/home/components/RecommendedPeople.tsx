@@ -6,6 +6,7 @@ import { sendFriendRequestApi } from "../../friends/api/friendApi";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { openProfileDrawer } from "../../users/store/userProfileDrawerSlice";
+import { UserPresence } from "../../../shared/constants/user.const";
 
 export default function RecommendedPeople({ enabled = true }: { enabled?: boolean }) {
   const { data: users, isLoading, isError } = useRecommendedUsersQuery(5, enabled);
@@ -82,7 +83,7 @@ export default function RecommendedPeople({ enabled = true }: { enabled?: boolea
               src={user.avatar}
               fallback={user.username[0]}
               size="sm"
-              status={user.isOnline ? "online" : "offline"}
+              status={user.isOnline ? UserPresence.ONLINE : UserPresence.OFFLINE}
             />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-white truncate">{user.username}</p>

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import serverReducer from "../features/servers/core/store/serverSlice";
 import userProfileDrawerReducer from "../features/users/store/userProfileDrawerSlice";
 import directChatReducer from "../features/messages/direct/store/directChatSlice";
+import groupChatReducer from "../features/messages/group/store/groupChatSlice"
 import homeNavigationReducer from "../features/home/store/homeNavigationSlice";
 import messageEditingReducer from "../features/messages/shared/store/messageEditingSlice";
 
@@ -12,6 +13,7 @@ export const store = configureStore({
     servers: serverReducer,
     userProfileDrawer: userProfileDrawerReducer,
     directChat: directChatReducer,
+    groupChat: groupChatReducer,
     homeNavigation: homeNavigationReducer,
     messageEditing: messageEditingReducer,
   },

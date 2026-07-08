@@ -11,8 +11,6 @@ export type AvatarSize = (typeof AvatarSize)[keyof typeof AvatarSize];
 export const AvatarStatus = {
   ONLINE: "online",
   OFFLINE: "offline",
-  IDLE: "idle",
-  DND: "dnd",
   STREAMING: "streaming",
 } as const;
 
@@ -29,8 +27,6 @@ export const AVATAR_SIZE_CLASSES: Record<AvatarSize, string> = {
 export const AVATAR_STATUS_COLORS: Record<AvatarStatus, string> = {
   [AvatarStatus.ONLINE]: "bg-green-500",
   [AvatarStatus.OFFLINE]: "bg-gray-500",
-  [AvatarStatus.IDLE]: "bg-yellow-500",
-  [AvatarStatus.DND]: "bg-red-500",
   [AvatarStatus.STREAMING]: "bg-purple-500",
 };
 

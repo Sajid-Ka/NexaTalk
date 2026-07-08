@@ -14,7 +14,6 @@ export const ComponentStatus = {
   LOADING: "loading",
   SUCCESS: "success",
   ERROR: "error",
-  IDLE: "idle",
 } as const;
 
 export type ComponentStatus = (typeof ComponentStatus)[keyof typeof ComponentStatus];

@@ -1,8 +1,6 @@
 export const FriendStatus = {
   ONLINE: "online",
   OFFLINE: "offline",
-  IDLE: "idle",
-  DND: "dnd",
 } as const;
 
 export type FriendStatus =

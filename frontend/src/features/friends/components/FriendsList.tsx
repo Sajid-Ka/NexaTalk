@@ -7,22 +7,22 @@ import Avatar from "../../../shared/ui/Avatar";
 import Button from "../../../shared/ui/Button";
 import { cn } from "../../../shared/utils/cn";
 import {
-  getFriendsApi,
   respondFriendRequestApi,
   getPendingRequestsApi,
-  getBlockedUsersApi,
-  unblockUserApi
+  unblockUserApi,
+  getBlockedUsersApi
 } from "../../friends/api/friendApi";
-import type { Friend } from "../../friends/api/friendApi";
+import type { Friend } from "../types/friend.types";
 import { UserPresence } from "../../../shared/constants/user.const";
 import AddFriendModal from "./AddFriendModal";
 import toast from "react-hot-toast";
-import { FriendTab, FriendshipStatus } from "../../../shared/constants/friend.const";
+import { FriendshipStatus, FriendTab } from "../../../shared/constants/friend.const";
 import NotificationDropdown from "../../notifications/components/NotificationDropdown";
 import { AxiosError } from "axios";
 import { useInvalidateRecommendations } from "../../recommendations/api/recommendationApi";
 import { useDispatch } from "react-redux";
 import { openProfileDrawer } from "../../users/store/userProfileDrawerSlice";
+import useFriends from "../hooks/useFriends";
 
 // Define error response type
 interface ApiErrorResponse {
@@ -34,14 +34,28 @@ interface ApiErrorResponse {
 
 export default function FriendsList() {
   const [activeTab, setActiveTab] = useState<FriendTab>(FriendTab.ONLINE);
-  const [friends, setFriends] = useState<Friend[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [processing, setProcessing] = useState<string | null>(null);
   const [pendingCount, setPendingCount] = useState(0);
   const invalidateRecommendations = useInvalidateRecommendations();
+  const [blockedUsers, setBlockedUsers] = useState<Friend[]>([]);
+  const [blockedLoading, setBlockedLoading] = useState(false);
+  const [pendingRequests, setPendingRequests] = useState<Friend[]>([]);
+  const [pendingLoading, setPendingLoading] = useState(false);
+
+
+  const friendStatus =
+    activeTab === FriendTab.ALL
+        ? FriendshipStatus.ACCEPTED
+        : activeTab === FriendTab.ONLINE
+            ? FriendshipStatus.ACCEPTED
+            : activeTab === FriendTab.PENDING
+                ? FriendshipStatus.PENDING
+                : FriendshipStatus.BLOCKED;
+
+  const { friends, loading, refresh } = useFriends({ status : friendStatus, search : debouncedSearch});
   const dispatch = useDispatch();
 
   const { mutate: openConversation, isPending: isOpeningConversation } = useOpenDirectConversation();
@@ -50,69 +64,6 @@ export default function FriendsList() {
     const timer = setTimeout(() => setDebouncedSearch(searchQuery), 300);
     return () => clearTimeout(timer);
   }, [searchQuery]);
-
-  const fetchFriends = useCallback(async () => {
-    setLoading(true);
-    try {
-      let friendsData;
-
-      if (activeTab === FriendTab.PENDING) {
-        // Fetch pending requests (send and recieve)
-        const [recievedRes, sentRes] = await Promise.all([
-          getPendingRequestsApi("received"),
-          getPendingRequestsApi("sent"),
-        ])
-
-        const receivedRequests = recievedRes.data.data;
-        const sentRequests = sentRes.data.data;
-
-        friendsData = {
-          friends: [...receivedRequests, ...sentRequests],
-          total: receivedRequests.length + sentRequests.length,
-          online: 0,
-          offline: 0,
-        }
-        setPendingCount(receivedRequests.length)
-      } else if (activeTab === FriendTab.BLOCKED) {
-        const res = await getBlockedUsersApi();
-        friendsData = {
-          friends: res.data.data.map((b) => ({
-            id: b.userId,
-            userId: b.userId, // use for block specific logic
-            friendId: b.userId,
-            friend: {
-              id: b.userId,
-              username: b.username,
-              avatar: b.avatar,
-              status: UserPresence.OFFLINE,
-            },
-            status: "blocked" as FriendshipStatus,
-            createdAt: b.blockedAt,
-          })),
-          total: res.data.data.length,
-          online: 0,
-          offline: res.data.data.length,
-        };
-      } else {
-        const status = activeTab === FriendTab.ONLINE ? "accepted" : undefined;
-        const res = await getFriendsApi({
-          status,
-          search: debouncedSearch || undefined,
-        });
-        friendsData = res.data.data;
-      }
-
-      setFriends(friendsData.friends);
-    } catch {
-      toast.error("Failed to load friends");
-    } finally {
-      setLoading(false);
-    }
-  }, [activeTab, debouncedSearch]);
-
-  useEffect(() => {
-    fetchFriends();
-  }, [fetchFriends]);
 
   const fetchPendingCount = useCallback(async () => {
     try {
@@ -124,17 +75,81 @@ export default function FriendsList() {
     }
   }, []);
 
+  const fetchBlockedUsers = useCallback(async () => {
+    setBlockedLoading(true);
+
+    try {
+      const res = await getBlockedUsersApi();
+
+      const mappedBlockedUsers: Friend[] = res.data.data.map((blockedUser) => ({
+        id: `blocked-${blockedUser.userId}`,
+        userId: blockedUser.userId,
+        friendId: blockedUser.userId,
+        status: FriendshipStatus.BLOCKED,
+        createdAt: blockedUser.blockedAt,
+        friend: {
+          id: blockedUser.userId,
+          username: blockedUser.username,
+          avatar: blockedUser.avatar,
+          status: UserPresence.OFFLINE,
+        },
+      }));
+
+      setBlockedUsers(mappedBlockedUsers);
+    } catch {
+      setBlockedUsers([]);
+    } finally {
+      setBlockedLoading(false);
+    }
+  }, []);
+
+  const fetchPendingRequests = useCallback(async () => {
+    setPendingLoading(true);
+
+    try {
+      const [receivedRes, sentRes] = await Promise.all([
+        getPendingRequestsApi("received"),
+        getPendingRequestsApi("sent"),
+      ]);
+
+      setPendingRequests([
+        ...receivedRes.data.data,
+        ...sentRes.data.data,
+      ]);
+
+      setPendingCount(receivedRes.data.data.length);
+    } catch {
+      setPendingRequests([]);
+      setPendingCount(0);
+    } finally {
+      setPendingLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchPendingCount();
   }, [fetchPendingCount]);
+
+  useEffect(() => {
+    if (activeTab === FriendTab.BLOCKED) {
+      fetchBlockedUsers();
+    }
+  }, [activeTab, fetchBlockedUsers]);
+
+  useEffect(() => {
+    if (activeTab === FriendTab.PENDING) {
+      fetchPendingRequests();
+    }
+  }, [activeTab, fetchPendingRequests]);
 
   const handleAcceptRequest = async (userId: string, requestId: string) => {
     setProcessing(requestId);
     try {
       await respondFriendRequestApi(userId, { status: "accepted" });
       toast.success("Friend request accepted");
-      fetchFriends();
       fetchPendingCount();
+      fetchPendingRequests();
+      refresh();
       invalidateRecommendations();
     } catch (err) {
       let errorMessage = "Failed to accept request";
@@ -153,8 +168,8 @@ export default function FriendsList() {
     try {
       await respondFriendRequestApi(userId, { status: "blocked" });
       toast.success("Friend request rejected");
-      fetchFriends();
       fetchPendingCount();
+      fetchPendingRequests();
       invalidateRecommendations();
     } catch (err) {
       let errorMessage = "Failed to reject request";
@@ -175,8 +190,8 @@ export default function FriendsList() {
     try {
       await unblockUserApi(userId);
       toast.success("User unblocked");
-      fetchFriends();
       invalidateRecommendations();
+      await fetchBlockedUsers();
     } catch {
       toast.error("Failed to unblock user");
     } finally {
@@ -191,11 +206,53 @@ export default function FriendsList() {
     { id: FriendTab.BLOCKED, label: "Blocked" },
   ] as const;
 
-  const filteredFriends = activeTab === FriendTab.ONLINE
-    ? friends.filter(f => f.friend.status === UserPresence.ONLINE)
-    : friends;
+  const listFriends =
+    activeTab === FriendTab.BLOCKED
+      ? blockedUsers
+      : activeTab === FriendTab.PENDING
+        ? pendingRequests
+        : friends;
 
-  const onlineCount = friends.filter(f => f.friend.status === UserPresence.ONLINE).length;
+  const filteredFriends = listFriends.filter((friend) => {
+    const matchesSearch = friend.friend.username
+      .toLowerCase()
+      .includes(debouncedSearch.toLowerCase());
+
+    if (!matchesSearch) return false;
+
+    switch (activeTab) {
+      case FriendTab.ONLINE:
+        return (
+          friend.status === FriendshipStatus.ACCEPTED &&
+          friend.friend.status === UserPresence.ONLINE
+        );
+
+      case FriendTab.ALL:
+        return friend.status === FriendshipStatus.ACCEPTED;
+
+      case FriendTab.PENDING:
+        return friend.status === FriendshipStatus.PENDING;
+
+      case FriendTab.BLOCKED:
+        return friend.status === FriendshipStatus.BLOCKED;
+
+      default:
+        return false;
+    }
+  });
+
+  const onlineCount = friends.filter(
+    (friend) =>
+      friend.status === FriendshipStatus.ACCEPTED &&
+      friend.friend.status === UserPresence.ONLINE
+  ).length;
+
+  const isListLoading =
+    activeTab === FriendTab.BLOCKED
+      ? blockedLoading
+      : activeTab === FriendTab.PENDING
+        ? pendingLoading
+        : loading;
 
   // Helper function to get status text
   const getStatusText = (status: UserPresence) => {
@@ -272,7 +329,7 @@ export default function FriendsList() {
 
       {/* Friend List Content */}
       <div className="flex-1 overflow-y-auto no-scrollbar px-2 py-4">
-        {loading ? (
+        {isListLoading ? (
           <div className="flex justify-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500" />
           </div>
@@ -299,13 +356,13 @@ export default function FriendsList() {
                   <Avatar
                     src={friend.friend.avatar}
                     fallback={friend.friend.username}
-                    status={friend.friend.status as "online" | "offline" | "idle" | "dnd"}
+                    status={friend.friend.status as UserPresence}
                     size="md"
                   />
                   <div className="min-w-0">
                     <p className="font-bold text-sm text-white">{friend.friend.username}</p>
                     <p className="text-xs text-white/40 truncate">
-                      {friend.status === "pending"
+                      {friend.status === FriendshipStatus.PENDING
                         ? isReceivedPendingRequest(friend)
                           ? "Incoming friend request"
                           : "Friend request sent"
@@ -316,7 +373,7 @@ export default function FriendsList() {
 
                 {/* Actions based on status */}
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {friend.status === "pending" && isReceivedPendingRequest(friend) ? (
+                  {friend.status === FriendshipStatus.PENDING && isReceivedPendingRequest(friend) ? (
                     // Show Accept/Reject buttons for recieved requests
                     <>
                       <button
@@ -336,7 +393,7 @@ export default function FriendsList() {
                         <X size={18} />
                       </button>
                     </>
-                  ) : friend.status === "pending" ? null : friend.status === "blocked" ? (
+                  ) : friend.status === FriendshipStatus.PENDING ? null : friend.status === FriendshipStatus.BLOCKED ? (
                     <Button
                       size="sm"
                       onClick={(e) => handleUnblock(friend.userId, e)}
@@ -374,8 +431,9 @@ export default function FriendsList() {
       <AddFriendModal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
-        onSuccess={fetchFriends}
+        onSuccess={refresh}
       />
     </div>
   );
 }
+

@@ -90,7 +90,7 @@ export default function AdminSidebar() {
                     active={location.pathname === AppRoute.ADMIN_SERVERS}
                     onClick={() => navigate(AppRoute.ADMIN_SERVERS)}
                 />
-                <NavItem icon={MessageSquareWarning} label="Reports Queue" badge={12} />
+                <NavItem icon={MessageSquareWarning} label="Reports Queue" /*badge={12} */ />
                 <NavItem icon={CreditCard} label="Earnings & Pay" />
                 <NavItem icon={Settings} label="Platform Settings" />
                 <NavItem icon={ClipboardList} label="Audit Logs" />
