@@ -4,7 +4,7 @@ import { GroupResponse } from "../dtos/responses/GroupResponse";
 export class GroupResponseMapper {
   static toResponse(conversation: Conversation): GroupResponse {
     return {
-      id: conversation.id,
+      conversationId: conversation.id,
       name: conversation.name ?? "",
       avatar: conversation.avatar,
       ownerId: conversation.ownerId!,

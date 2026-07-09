@@ -1,5 +1,5 @@
 export interface GroupResponse {
-  id: string;
+  conversationId: string;
   name: string;
   avatar?: string;
   ownerId: string;

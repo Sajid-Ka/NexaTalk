@@ -1,6 +1,6 @@
 import { useAppSelector } from "../../../app/store";
 import UserProfileDrawer from "../../users/components/UserProfileDrawer";
-import DirectChatPanel from "../../messages/shared/components/ConversationChatPanel";
+import ConversationChatPanel from "../../messages/shared/components/ConversationChatPanel";
 import { cn } from "../../../shared/utils/cn";
 import { useLocation } from "react-router-dom";
 import { AppRoute } from "../../../shared/constants/app-route.const";
@@ -9,26 +9,37 @@ export default function ActivitySidebar() {
     const location = useLocation();
     const canShowChat = location.pathname === AppRoute.HOME_PAGE;
 
-    const { isOpen, selectedUserId } = useAppSelector(
+    const {
+        isOpen: profileOpen,
+        selectedUserId,
+    } = useAppSelector(
         (state) => state.userProfileDrawer
     );
 
-    const { isOpen: chatOpen } = useAppSelector(
-        (state) => state.directChat
+    const directChatOpen = useAppSelector(
+        (state) => state.directChat.isOpen
     );
 
-        const showChat = canShowChat && chatOpen;
+    const groupChatOpen = useAppSelector(
+        (state) => state.groupChat.isOpen
+    );
+
+    const showChat =
+        canShowChat &&
+        (directChatOpen || groupChatOpen);
 
     return (
         <aside
             className={cn(
                 "hidden xl:flex flex-col border-l border-white/5 bg-[#090B11] overflow-hidden min-w-0 min-h-0 transition-all duration-300",
-                showChat ? "w-[950px] max-w-[calc(100vw-672px)] shrink-0" : "w-[340px] shrink-0"
+                showChat
+                    ? "w-[950px] max-w-[calc(100vw-672px)] shrink-0"
+                    : "w-[340px] shrink-0"
             )}
         >
             {showChat ? (
-                <DirectChatPanel />
-            ) : isOpen && selectedUserId ? (
+                <ConversationChatPanel />
+            ) : profileOpen && selectedUserId ? (
                 <UserProfileDrawer />
             ) : (
                 <>
@@ -45,14 +56,14 @@ export default function ActivitySidebar() {
                             </h3>
 
                             <p className="text-sm leading-relaxed text-white/40">
-                                When a friend starts an activity, it will appear here.
+                                When a friend starts an
+                                activity, it will appear
+                                here.
                             </p>
                         </div>
                     </div>
                 </>
             )}
-
-            {/*Place upgrade card here*/}
         </aside>
     );
 }
