@@ -18,6 +18,15 @@ import { MarkAsReadRequest } from "../../../application/messages/shared/dtos/req
 import { ICreateGroupUsecase } from "../../../application/messages/group/interfaces/ICreateGroupUsecase";
 import { CreateGroupRequest } from "../../../application/messages/group/dtos/requests/CreateGroupRequest";
 import { IGetGroupsUsecase } from "../../../application/messages/group/interfaces/IGetGroupsUsecase";
+import { IDeleteMessageForMeUsecase } from "../../../application/messages/shared/interfaces/IDeleteMessageForMeUsecase";
+import { IUpdateGroupMemberRoleUsecase } from "../../../application/messages/group/interfaces/IUpdateGroupMemberRoleUsecase";
+import { IRemoveGroupMemberUsecase } from "../../../application/messages/group/interfaces/IRemoveGroupMemberUsecase";
+import { ILeaveGroupUsecase } from "../../../application/messages/group/interfaces/ILeaveGroupUsecase";
+import { ITransferGroupOwnershipUsecase } from "../../../application/messages/group/interfaces/ITransferGroupOwnershipUsecase";
+import { IDeleteGroupUsecase } from "../../../application/messages/group/interfaces/IDeleteGroupUsecase";
+import { IAddGroupMembersUsecase } from "../../../application/messages/group/interfaces/IAddGroupMembersUsecase";
+import { IUploadGroupAvatarUsecase } from "../../../application/messages/group/interfaces/IUploadGroupAvatarUsecase";
+import { IRenameGroupUsecase } from "../../../application/messages/group/interfaces/IRenameGroupUsecase";
 
 @injectable()
 export class MessageController {
@@ -40,6 +49,24 @@ export class MessageController {
     private readonly _createGroup: ICreateGroupUsecase,
     @inject(MESSAGES_TYPES.GetGroups)
     private readonly _getGroups: IGetGroupsUsecase,
+    @inject(MESSAGES_TYPES.DeleteMessageForMe)
+    private readonly _deleteMessageForMe: IDeleteMessageForMeUsecase,
+    @inject(MESSAGES_TYPES.UpdateGroupMemberRole)
+    private readonly _updateGroupMemberRole: IUpdateGroupMemberRoleUsecase,
+    @inject(MESSAGES_TYPES.RemoveGroupMember)
+    private readonly _removeGroupMember: IRemoveGroupMemberUsecase,
+    @inject(MESSAGES_TYPES.LeaveGroup)
+    private readonly _leaveGroup: ILeaveGroupUsecase,
+    @inject(MESSAGES_TYPES.TransferGroupOwnership)
+    private readonly _transferGroupOwnership: ITransferGroupOwnershipUsecase,
+    @inject(MESSAGES_TYPES.DeleteGroup)
+    private readonly _deleteGroup: IDeleteGroupUsecase,
+    @inject(MESSAGES_TYPES.AddGroupMembers)
+    private readonly _addGroupMembers: IAddGroupMembersUsecase,
+    @inject(MESSAGES_TYPES.UploadGroupAvatar)
+    private readonly _uploadGroupAvatar: IUploadGroupAvatarUsecase,
+    @inject(MESSAGES_TYPES.RenameGroup)
+    private readonly _renameGroup: IRenameGroupUsecase,
   ) {}
 
   createDirectConversation = async (req: AuthenticatedRequest, res: Response) => {
@@ -129,5 +156,85 @@ export class MessageController {
     const result = await this._getGroups.execute(req.user!.userId);
 
     res.json(successResponse(result, "Groups retrieved successfully"));
+  };
+
+  deleteMessageForMe = async (req: AuthenticatedRequest, res: Response) => {
+    await this._deleteMessageForMe.execute(req.user!.userId, {
+      messageId: req.body.messageId,
+    });
+
+    res.json(successResponse(null, "Message deleted for you"));
+  };
+
+  updateGroupMemberRole = async (req: AuthenticatedRequest, res: Response) => {
+    const result = await this._updateGroupMemberRole.execute(req.user!.userId, {
+      conversationId: req.params.conversationId,
+      userId: req.params.userId,
+      role: req.body.role,
+    });
+
+    res.json(successResponse(result, "Group member role updated successfully"));
+  };
+
+  removeGroupMember = async (req: AuthenticatedRequest, res: Response) => {
+    const result = await this._removeGroupMember.execute(req.user!.userId, {
+      conversationId: req.params.conversationId,
+      userId: req.params.userId,
+    });
+
+    res.json(successResponse(result, "Group member removed successfully"));
+  };
+
+  leaveGroup = async (req: AuthenticatedRequest, res: Response) => {
+    await this._leaveGroup.execute(req.user!.userId, {
+      conversationId: req.params.conversationId,
+    });
+
+    res.json(successResponse(null, "Left group successfully"));
+  };
+
+  transferGroupOwnership = async (req: AuthenticatedRequest, res: Response) => {
+    const result = await this._transferGroupOwnership.execute(req.user!.userId, {
+      conversationId: req.params.conversationId,
+      newOwnerId: req.body.newOwnerId,
+    });
+
+    res.json(successResponse(result, "Group ownership transferred successfully"));
+  };
+
+  addGroupMembers = async (req: AuthenticatedRequest, res: Response) => {
+    const result = await this._addGroupMembers.execute(req.user!.userId, {
+      conversationId: req.params.conversationId,
+      participantIds: req.body.participantIds,
+    });
+
+    res.json(successResponse(result, "Group members added successfully"));
+  };
+
+  deleteGroup = async (req: AuthenticatedRequest, res: Response) => {
+    await this._deleteGroup.execute(req.user!.userId, {
+      conversationId: req.params.conversationId,
+    });
+
+    res.json(successResponse(null, "Group deleted successfully"));
+  };
+
+  uploadGroupAvatar = async (req: AuthenticatedRequest, res: Response) => {
+    const result = await this._uploadGroupAvatar.execute(
+      req.user!.userId,
+      req.params.conversationId,
+      req.file!,
+    );
+
+    res.json(successResponse(result, "Group avatar uploaded successfully"));
+  };
+
+  renameGroup = async (req: AuthenticatedRequest, res: Response) => {
+    const result = await this._renameGroup.execute(req.user!.userId, {
+      conversationId: req.params.conversationId,
+      name: req.body.name,
+    });
+
+    res.json(successResponse(result, "Group renamed successfully"));
   };
 }

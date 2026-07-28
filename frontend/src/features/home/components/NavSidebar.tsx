@@ -12,6 +12,7 @@ import { useAppDispatch, useAppSelector } from "../../../app/store";
 import { setHomeTab } from "../store/homeNavigationSlice";
 import { closeDirectChat } from "../../messages/direct/store/directChatSlice";
 import { closeProfileDrawer } from "../../users/store/userProfileDrawerSlice";
+import { closeGroupChat } from "../../messages/group/store/groupChatSlice";
 
 export default function NavSidebar() {
   const navigate = useNavigate();
@@ -46,6 +47,7 @@ export default function NavSidebar() {
                 dispatch(setHomeTab(item.key));
                 dispatch(closeProfileDrawer());
                 dispatch(closeDirectChat());
+                dispatch(closeGroupChat());
                 navigate(AppRoute.HOME_PAGE);
               }}
               className={cn(
@@ -55,7 +57,7 @@ export default function NavSidebar() {
             >
               <item.icon size={20} className={activeTab === item.key ? "text-indigo-400" : "text-white/40 group-hover:text-white/60"} />
               <span className="text-sm font-medium flex-1 text-left">{item.label}</span>
-              {item.badge && <Badge variant="primary" className="bg-indigo-600">{item.badge}</Badge>}
+              {/* {item.badge && <Badge variant="primary" className="bg-indigo-600">{item.badge}</Badge>} */}
             </button>
           ))}
         </div>

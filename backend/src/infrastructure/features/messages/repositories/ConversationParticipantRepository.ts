@@ -9,6 +9,7 @@ import {
 import { ConversationParticipantPersistenceMapper } from "../mappers/ConversationParticipantMapper";
 import { TransactionContext } from "../../../../domain/core/common/services/TransactionContext";
 import { toMongoSession } from "../../../core/common/database/toMongoSession";
+import { GroupRole } from "../../../../shared/constants/group-role.const";
 
 @injectable()
 export class ConversationParticipantRepository
@@ -43,11 +44,17 @@ export class ConversationParticipantRepository
     return docs.map((doc) => this.mapper.toDomain(doc));
   }
 
-  async removeParticipant(conversationId: string, userId: string): Promise<boolean> {
-    const result = await this.model.deleteOne({
-      conversationId,
-      userId,
-    });
+  async removeParticipant(
+    conversationId: string,
+    userId: string,
+    transaction?: TransactionContext,
+  ): Promise<boolean> {
+    const result = await this.model
+      .deleteOne({
+        conversationId,
+        userId,
+      })
+      .session(toMongoSession(transaction) ?? null);
 
     return result.deletedCount > 0;
   }
@@ -88,5 +95,43 @@ export class ConversationParticipantRepository
     });
 
     return docs.map((doc) => this.mapper.toDomain(doc.toObject()));
+  }
+
+  async updateRole(
+    conversationId: string,
+    userId: string,
+    role: GroupRole,
+    transaction?: TransactionContext,
+  ): Promise<ConversationParticipant | null> {
+    const doc = await this.model
+      .findOneAndUpdate(
+        {
+          conversationId,
+          userId,
+        },
+        {
+          $set: {
+            role,
+          },
+        },
+        {
+          returnDocument: "after",
+          session: toMongoSession(transaction),
+        },
+      )
+      .lean();
+
+    return doc ? this.mapper.toDomain(doc) : null;
+  }
+
+  async removeByConversation(
+    conversationId: string,
+    transaction?: TransactionContext,
+  ): Promise<void> {
+    await this.model
+      .deleteMany({
+        conversationId,
+      })
+      .session(toMongoSession(transaction) ?? null);
   }
 }

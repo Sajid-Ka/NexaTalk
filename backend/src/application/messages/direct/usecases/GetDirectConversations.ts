@@ -50,13 +50,21 @@ export class GetDirectConversations implements IGetDirectConversationsUsecase {
 
     const userMap = new Map(users.map((user) => [user.id, user]));
 
-    const lastMessageIds = conversations
-      .map((conversation) => conversation.lastMessageId)
-      .filter((messageId): messageId is string => Boolean(messageId));
+    const lastMessageMap = new Map<
+      string,
+      Awaited<ReturnType<IMessageRepository["findLatestVisibleByConversation"]>>
+    >();
 
-    const messages = await this._messageRepo.findByIds(lastMessageIds);
+    await Promise.all(
+      conversations.map(async (conversation) => {
+        const lastMessage = await this._messageRepo.findLatestVisibleByConversation(
+          conversation.id,
+          userId,
+        );
 
-    const messageMap = new Map(messages.map((message) => [message.id, message]));
+        lastMessageMap.set(conversation.id, lastMessage);
+      }),
+    );
 
     const response: DirectConversationResponse[] = [];
 
@@ -69,9 +77,7 @@ export class GetDirectConversations implements IGetDirectConversationsUsecase {
         continue;
       }
 
-      const lastMessage = conversation.lastMessageId
-        ? (messageMap.get(conversation.lastMessageId) ?? null)
-        : null;
+      const lastMessage = lastMessageMap.get(conversation.id) ?? null;
 
       response.push(
         DirectConversationResponseMapper.toResponse(conversation, targetUser, lastMessage, 0),

@@ -16,7 +16,6 @@ const recommendationSchema = new Schema<IRecommendationPersistence>(
       type: String,
       required: true,
       unique: true,
-      index: true,
     },
     recommendedUserIds: [
       {
@@ -41,7 +40,6 @@ const recommendationSchema = new Schema<IRecommendationPersistence>(
 );
 
 recommendationSchema.index({ lastRefreshedAt: 1 }); // Index for finding stale (Outdated) recommendations
-recommendationSchema.index({ userId: 1 });
 
 export const RecommendationModel = model<IRecommendationPersistence>(
   "Recommendation",

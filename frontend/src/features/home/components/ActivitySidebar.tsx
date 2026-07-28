@@ -4,10 +4,13 @@ import ConversationChatPanel from "../../messages/shared/components/Conversation
 import { cn } from "../../../shared/utils/cn";
 import { useLocation } from "react-router-dom";
 import { AppRoute } from "../../../shared/constants/app-route.const";
+import { HomeTab } from "../../../shared/constants/homeTab.const";
 
 export default function ActivitySidebar() {
     const location = useLocation();
     const canShowChat = location.pathname === AppRoute.HOME_PAGE;
+
+    const { activeTab } = useAppSelector((state) => state.homeNavigation);
 
     const {
         isOpen: profileOpen,
@@ -26,7 +29,10 @@ export default function ActivitySidebar() {
 
     const showChat =
         canShowChat &&
-        (directChatOpen || groupChatOpen);
+        (
+            (activeTab === HomeTab.DIRECTMESSAGES && directChatOpen) ||
+            (activeTab === HomeTab.GROUPMESSAGES && groupChatOpen)
+        );
 
     return (
         <aside

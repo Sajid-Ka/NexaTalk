@@ -116,7 +116,7 @@ export class ServerDirectInviteRepository implements IServerDirectInviteReposito
     const doc = await ServerDirectInviteModel.findByIdAndUpdate(
       id,
       { status },
-      { new: true },
+      { returnDocument: "after" },
     ).lean();
 
     if (!doc) throw new Error("Invite not found");

@@ -67,6 +67,6 @@ export class EditMessage implements IEditMessageUsecase {
       messageId: updatedMessage.id,
     });
 
-    return MessageResponseMapper.toResponse(updatedMessage);
+    return MessageResponseMapper.toResponse(updatedMessage, user.id, user);
   }
 }

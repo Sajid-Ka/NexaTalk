@@ -4,10 +4,16 @@ import { COMMON_TYPES } from "../../../../main/di/modules/common/common.types";
 import { MESSAGES_TYPES } from "../../../../main/di/modules/messages/messages.types";
 import { IUserRepository } from "../../../../domain/features/auth/repositories/IUserRepository";
 import { IMessageRepository } from "../../../../domain/features/messages/repositories/IMessageRepository";
+import { IConversationRepository } from "../../../../domain/features/messages/repositories/IConversationRepository";
+import { IConversationParticipantRepository } from "../../../../domain/features/messages/repositories/IConversationParticipantRepository";
 import { ILogger } from "../../../../domain/core/common/services/ILogger";
 import { UserNotFoundError } from "../../../../domain/features/auth/errors/UserNotFoundError";
 import { MessageNotFoundError } from "../../../../domain/features/messages/errors/MessageNotFoundError";
+import { ConversationNotFoundError } from "../../../../domain/features/messages/errors/ConversationNotFoundError";
+import { ConversationAccessDeniedError } from "../../../../domain/features/messages/errors/ConversationAccessDeniedError";
 import { MessageDeleteForbiddenError } from "../../../../domain/features/messages/errors/MessageDeleteForbiddenError";
+import { ConversationType } from "../../../../shared/constants/conversation.const";
+import { GroupRole } from "../../../../shared/constants/group-role.const";
 import { DeleteMessageRequest } from "../dtos/requests/DeleteMessageRequest";
 import { MessageResponse } from "../dtos/responses/MessageResponse";
 import { MessageResponseMapper } from "../mappers/MessageResponseMapper";
@@ -20,6 +26,10 @@ export class DeleteMessage implements IDeleteMessageUsecase {
     private readonly _userRepo: IUserRepository,
     @inject(MESSAGES_TYPES.MessageRepository)
     private readonly _messageRepo: IMessageRepository,
+    @inject(MESSAGES_TYPES.ConversationRepository)
+    private readonly _conversationRepo: IConversationRepository,
+    @inject(MESSAGES_TYPES.ConversationParticipantRepository)
+    private readonly _participantRepo: IConversationParticipantRepository,
     @inject(COMMON_TYPES.Logger)
     private readonly _logger: ILogger,
   ) {}
@@ -42,12 +52,32 @@ export class DeleteMessage implements IDeleteMessageUsecase {
       throw new MessageNotFoundError();
     }
 
-    if (message.senderId !== user.id) {
+    const conversation = await this._conversationRepo.findById(message.conversationId);
+
+    if (!conversation) {
+      throw new ConversationNotFoundError();
+    }
+
+    const isOwnMessage = message.senderId === user.id;
+    let canModerateGroupMessage = false;
+
+    if (conversation.type === ConversationType.GROUP) {
+      const participant = await this._participantRepo.findParticipant(conversation.id, user.id);
+
+      if (!participant) {
+        throw new ConversationAccessDeniedError();
+      }
+
+      canModerateGroupMessage =
+        participant.role === GroupRole.OWNER || participant.role === GroupRole.ADMIN;
+    }
+
+    if (!isOwnMessage && !canModerateGroupMessage) {
       throw new MessageDeleteForbiddenError();
     }
 
     if (message.deletedAt) {
-      return MessageResponseMapper.toResponse(message);
+      return MessageResponseMapper.toResponse(message, user.id, user);
     }
 
     const updated = await this._messageRepo.update(message.id, {
@@ -62,8 +92,9 @@ export class DeleteMessage implements IDeleteMessageUsecase {
 
     this._logger.info("Message deleted", {
       messageId: updated.id,
+      deletedBy: user.id,
     });
 
-    return MessageResponseMapper.toResponse(updated);
+    return MessageResponseMapper.toResponse(updated, user.id, user);
   }
 }

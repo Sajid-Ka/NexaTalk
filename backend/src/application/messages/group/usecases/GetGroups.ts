@@ -10,6 +10,7 @@ import { ConversationType } from "../../../../shared/constants/conversation.cons
 import { GroupResponse } from "../dtos/responses/GroupResponse";
 import { GroupResponseMapper } from "../mappers/GroupResponseMapper";
 import { IGetGroupsUsecase } from "../interfaces/IGetGroupsUsecase";
+import { IConversationParticipantRepository } from "../../../../domain/features/messages/repositories/IConversationParticipantRepository";
 
 @injectable()
 export class GetGroups implements IGetGroupsUsecase {
@@ -18,6 +19,8 @@ export class GetGroups implements IGetGroupsUsecase {
     private readonly _userRepo: IUserRepository,
     @inject(MESSAGES_TYPES.ConversationRepository)
     private readonly _conversationRepo: IConversationRepository,
+    @inject(MESSAGES_TYPES.ConversationParticipantRepository)
+    private readonly _participantRepo: IConversationParticipantRepository,
     @inject(COMMON_TYPES.Logger)
     private readonly _logger: ILogger,
   ) {}
@@ -35,8 +38,24 @@ export class GetGroups implements IGetGroupsUsecase {
 
     const conversations = await this._conversationRepo.findGroupsByUser(userId);
 
-    return conversations
-      .filter((conversation) => conversation.type === ConversationType.GROUP)
-      .map(GroupResponseMapper.toResponse);
+    const groups = conversations.filter(
+      (conversation) => conversation.type === ConversationType.GROUP,
+    );
+
+    return Promise.all(
+      groups.map(async (conversation) => {
+        const participants = await this._participantRepo.getParticipants(conversation.id);
+
+        const users = await this._userRepo.findByIds(
+          participants.map((participant) => participant.userId),
+        );
+
+        return GroupResponseMapper.toResponse(conversation, {
+          currentUserId: userId,
+          participants,
+          users,
+        });
+      }),
+    );
   }
 }

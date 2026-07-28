@@ -57,15 +57,16 @@ export class GetConversationMessages implements IGetConversationMessagesUsecase 
       throw new ConversationAccessDeniedError();
     }
 
-    const page = await this._messageRepo.findByConversation(
+    const page = await this._messageRepo.findByConversationWithSender(
       request.conversationId,
       request.limit,
       request.cursor,
+      userId,
     );
 
     return {
       messages: page.messages.map((message) =>
-        MessageItemResponseMapper.toResponse(message, userId),
+        MessageItemResponseMapper.toResponseWithSender(message, userId),
       ),
 
       nextCursor: page.nextCursor,

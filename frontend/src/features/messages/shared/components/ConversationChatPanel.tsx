@@ -27,6 +27,7 @@ export default function DirectChatPanel() {
 
             <ChatMessages
                 conversationId={selectedConversationId}
+                isDirectConversation={directChat.isOpen}
             />
 
             <ChatInput

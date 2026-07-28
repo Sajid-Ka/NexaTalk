@@ -85,6 +85,6 @@ export class SendMessage implements ISendMessageUsecase {
       messageId: createdMessage.id,
     });
 
-    return MessageResponseMapper.toResponse(createdMessage);
+    return MessageResponseMapper.toResponse(createdMessage, user.id, user);
   }
 }

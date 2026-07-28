@@ -1,65 +1,103 @@
+import { useEffect, useMemo, useRef } from "react";
+import { useAuth } from "../../../auth/context/useAuth";
 import { useConversationMessages } from "../hooks/useConversationMessages";
 import MessageBubble from "./MessageBubble";
 import { useAutoScroll } from "../hooks/useAutoScroll";
 import ChatMessagesSkeleton from "./ChatMessageSkeleton";
 import EmptyMessagesState from "./EmptyMessagesState";
-import { useEffect } from "react";
 import { useMarkConversationRead } from "../hooks/useMarkConversationRead";
 
 interface ChatMessagesProps {
     conversationId: string;
+    isDirectConversation: boolean;
 }
 
 export default function ChatMessages({
     conversationId,
+    isDirectConversation,
 }: ChatMessagesProps) {
     const { data, isLoading } = useConversationMessages(conversationId);
-    const bottomRef = useAutoScroll(data?.messages);
-    const { mutate: markConversationRead } = useMarkConversationRead();
+    const { user } = useAuth();
+
+    const messages = useMemo(
+        () =>
+            data?.messages.map((message) => ({
+                ...message,
+                isOwnMessage:
+                    message.isOwnMessage || message.senderId === user?.id,
+            })) ?? [],
+        [data?.messages, user?.id]
+    );
+
+    const bottomRef = useAutoScroll(messages);
+    const lastMarkedMessageIdRef = useRef<string | null>(null);
+    
+
+    const {
+        mutate: markConversationRead,
+        isPending: markingRead,
+    } = useMarkConversationRead();
 
     useEffect(() => {
-        if (!data?.messages.length) {
+        lastMarkedMessageIdRef.current = null;
+    }, [conversationId]);
+
+    useEffect(() => {
+        if (!messages.length || markingRead) {
             return;
         }
 
-        const latestIncomingMessage = [...data.messages]
+        const latestIncomingMessage = [...messages]
             .reverse()
-            .find(
-                (message) =>
-                    !message.isOwnMessage &&
-                    !message.deletedAt
-            );
+            .find((message) => !message.isOwnMessage && !message.deletedAt);
 
         if (!latestIncomingMessage) {
             return;
         }
 
-        markConversationRead({
-            conversationId,
-            messageId: latestIncomingMessage.id,
-        });
+        if (lastMarkedMessageIdRef.current === latestIncomingMessage.id) {
+            return;
+        }
+
+        lastMarkedMessageIdRef.current = latestIncomingMessage.id;
+
+        markConversationRead(
+            {
+                conversationId,
+                messageId: latestIncomingMessage.id,
+            },
+            {
+                onError: () => {
+                    lastMarkedMessageIdRef.current = null;
+                },
+            }
+        );
     }, [
         conversationId,
-        data?.messages,
+        messages,
         markConversationRead,
+        markingRead,
     ]);
 
     if (isLoading) {
-        return <ChatMessagesSkeleton />
+        return <ChatMessagesSkeleton />;
     }
 
-    if (!isLoading && data?.messages.length === 0) {
-        return <EmptyMessagesState />
+    if (!isLoading && messages.length === 0) {
+        return <EmptyMessagesState />;
     }
 
     return (
         <div className="flex flex-1 min-h-0 flex-col gap-4 overflow-y-auto p-6 no-scrollbar">
-            {data?.messages.map((message) => (
+            {messages.map((message) => (
                 <MessageBubble
                     key={message.id}
                     message={message}
+                    isDirectConversation={isDirectConversation}
+                    showSenderInfo={!isDirectConversation}
                 />
             ))}
+
             <div ref={bottomRef} />
         </div>
     );

@@ -1,9 +1,11 @@
 import { Schema, model, Types } from "mongoose";
+import { GroupRole } from "../../../../shared/constants/group-role.const";
 
 export interface IConversationParticipantPersistence {
   _id: Types.ObjectId;
   conversationId: string;
   userId: string;
+  role: GroupRole;
   lastReadMessageId?: string;
   joinedAt: Date;
 }
@@ -20,6 +22,13 @@ const conversationParticipantSchema = new Schema<IConversationParticipantPersist
       type: String,
       required: true,
       index: true,
+    },
+
+    role: {
+      type: String,
+      enum: Object.values(GroupRole),
+      default: GroupRole.MEMBER,
+      required: true,
     },
 
     lastReadMessageId: {

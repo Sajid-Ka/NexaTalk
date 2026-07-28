@@ -44,8 +44,6 @@ const conversationSchema = new Schema<IConversationPersistence>(
 
     directKey: {
       type: String,
-      unique: true,
-      sparse: true,
     },
 
     channelId: {

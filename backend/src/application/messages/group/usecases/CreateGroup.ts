@@ -15,6 +15,7 @@ import { CreateGroupRequest } from "../dtos/requests/CreateGroupRequest";
 import { GroupResponse } from "../dtos/responses/GroupResponse";
 import { GroupResponseMapper } from "../mappers/GroupResponseMapper";
 import { ICreateGroupUsecase } from "../interfaces/ICreateGroupUsecase";
+import { GroupRole } from "../../../../shared/constants/group-role.const";
 
 @injectable()
 export class CreateGroup implements ICreateGroupUsecase {
@@ -61,6 +62,7 @@ export class CreateGroup implements ICreateGroupUsecase {
         new ConversationParticipant({
           conversationId: conversation.id,
           userId: participantId,
+          role: participantId === userId ? GroupRole.OWNER : GroupRole.MEMBER,
         }),
     );
 
@@ -70,6 +72,10 @@ export class CreateGroup implements ICreateGroupUsecase {
       conversationId: conversation.id,
     });
 
-    return GroupResponseMapper.toResponse(conversation);
+    return GroupResponseMapper.toResponse(conversation, {
+      currentUserId: userId,
+      participants,
+      users,
+    });
   }
 }

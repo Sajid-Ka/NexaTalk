@@ -2,6 +2,7 @@ import { ConversationParticipant } from "../../../../domain/features/messages/en
 import { IConversationParticipantPersistence } from "../models/ConversationParticipantModel";
 import { IMapper } from "../../../core/common/mappers/IMapper";
 import { OmittedDatabaseFields } from "../../../../shared/constants/database-field.const";
+import { GroupRole } from "../../../../shared/constants/group-role.const";
 
 export class ConversationParticipantPersistenceMapper implements IMapper<
   IConversationParticipantPersistence,
@@ -12,6 +13,7 @@ export class ConversationParticipantPersistenceMapper implements IMapper<
       id: doc._id.toString(),
       conversationId: doc.conversationId,
       userId: doc.userId,
+      role: doc.role ?? GroupRole.MEMBER,
       lastReadMessageId: doc.lastReadMessageId,
       joinedAt: doc.joinedAt,
     });
@@ -23,6 +25,7 @@ export class ConversationParticipantPersistenceMapper implements IMapper<
     return {
       conversationId: entity.conversationId,
       userId: entity.userId,
+      role: entity.role,
       lastReadMessageId: entity.lastReadMessageId,
       joinedAt: entity.joinedAt,
     };
@@ -33,6 +36,7 @@ export class ConversationParticipantPersistenceMapper implements IMapper<
 
     if (partialDomain.lastReadMessageId !== undefined)
       update.lastReadMessageId = partialDomain.lastReadMessageId;
+    if (partialDomain.role !== undefined) update.role = partialDomain.role;
 
     return update;
   }

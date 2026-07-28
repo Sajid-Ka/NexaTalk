@@ -9,6 +9,7 @@ export interface IMessagePersistence {
   updatedAt: Date;
   editedAt?: Date | null;
   deletedAt?: Date | null;
+  hiddenForUserIds?: string[];
 }
 
 const messageSchema = new Schema<IMessagePersistence>(
@@ -39,6 +40,12 @@ const messageSchema = new Schema<IMessagePersistence>(
     deletedAt: {
       type: Date,
       default: null,
+    },
+
+    hiddenForUserIds: {
+      type: [String],
+      default: [],
+      index: true,
     },
   },
   {

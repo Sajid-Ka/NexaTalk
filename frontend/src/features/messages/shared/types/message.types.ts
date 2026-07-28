@@ -1,6 +1,13 @@
+export interface MessageSender {
+    id: string;
+    username: string;
+    avatar?: string;
+}
+
 export interface MessageItem {
     id: string;
     senderId: string;
+    sender: MessageSender | null;
     content: string;
     createdAt: Date;
     editedAt: Date | null;

@@ -2,6 +2,15 @@ import { Message } from "../../../../domain/features/messages/entities/Message";
 import { IMessagePersistence } from "../models/MessageModel";
 import { IMapper } from "../../../core/common/mappers/IMapper";
 import { OmittedDatabaseFields } from "../../../../shared/constants/database-field.const";
+import { MessageWithSender } from "../../../../domain/features/messages/types/MessageWithSender";
+
+type MessageWithSenderPersistence = IMessagePersistence & {
+  sender?: Array<{
+    _id: unknown;
+    username: string;
+    avatar?: string;
+  }>;
+};
 
 export class MessagePersistenceMapper implements IMapper<IMessagePersistence, Message> {
   toDomain(doc: IMessagePersistence): Message {
@@ -14,6 +23,7 @@ export class MessagePersistenceMapper implements IMapper<IMessagePersistence, Me
       updatedAt: doc.updatedAt,
       editedAt: doc.editedAt,
       deletedAt: doc.deletedAt,
+      hiddenForUserIds: doc.hiddenForUserIds ?? [],
     });
   }
 
@@ -24,6 +34,7 @@ export class MessagePersistenceMapper implements IMapper<IMessagePersistence, Me
       content: entity.content,
       editedAt: entity.editedAt,
       deletedAt: entity.deletedAt,
+      hiddenForUserIds: entity.hiddenForUserIds,
     };
   }
 
@@ -36,6 +47,26 @@ export class MessagePersistenceMapper implements IMapper<IMessagePersistence, Me
 
     if (partialDomain.deletedAt !== undefined) update.deletedAt = partialDomain.deletedAt;
 
+    if (partialDomain.hiddenForUserIds !== undefined) {
+      update.hiddenForUserIds = partialDomain.hiddenForUserIds;
+    }
+
     return update;
+  }
+
+  toWithSenderDomain(doc: MessageWithSenderPersistence): MessageWithSender {
+    const message = this.toDomain(doc);
+    const sender = doc.sender?.[0];
+
+    return {
+      message,
+      sender: sender
+        ? {
+            id: String(sender._id),
+            username: sender.username,
+            avatar: sender.avatar,
+          }
+        : null,
+    };
   }
 }

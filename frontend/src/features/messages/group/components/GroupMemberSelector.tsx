@@ -10,33 +10,35 @@ import { FriendshipStatus } from "../../../../shared/constants/friend.const";
 interface GroupMemberSelectorProps {
     selectedIds: string[];
     onChange: (ids: string[]) => void;
+    excludeIds?: string[];
 }
 
 export default function GroupMemberSelector({
     selectedIds,
     onChange,
+    excludeIds = [],
 }: GroupMemberSelectorProps) {
-
     const { friends, loading : isLoading } = useFriends( { status : FriendshipStatus.ACCEPTED });
 
     const [search, setSearch] = useState("");
 
     const filteredFriends = useMemo(() => {
+        return friends.filter((friend) => {
+            const friendId = friend.friend.id;
 
-        return friends.filter(friend =>
-            friend.friend.username
-                .toLowerCase()
-                .includes(search.toLowerCase())
-        );
-
-    }, [friends, search]);
+            return (
+                !excludeIds.includes(friendId) &&
+                friend.friend.username
+                    .toLowerCase()
+                    .includes(search.toLowerCase())
+            );
+        });
+    }, [friends, search, excludeIds]);
 
     const selectedFriends = useMemo(() => {
-
-        return friends.filter(friend =>
+        return friends.filter((friend) =>
             selectedIds.includes(friend.friend.id)
         );
-
     }, [friends, selectedIds]);
 
     const toggleFriend = (id: string) => {

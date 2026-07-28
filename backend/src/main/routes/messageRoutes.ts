@@ -15,6 +15,11 @@ import { editMessageSchema } from "../../presentation/messages/validators/shared
 import { deleteMessageSchema } from "../../presentation/messages/validators/shared/deleteMessageValidator";
 import { markAsReadSchema } from "../../presentation/messages/validators/shared/markAsReadValidator";
 import { createGroupSchema } from "../../presentation/messages/validators/group/createGroupValidator";
+import { updateGroupMemberRoleSchema } from "../../presentation/messages/validators/group/updateGroupMemberRoleValidator";
+import { transferGroupOwnershipSchema } from "../../presentation/messages/validators/group/transferGroupOwnershipValidator";
+import { addGroupMembersSchema } from "../../presentation/messages/validators/group/addGroupMembersValidator";
+import { renameGroupSchema } from "../../presentation/messages/validators/group/renameGroupValidator";
+import { upload } from "../../infrastructure/core/storage/multer.config";
 const router = Router();
 
 const controller = container.get<MessageController>(MESSAGES_TYPES.MessageController);
@@ -31,9 +36,6 @@ router.post(
   controller.createDirectConversation,
 );
 
-router.get("/groups", authMiddleware, controller.getGroups);
-router.post("/groups", authMiddleware, validate(createGroupSchema), controller.createGroup);
-
 router.get(
   "/conversations/:conversationId/messages",
   authMiddleware,
@@ -43,7 +45,61 @@ router.get(
 
 router.post("/", authMiddleware, validate(sendMessageSchema), controller.sendMessage);
 router.patch("/", authMiddleware, validate(editMessageSchema), controller.editMessage);
+router.delete(
+  "/for-me",
+  authMiddleware,
+  validate(deleteMessageSchema),
+  controller.deleteMessageForMe,
+);
 router.delete("/", authMiddleware, validate(deleteMessageSchema), controller.deleteMessage);
 router.post("/read", authMiddleware, validate(markAsReadSchema), controller.markAsRead);
+
+router.get("/groups", authMiddleware, controller.getGroups);
+router.post("/groups", authMiddleware, validate(createGroupSchema), controller.createGroup);
+
+router.patch(
+  "/groups/:conversationId/members/:userId/role",
+  authMiddleware,
+  validate(updateGroupMemberRoleSchema),
+  controller.updateGroupMemberRole,
+);
+
+router.post("/groups/:conversationId/leave", authMiddleware, controller.leaveGroup);
+
+router.post(
+  "/groups/:conversationId/transfer-owner",
+  authMiddleware,
+  validate(transferGroupOwnershipSchema),
+  controller.transferGroupOwnership,
+);
+
+router.delete(
+  "/groups/:conversationId/members/:userId",
+  authMiddleware,
+  controller.removeGroupMember,
+);
+
+router.post(
+  "/groups/:conversationId/members",
+  authMiddleware,
+  validate(addGroupMembersSchema),
+  controller.addGroupMembers,
+);
+
+router.post(
+  "/groups/:conversationId/avatar",
+  authMiddleware,
+  upload.single("avatar"),
+  controller.uploadGroupAvatar,
+);
+
+router.patch(
+  "/groups/:conversationId",
+  authMiddleware,
+  validate(renameGroupSchema),
+  controller.renameGroup,
+);
+
+router.delete("/groups/:conversationId", authMiddleware, controller.deleteGroup);
 
 export default router;

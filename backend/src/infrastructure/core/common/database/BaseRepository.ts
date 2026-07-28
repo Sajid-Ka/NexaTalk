@@ -86,7 +86,7 @@ export abstract class BaseRepository<
   ): Promise<TPersistence | null> {
     return this.model
       .findOneAndUpdate({ _id: new Types.ObjectId(id) } as Filter, data, {
-        new: true,
+        returnDocument: "after",
         session: toMongoSession(transaction),
       })
       .lean<TPersistence>()

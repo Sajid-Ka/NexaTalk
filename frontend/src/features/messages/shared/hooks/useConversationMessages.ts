@@ -8,7 +8,7 @@ export function useConversationMessages(conversationId: string | null) {
             ConversationQuery.CONVERSATION,
             conversationId,
         ],
-        enabled: !!conversationId,
+        enabled: Boolean(conversationId),
         queryFn: async () => {
             const response = await getConversationMessagesApi(
                 conversationId!
@@ -16,9 +16,10 @@ export function useConversationMessages(conversationId: string | null) {
 
             return response.data.data;
         },
-
-        refetchInterval: conversationId ? 1500 : false,
-        refetchIntervalInBackground: true,
+        staleTime: 30_000,
+        gcTime: 5 * 60_000,
+        refetchOnMount: false,
         refetchOnWindowFocus: true,
+        refetchOnReconnect: true,
     });
 }

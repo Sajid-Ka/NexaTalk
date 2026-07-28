@@ -8,18 +8,12 @@ export function useMarkConversationRead() {
     return useMutation({
         mutationFn: markConversationReadApi,
 
-        onSuccess: (_, variables) => {
+        onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: [
                     ConversationQuery.DIRECT_CONVERSATIONS,
                 ],
-            });
-
-            queryClient.invalidateQueries({
-                queryKey: [
-                    ConversationQuery.CONVERSATION,
-                    variables.conversationId,
-                ],
+                refetchType: "active",
             });
         },
     });
