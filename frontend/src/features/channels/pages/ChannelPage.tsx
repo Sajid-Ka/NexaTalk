@@ -43,7 +43,7 @@ export default function ChannelPage({
         onDeleteClick={onDeleteClick}
       />
 
-      <ChannelMainPane channel={selectedChannel} />
+      <ChannelMainPane serverId={server.id} channel={selectedChannel} members={members ?? []} />
       <OnlineMembersSidebar members={members ?? []} />
     </div>
   );

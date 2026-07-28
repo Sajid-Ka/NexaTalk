@@ -8,6 +8,7 @@ import { MessageRepository } from "../../../../infrastructure/features/messages/
 
 // usecases
 import { CreateDirectConversation } from "../../../../application/messages/direct/usecases/CreateDirectConversation";
+import { GetChannelConversation } from "../../../../application/messages/channel/usecases/GetChannelConversation";
 import { CreateGroup } from "../../../../application/messages/group/usecases/CreateGroup";
 import { GetDirectConversations } from "../../../../application/messages/direct/usecases/GetDirectConversations";
 import { GetConversationMessages } from "../../../../application/messages/shared/usecases/GetConversationMessages";
@@ -44,6 +45,7 @@ export function loadMessagesModule(container: Container) {
 
   // usecases
   container.bind(MESSAGES_TYPES.CreateDirectConversation).to(CreateDirectConversation);
+  container.bind(MESSAGES_TYPES.GetChannelConversation).to(GetChannelConversation);
   container.bind(MESSAGES_TYPES.CreateGroup).to(CreateGroup);
   container.bind(MESSAGES_TYPES.GetDirectConversations).to(GetDirectConversations);
   container.bind(MESSAGES_TYPES.GetConversationMessages).to(GetConversationMessages);

@@ -37,6 +37,12 @@ router.post(
 );
 
 router.get(
+  "/servers/:serverId/channels/:channelId/conversation",
+  authMiddleware,
+  controller.getChannelConversation,
+);
+
+router.get(
   "/conversations/:conversationId/messages",
   authMiddleware,
   validate(getConversationMessagesSchema, ValidationSource.QUERY),

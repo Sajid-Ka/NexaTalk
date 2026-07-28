@@ -15,12 +15,14 @@ interface MessageBubbleProps {
   message: MessageItem;
   isDirectConversation: boolean;
   showSenderInfo?: boolean;
+  canDeleteForEveryone?: boolean;
 }
 
 export default function MessageBubble({
   message,
   isDirectConversation,
   showSenderInfo = false,
+  canDeleteForEveryone = false,
 }: MessageBubbleProps) {
   const dispatch = useAppDispatch();
   const editingMessageId = useAppSelector((state) => state.messageEditing.editingMessageId);
@@ -42,8 +44,8 @@ export default function MessageBubble({
     (selectedGroup?.currentUserRole === GroupRole.OWNER ||
       selectedGroup?.currentUserRole === GroupRole.ADMIN);
 
-  const canDeleteForEveryone =
-    message.isOwnMessage || canModerateGroupMessages;
+  const canDeleteMessageForEveryone =
+    message.isOwnMessage || canModerateGroupMessages || canDeleteForEveryone;
 
   return (
     <>
@@ -93,7 +95,7 @@ export default function MessageBubble({
                   }
                   onDeleteForMe={() => setDeleteForMeOpen(true)}
                   onDeleteForEveryone={
-                    canDeleteForEveryone ? () => setDeleteForEveryoneOpen(true) : undefined
+                    canDeleteMessageForEveryone ? () => setDeleteForEveryoneOpen(true) : undefined
                   }
                 />
               </div>

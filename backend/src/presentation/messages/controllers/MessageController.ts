@@ -5,6 +5,7 @@ import { MESSAGES_TYPES } from "../../../main/di/modules/messages/messages.types
 import { successResponse } from "../../../shared/response/responseFormatter";
 import { IGetDirectConversationsUsecase } from "../../../application/messages/direct/interfaces/IGetDirectConversationsUsecase";
 import { ICreateDirectConversationUsecase } from "../../../application/messages/direct/interfaces/ICreateDirectConversationUsecase";
+import { IGetChannelConversationUsecase } from "../../../application/messages/channel/interfaces/IGetChannelConversationUsecase";
 import { CreateDirectConversationRequest } from "../../../application/messages/direct/dtos/requests/CreateDirectConversationRequest";
 import { IGetConversationMessagesUsecase } from "../../../application/messages/shared/interfaces/IGetConversationMessagesUsecase";
 import { GetConversationMessagesRequest } from "../../../application/messages/shared/dtos/requests/GetConversationMessagesRequest";
@@ -33,6 +34,8 @@ export class MessageController {
   constructor(
     @inject(MESSAGES_TYPES.CreateDirectConversation)
     private readonly _createDirectConversation: ICreateDirectConversationUsecase,
+    @inject(MESSAGES_TYPES.GetChannelConversation)
+    private readonly _getChannelConversation: IGetChannelConversationUsecase,
     @inject(MESSAGES_TYPES.GetDirectConversations)
     private readonly _getDirectConversations: IGetDirectConversationsUsecase,
     @inject(MESSAGES_TYPES.GetConversationMessages)
@@ -83,6 +86,15 @@ export class MessageController {
     const result = await this._getDirectConversations.execute(req.user!.userId);
 
     res.json(successResponse(result, "Direct conversations retrieved successfully"));
+  };
+
+  getChannelConversation = async (req: AuthenticatedRequest, res: Response) => {
+    const result = await this._getChannelConversation.execute(req.user!.userId, {
+      serverId: req.params.serverId,
+      channelId: req.params.channelId,
+    });
+
+    res.json(successResponse(result, "Channel conversation retrieved successfully"));
   };
 
   getConversationMessages = async (req: AuthenticatedRequest, res: Response) => {

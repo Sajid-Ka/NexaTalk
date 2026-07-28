@@ -25,6 +25,17 @@ export class ConversationRepository
     return doc ? this.mapper.toDomain(doc) : null;
   }
 
+  async findByChannelId(channelId: string): Promise<Conversation | null> {
+    const doc = await this.model
+      .findOne({
+        type: ConversationType.CHANNEL,
+        channelId,
+      })
+      .lean();
+
+    return doc ? this.mapper.toDomain(doc) : null;
+  }
+
   async findByParticipant(userId: string): Promise<Conversation[]> {
     const docs = await this.model
       .find({

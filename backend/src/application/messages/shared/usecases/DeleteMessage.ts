@@ -18,6 +18,12 @@ import { DeleteMessageRequest } from "../dtos/requests/DeleteMessageRequest";
 import { MessageResponse } from "../dtos/responses/MessageResponse";
 import { MessageResponseMapper } from "../mappers/MessageResponseMapper";
 import { IDeleteMessageUsecase } from "../interfaces/IDeleteMessageUsecase";
+import { CHANNELS_TYPES } from "../../../../main/di/modules/channels/channels.types";
+import { SERVERS_TYPES } from "../../../../main/di/modules/servers/servers.types";
+import { IChannelRepository } from "../../../../domain/features/channels/repositories/IChannelRepository";
+import { IServerMemberRepository } from "../../../../domain/features/servers/repositories/IServerMemberRepository";
+import { ServerMemberRole } from "../../../../shared/constants/server.const";
+import { NotFoundError } from "../../../../domain/core/errors/NotFoundError";
 
 @injectable()
 export class DeleteMessage implements IDeleteMessageUsecase {
@@ -32,7 +38,57 @@ export class DeleteMessage implements IDeleteMessageUsecase {
     private readonly _participantRepo: IConversationParticipantRepository,
     @inject(COMMON_TYPES.Logger)
     private readonly _logger: ILogger,
+    @inject(CHANNELS_TYPES.ChannelRepository)
+    private readonly _channelRepo: IChannelRepository,
+    @inject(SERVERS_TYPES.ServerMemberRepository)
+    private readonly _serverMemberRepo: IServerMemberRepository,
   ) {}
+
+  private async canDeleteChannelMessage(
+    currentUserId: string,
+    senderUserId: string,
+    channelId?: string,
+  ): Promise<boolean> {
+    if (!channelId) {
+      throw new NotFoundError("Channel not found");
+    }
+
+    const channel = await this._channelRepo.findById(channelId);
+
+    if (!channel) {
+      throw new NotFoundError("Channel not found");
+    }
+
+    const currentMember = await this._serverMemberRepo.findByServerAndUser(
+      channel.serverId,
+      currentUserId,
+    );
+
+    if (!currentMember) {
+      throw new ConversationAccessDeniedError();
+    }
+
+    if (currentUserId === senderUserId) {
+      return true;
+    }
+
+    const senderMember = await this._serverMemberRepo.findByServerAndUser(
+      channel.serverId,
+      senderUserId,
+    );
+
+    const senderRole = senderMember?.role ?? ServerMemberRole.MEMBER;
+
+    if (currentMember.role === ServerMemberRole.OWNER) {
+      return true;
+    }
+
+    if (currentMember.role === ServerMemberRole.ADMIN) {
+      return senderRole !== ServerMemberRole.OWNER;
+    }
+
+    return false;
+  }
 
   async execute(userId: string, request: DeleteMessageRequest): Promise<MessageResponse> {
     this._logger.info("Deleting message", {
@@ -59,7 +115,15 @@ export class DeleteMessage implements IDeleteMessageUsecase {
     }
 
     const isOwnMessage = message.senderId === user.id;
-    let canModerateGroupMessage = false;
+    let canDeleteMessage = isOwnMessage;
+
+    if (conversation.type === ConversationType.CHANNEL) {
+      canDeleteMessage = await this.canDeleteChannelMessage(
+        user.id,
+        message.senderId,
+        conversation.channelId,
+      );
+    }
 
     if (conversation.type === ConversationType.GROUP) {
       const participant = await this._participantRepo.findParticipant(conversation.id, user.id);
@@ -68,11 +132,13 @@ export class DeleteMessage implements IDeleteMessageUsecase {
         throw new ConversationAccessDeniedError();
       }
 
-      canModerateGroupMessage =
-        participant.role === GroupRole.OWNER || participant.role === GroupRole.ADMIN;
+      canDeleteMessage =
+        isOwnMessage ||
+        participant.role === GroupRole.OWNER ||
+        participant.role === GroupRole.ADMIN;
     }
 
-    if (!isOwnMessage && !canModerateGroupMessage) {
+    if (!canDeleteMessage) {
       throw new MessageDeleteForbiddenError();
     }
 

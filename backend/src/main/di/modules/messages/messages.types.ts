@@ -6,6 +6,7 @@ export const MESSAGES_TYPES = {
 
   // usecases
   CreateDirectConversation: Symbol.for("CreateDirectConversationUsecase"),
+  GetChannelConversation: Symbol.for("GetChannelConversation"),
   CreateGroup: Symbol.for("CreateGroup"),
   GetDirectConversations: Symbol.for("GetDirectConversations"),
   GetConversationMessages: Symbol.for("GetConversationMessages"),
